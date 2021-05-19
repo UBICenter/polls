@@ -1,0 +1,54 @@
+response,favorability
+Oppose,-1
+Would vote for,1
+Would vote against,-1
+Would not vote,-1
+No,-1
+Yes,1
+Strongly against,-1
+Against,-1
+In favour,1
+Strongly in favour,1
+Strongly support,1
+Tend to support,1
+Neither support nor oppose,0
+Tend to oppose,-1
+Strongly oppose,-1
+I support this idea in principle,1
+I neither support nor oppose this idea in principle,0
+I oppose this idea in principle,-1
+Don't know,0
+The government should have a universal basic income program,1
+The government should not offer universal income programs,-1
+Strongly favor,1
+Somewhat favor,1
+Unsure,0
+Somewhat oppose,-1
+Good idea,1
+Bad idea,-1
+Support ,1
+Undecided,0
+Very supportive,1
+Supportive,1
+Neither supportive or unsupportive,0
+Unsupportive,-1
+Very unsupportive,-1
+Moderately support,1
+Moderately oppose,-1
+Don't know/can't say,0
+Fully agree,1
+Somewhat supportive,1
+Fully opposed,-1
+Somewhat opposed,-1
+Don't know or neither agree or disagree,0
+Strongly agree or rather agree,-1
+Strong disagree or rather disagree,-1
+Strong support,1
+Somewhat support,1
+Not sure,0
+Strongly Support,1
+Significantly more likely,1
+More likely,1
+Neither more likley or less likely,0
+Less likely,-1
+Significantly less likely,-1
