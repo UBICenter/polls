@@ -7,7 +7,14 @@ favorability = pd.read_csv("data/favorability.csv")
 questions = pd.read_csv("data/questions.csv")
 
 # Columns to group each poll responses to.
-IDS = ["poll_id", "question_id", "xtab1_var", "xtab1_val", "xtab2_var", "xtab2_val"]
+IDS = [
+    "poll_id",
+    "question_id",
+    "xtab1_var",
+    "xtab1_val",
+    "xtab2_var",
+    "xtab2_val",
+]
 
 total_by_poll = (
     responses.groupby(IDS)
@@ -24,11 +31,8 @@ responses2["pct_fav"] = responses2.favorability * responses2.pct
 responses2.poll_id = responses2.poll_id.astype(float)
 responses2 = responses2.merge(polls, on="poll_id")
 # Make sample_size numeric, treat missing sample sizes as zero.
-responses2.sample_size = (
-    pd.to_numeric(responses2.sample_size, errors="coerce")
-    .str.replace(",", "")
-    .str.replace(r"^\s*$", "0")
-    .astype(int)
+responses2.sample_size = pd.to_numeric(
+    responses2.sample_size.str.replace(",", ""), errors="coerce"
 )
 # Merge to get question text.
 responses2 = responses2.merge(questions, on="question_id")
