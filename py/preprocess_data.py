@@ -25,7 +25,10 @@ responses2.poll_id = responses2.poll_id.astype(float)
 responses2 = responses2.merge(polls, on="poll_id")
 # Make sample_size numeric, treat missing sample sizes as zero.
 responses2.sample_size = (
-    responses2.sample_size.str.replace(",", "").str.replace(r"^\s*$", "0").astype(int)
+    pd.to_numeric(responses2.sample_size, errors="coerce")
+    .str.replace(",", "")
+    .str.replace(r"^\s*$", "0")
+    .astype(int)
 )
 # Merge to get question text.
 responses2 = responses2.merge(questions, on="question_id")
