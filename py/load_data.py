@@ -17,11 +17,6 @@ VARIABLE_MAPPING = {
     "Notes": "notes",
 }
 
-variable_mapping_inverse = {v: k for k, v in VARIABLE_MAPPING.items()}
-variable_mapping_inverse["question_text_wrap"] = "Question"
-variable_mapping_inverse["pollster_wrap"] = "Pollster"
-variable_mapping_inverse["pct_fav"] = "% favorability"
-
 
 def get_data(gid, f):
     temp = (
