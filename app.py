@@ -75,7 +75,6 @@ cards = dbc.CardDeck(
             color="info",
             outline=False,
         ),
-        
     ],
 )
 
