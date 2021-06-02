@@ -112,4 +112,4 @@ def bubble_chart(
             hover_data=["question_text_wrap"],
             labels=variable_mapping_inverse,
         )
-    ubicenter.format_fig(fig)
+    ubicenter.format_fig(show=False)
