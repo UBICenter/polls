@@ -42,7 +42,6 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
     # if cross tabs, pull the corresponding responses, but if no crosstabs selected, pull the response
     # from the "-" rows
     fig = px.bar(
-        responses,
         target_responses,
         x="percent_norm",
         y="xtab1_val",
@@ -113,11 +112,4 @@ def bubble_chart(
             hover_data=["question_text_wrap"],
             labels=variable_mapping_inverse,
         )
-    ubicenter.format_fig(fig)
-
-
-import pandas as pd
-
-responses = pd.read_csv("data/responses_merged.csv")
-
-bubble_chart(responses, [10])
+    ubicenter.format_fig(show=False)
