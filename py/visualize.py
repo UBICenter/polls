@@ -114,10 +114,3 @@ def bubble_chart(
             labels=variable_mapping_inverse,
         )
     ubicenter.format_fig(fig)
-
-
-import pandas as pd
-
-responses = pd.read_csv("data/responses_merged.csv")
-
-bubble_chart(responses, [10])

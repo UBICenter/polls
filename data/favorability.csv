@@ -1,4 +1,5 @@
 response,favorability
+Support,1
 Oppose,-1
 Would vote for,1
 Would vote against,-1
@@ -46,9 +47,8 @@ Strong disagree or rather disagree,-1
 Strong support,1
 Somewhat support,1
 Not sure,0
-Strongly Support,1
 Significantly more likely,1
 More likely,1
-Neither more likley or less likely,0
+Neither more likely nor less likely,0
 Less likely,-1
 Significantly less likely,-1
