@@ -1,26 +1,28 @@
-poll_id,date,pollster,sample_size,Margin of error,Demographic,Country,Crosstabs entered,Crosstabs not entered,Complete?,"If incomplete, emailed?",Link,notes
-1,2011-08-30,Rasmussen Reports,"1,000",±3%,Likely voters,USA,-,a few,False,,https://www.rasmussenreports.com/public_content/politics/general_politics/august_2011/11_think_government_should_provide_basic_income_grant_for_all,
-2,2016-04-30,Dalia Research,"10,000",,14-65,EU28,-,,False,Y,https://basicincome.org/wp-content/uploads/2017/05/DR-2017-survey.pdf,Only month specified
-3,2016-06-05,Swiss Referendum ,"2,494,848",,Registered voters,Switzerland,-,,False,,"https://www.loc.gov/law/foreign-news/article/switzerland-voters-reject-unconditional-basic-income/#:~:text=(June%206%2C%202016)%20On,Income.%E2%80%9D%20(Vorlage%20Nr.",
+poll_id,date,pollster,sample_size,margin_of_error,demographic,country,crosstabs_entered,crosstabs_not_entered,is_complete,"If incomplete, emailed?",Link,notes
+1,2011-08-30,Rasmussen Reports,1000,±3%,Likely voters,USA,-,a few,False,,https://www.rasmussenreports.com/public_content/politics/general_politics/august_2011/11_think_government_should_provide_basic_income_grant_for_all,
+2,2016-04-30,Dalia Research,10000,,14-65,EU28,-,,False,Y,https://basicincome.org/wp-content/uploads/2017/05/DR-2017-survey.pdf,Only month specified
+3,2016-06-05,Swiss Referendum ,2494848,,Registered voters,Switzerland,-,,False,,"https://www.loc.gov/law/foreign-news/article/switzerland-voters-reject-unconditional-basic-income/#:~:text=(June%206%2C%202016)%20On,Income.%E2%80%9D%20(Vorlage%20Nr.",
 4,2016-12-31,ESS,0,,,EU28,Country,Country,False,,https://citizensincome.org/wp-content/uploads/2017/11/European-Social-Survey-survey-on-Basic-Income.pdf,Only year specified
-5,2016-12-31,Angus Reid Institute,0,,,Canada,,,False,,http://angusreid.org/wp-content/uploads/2016/08/2016.08.10_Basic_Income_PressReleaseTables.pdf,Only year specified
-6,2017-03-31,Dalia Research,"11,021",,14-65,EU28,-,,False,Y,https://basicincome.org/wp-content/uploads/2017/05/DR-2017-survey.pdf,Only month specified
-7,2017-08-04,Ipsos MORI,"1,111",,Adults,UK,-,,False,,https://www.ipsos.com/ipsos-mori/en-uk/half-uk-adults-would-support-universal-basic-income-principle,
-8,2018-07-29,Populus,"2,070",,Adults,UK,-,"Gender, Age, Social Grade, Region, Employment Sector",False,,https://www.populus.co.uk/poll/universal-basic-income-survey/,
+5,2016-12-31,Angus Reid Institute,1516,,,Canada,"Age, Gender, Education, Household Income",,False,,http://angusreid.org/wp-content/uploads/2016/08/2016.08.10_Basic_Income_PressReleaseTables.pdf,Only year specified
+6,2017-03-31,Dalia Research,11021,,14-65,EU28,-,,False,Y,https://basicincome.org/wp-content/uploads/2017/05/DR-2017-survey.pdf,Only month specified
+7,2017-08-04,Ipsos MORI,1111,,Adults,UK,"Gender, Age, Region, Voting Intention, 2017 Election Vote",,False,,https://www.ipsos.com/ipsos-mori/en-uk/half-uk-adults-would-support-universal-basic-income-principle,
+8,2018-07-29,Populus,2070,,Adults,UK,-,"Gender, Age, Social Grade, Region, Employment Sector",False,,https://www.populus.co.uk/poll/universal-basic-income-survey/,
 9,2019-03-17,Hill-HarrisX,0,,,USA,Age,,False,,https://thehill.com/hilltv/what-americas-thinking/435278-poll-most-voters-oppose-a-universal-basic-income-programs,
-10,2019-05-09,Gallup,"3,208",,,UK,,,False,,https://news.gallup.com/poll/267143/universal-basic-income-favored-canada-not.aspx,
-11,2019-06-25,Echelon Insights,"1,006",,Registered voters,USA,Political Affiliation,,False,,http://echeloninsights.com/wp-content/uploads/Omnibus-June-2019_Policies.pdf,
-12,2019-07-17,NPR/PBS Newshour/Marist,"1,346",,National Adults,USA,-,,False,,http://maristpoll.marist.edu/npr-pbs-newshour-marist-poll-results-7/#sthash.kgrtbxuP.dpbs,
-13,2019-09-21,Hill-HarrisX,"1,000",,Registered voters,USA,-,,False,,https://thehill.com/hilltv/rising/463055-more-voters-support-universal-basic-income,
-14,2020-03-25,Dalia Research,"12,859",,14-69,EU27 + UK,-,,False,(Y- Dalia),https://europeanmoments.com/opinions/eupinions,
-15,2020-03-30,Rasmussen Reports,"1,000",±3%,Likely voters,USA,-,,False,,https://www.rasmussenreports.com/public_content/politics/current_events/healthcare/support_grows_for_government_run_health_care_universal_basic_income,
-16,2020-04-16,YouGov,"2,015",,Adults,UK,"Vote in most recent GE, Vote in 2019 GE, Gender, Age","Social Grade, GB Region",True,,https://docs.cdn.yougov.com/5y7qpjzd6v/NEON_CoronavirusClimate_200417_W.pdf,
-17,2020-08-19,Pew Research Center,"11,001",,Adults,USA,"Race, Age, Political Affiliation, Income",,False,,https://www.pewresearch.org/fact-tank/2020/08/19/more-americans-oppose-than-favor-the-government-providing-a-universal-basic-income-for-all-adult-citizens/,
-18,2020-12-31,Angus Reid Institute,"1,510",,,Canada,-,,False,,http://angusreid.org/universal-basic-income-covid19/,Only year specified
+10,2019-05-09,Gallup,3208,,,UK,,,False,,https://news.gallup.com/poll/267143/universal-basic-income-favored-canada-not.aspx,
+11,2019-06-25,Echelon Insights,1006,,Registered voters,USA,Political Affiliation,,False,,http://echeloninsights.com/wp-content/uploads/Omnibus-June-2019_Policies.pdf,
+12,2019-07-17,NPR/PBS Newshour/Marist,1346,,National Adults,USA,-,,False,,http://maristpoll.marist.edu/npr-pbs-newshour-marist-poll-results-7/#sthash.kgrtbxuP.dpbs,
+13,2019-09-21,Hill-HarrisX,1000,,Registered voters,USA,-,,False,,https://thehill.com/hilltv/rising/463055-more-voters-support-universal-basic-income,
+15,2020-03-30,Rasmussen Reports,1000,±3%,Likely voters,USA,-,,False,,https://www.rasmussenreports.com/public_content/politics/current_events/healthcare/support_grows_for_government_run_health_care_universal_basic_income,
+16,2020-04-16,YouGov,2015,,Adults,UK,"Vote in most recent GE, Vote in 2019 GE, Gender, Age","Social Grade, GB Region",True,,https://docs.cdn.yougov.com/5y7qpjzd6v/NEON_CoronavirusClimate_200417_W.pdf,
+17,2020-08-19,Pew Research Center,11001,,Adults,USA,"Race, Age, Political Affiliation, Income",,False,,https://www.pewresearch.org/fact-tank/2020/08/19/more-americans-oppose-than-favor-the-government-providing-a-universal-basic-income-for-all-adult-citizens/,
+18,2020-12-31,Angus Reid Institute,1510,,,Canada,-,,False,,http://angusreid.org/universal-basic-income-covid19/,Only year specified
 19,2020-12-31,Foundation for European Progressive Studies,0,,,EU14,Country,,False,,https://www.feps-europe.eu/attachments/publications/ed_web.pdf,Only year specified
-20,2021-03-24,Slingshot Strategies,"1,000",,Likely Democratic primary voters in New York,USA,"Age, Gender, Race, Political ideology",NYC Borough,True,,https://www.politico.com/f/?id=00000178-6132-d9ca-af78-7dbabb150000,
-21,2020-07-01,Redfield and Wilton Strategies,"1,500",,Eligible Voters in Great Britain,UK,"Gender, Age",,False,,https://redfieldandwiltonstrategies.com/uk-public-unfamiliar-with-universal-basic-income-but-cautiously-supportive/,
-22,2021-03-24,Redfield and Wilton Strategies,"1,500",,Eligible Voters in Great Britain,UK,"Gender, Age, Vote in most recent GE, Vote in Dec 2019 GE",,True,,https://redfieldandwiltonstrategies.com/universal-basic-income-supported-by-a-majority-of-british-public/,
-23,2021-04-22,Pew Research Center,1003,,national samples,"UK, US, GerMaley, France",-,,False,,https://www.pewresearch.org/global/2021/04/22/Maley-in-western-europe-and-u-s-want-economic-changes-as-pandemic-continues/,"Chart excluded from input on ""those with the lowest levels of income are the most likely to say it is very important for the national government to provide a UBI"""
-24,2019-05-09,Gallup,"4,394",,,US,,,False,,https://news.gallup.com/poll/267143/universal-basic-income-favored-canada-not.aspx,
-25,2019-05-09,Gallup,"3,049",,,Canada,,,False,,https://news.gallup.com/poll/267143/universal-basic-income-favored-canada-not.aspx,
+20,2021-03-24,Slingshot Strategies,1000,,Likely Democratic primary voters in New York,USA,"Age, Gender, Race, Political ideology",NYC Borough,True,,https://www.politico.com/f/?id=00000178-6132-d9ca-af78-7dbabb150000,
+21,2020-07-01,Redfield and Wilton Strategies,1500,,Eligible Voters in Great Britain,UK,"Gender, Age, Vote in most recent GE, Region",,False,,https://redfieldandwiltonstrategies.com/uk-public-unfamiliar-with-universal-basic-income-but-cautiously-supportive/,
+22,2021-03-24,Redfield and Wilton Strategies,1500,,Eligible Voters in Great Britain,UK,"Gender, Age, Vote in most recent GE, Region, Vote in Dec 2019 GE",,True,,https://redfieldandwiltonstrategies.com/universal-basic-income-supported-by-a-majority-of-british-public/,
+23,2021-04-22,Pew Research Center,1003,,national samples,US,,,False,,https://www.pewresearch.org/global/2021/04/22/Maley-in-western-europe-and-u-s-want-economic-changes-as-pandemic-continues/,"Chart excluded from input on ""those with the lowest levels of income are the most likely to say it is very important for the national government to provide a UBI"""
+24,2019-05-09,Gallup,4394,,,US,,,False,,https://news.gallup.com/poll/267143/universal-basic-income-favored-canada-not.aspx,
+25,2019-05-09,Gallup,3049,,,Canada,,,False,,https://news.gallup.com/poll/267143/universal-basic-income-favored-canada-not.aspx,
+26,2021-04-22,Pew Research Center,1003,,national samples,France,,,False,,https://www.pewresearch.org/global/2021/04/22/Maley-in-western-europe-and-u-s-want-economic-changes-as-pandemic-continues/,"Chart excluded from input on ""those with the lowest levels of income are the most likely to say it is very important for the national government to provide a UBI"""
+27,2021-04-22,Pew Research Center,1003,,national samples,Germany,,,False,,https://www.pewresearch.org/global/2021/04/22/Maley-in-western-europe-and-u-s-want-economic-changes-as-pandemic-continues/,"Chart excluded from input on ""those with the lowest levels of income are the most likely to say it is very important for the national government to provide a UBI"""
+28,2021-04-22,Pew Research Center,1003,,national samples,UK,,,False,,https://www.pewresearch.org/global/2021/04/22/Maley-in-western-europe-and-u-s-want-economic-changes-as-pandemic-continues/,"Chart excluded from input on ""those with the lowest levels of income are the most likely to say it is very important for the national government to provide a UBI"""

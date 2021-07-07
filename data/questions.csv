@@ -1,7 +1,9 @@
-question_id,question_text,Response scale
+question_id,question_text,response_scale
 1,"Do you support New York City establishing a Basic Income, Guaranteed Minimum Income, or some other form of direct cash relief for people who live in New York?",
 2,"Would you favor or oppose the federal government providing a guaranteed income, sometimes called a “Universal Basic Income,” of about $1,000 a month for all adult citizens, whether or not they work?",
-3,"Universal Basic Income – where the government makes sure everyone has an income, without a means test or requirement to work",
+3,"Thinking about the financial impact of a crisis like the Coronavirus
+pandemic, to what extent, if at all, would you support or oppose the
+government introducing the following permanent measures: Universal Basic Income – where the government makes sure everyone has an income, without a means test or requirement to work",
 4,Some contend that Congress' coronavirus relief package paves the way for a universal basic income for all Americans. Do you favor or oppose having the federal government provide every single American with a basic income?,
 5,One proposal to help Americans whose jobs are threatened by automation is having a universal basic income program that pays all Americans $1000 per month. Which comes closest to your belief?,
 6,"Do you think each of the following is a good idea or a bad idea: A Universal Basic Income of $1,000 per month for each American 18 or older?",
@@ -11,7 +13,7 @@ question_id,question_text,Response scale
 10,"Assuming the level would be set roughly at the amount the UK government judged to be necessary to cover basic needs, e.g. food and clothing (but not housing costs), to what extent would you support or oppose the UK Government introducing a basic income…",
 11,"If there would be a referendum on introducing basic income today, how would you vote?",
 12,Another proposal has been made for the federal government to provide every single American with a basic income grant. The idea would be to provide enough money for everyone to enjoy a modest living regardless of whether or not they choose to work. Do you favor or oppose having the federal government provide every single American with a basic income grant?,
-13,Would you support or oppose implementing a program of this type in Canada at a level of $10K/$20K$30K?,Separate out into 3 questions
+13,Would you support or oppose implementing a program of this type in Canada at a level of $10K?,Separate out into 3 questions
 14,"Do you agree or disagree that each citizen, including those in work, should receive a guaranteed income from the state without work requirement?",
 15,"Some countries are currently talking about introducing a basic income scheme. In a moment I will ask you to tell me whether you are against or in favour of this scheme. First, I will give you some more details. The highlighted box at the top of this card shows the main features of the scheme. A basic income scheme includes all of the following: ...READ OUT...- The government pays everyone a monthly income to cover essential living costs. - It replaces Maley other social benefits. - The purpose is to guarantee everyone a minimum standard of living. - Everyone receives the same amount regardless of whether or not they are working. - People also keep the money they earn from work or other sources. - This scheme is paid for by taxes. INTERVIEWER: PAUSE TO GIVE THE RESPONDENT TIME TO READ CARD. Overall, would you be against or in favour of having this scheme in [country]?",
 16,"1 The Federation will see to the introduction of an unconditional basic income.
@@ -24,3 +26,7 @@ question_id,question_text,Response scale
 19,Do you support or not support a universal basic income program as a way to help people in the U.S. who lose their jobs because of advances in artificial intelligence?,
 20,Do you support or not support a universal basic income program as a way to help people in Canada who lose their jobs because of advances in artificial intelligence?,
 21,Would you be willing to pay higher taxes to fund a universal basic income program? (Among those who support universal basic income programs),
+22,% who say it is ___ important for the national government to provide a universal basic income for all people.,
+23,% who say it is very important for the national government to provide a universal basic income for all people.,
+24,Would you support or oppose implementing a program of this type in Canada at a level of $20K?,
+25,Would you support or oppose implementing a program of this type in Canada at a level of $30K?,
