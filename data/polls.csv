@@ -12,7 +12,6 @@ poll_id,date,pollster,sample_size,margin_of_error,demographic,country,crosstabs_
 11,2019-06-25,Echelon Insights,1006,,Registered voters,USA,Political Affiliation,,False,,http://echeloninsights.com/wp-content/uploads/Omnibus-June-2019_Policies.pdf,
 12,2019-07-17,NPR/PBS Newshour/Marist,1346,,National Adults,USA,-,,False,,http://maristpoll.marist.edu/npr-pbs-newshour-marist-poll-results-7/#sthash.kgrtbxuP.dpbs,
 13,2019-09-21,Hill-HarrisX,1000,,Registered voters,USA,-,,False,,https://thehill.com/hilltv/rising/463055-more-voters-support-universal-basic-income,
-14,2020-03-25,Dalia Research,12859,,14-69,EU27 + UK,-,,False,(Y- Dalia),https://europeanmoments.com/opinions/eupinions,
 15,2020-03-30,Rasmussen Reports,1000,±3%,Likely voters,USA,-,,False,,https://www.rasmussenreports.com/public_content/politics/current_events/healthcare/support_grows_for_government_run_health_care_universal_basic_income,
 16,2020-04-16,YouGov,2015,,Adults,UK,"Vote in most recent GE, Vote in 2019 GE, Gender, Age","Social Grade, GB Region",True,,https://docs.cdn.yougov.com/5y7qpjzd6v/NEON_CoronavirusClimate_200417_W.pdf,
 17,2020-08-19,Pew Research Center,11001,,Adults,USA,"Race, Age, Political Affiliation, Income",,False,,https://www.pewresearch.org/fact-tank/2020/08/19/more-americans-oppose-than-favor-the-government-providing-a-universal-basic-income-for-all-adult-citizens/,
