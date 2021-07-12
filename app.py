@@ -41,9 +41,7 @@ cards = dbc.CardDeck(
                             value=22,
                             # create a list of dicts of states and their labels
                             # to be selected by user in dropdown
-                            options=[
-                                {"label": x, "value": x} for x in poll_ids
-                            ],
+                            options=[{"label": x, "value": x} for x in poll_ids],
                         ),
                     ]
                 ),
@@ -65,9 +63,7 @@ cards = dbc.CardDeck(
                             value=17,
                             # create a list of dicts of states and their labels
                             # to be selected by user in dropdown
-                            options=[
-                                {"label": x, "value": x} for x in question_ids
-                            ],
+                            options=[{"label": x, "value": x} for x in question_ids],
                         ),
                     ]
                 ),
@@ -172,7 +168,7 @@ app.layout = html.Div(
             [
                 dbc.Col(
                     html.H1(
-                        "Results of your reform:",
+                        "Poll results:",
                         style={
                             "text-align": "center",
                             "color": "#1976D2",
