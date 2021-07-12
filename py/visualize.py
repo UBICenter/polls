@@ -53,7 +53,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
     fig.update_layout(
         xaxis_title="Percentage", yaxis_title=crosstab_variable, xaxis_tickformat="%"
     )
-    fig.show()
+    return fig
 
 
 # Function to create a bubble chart for % favorability across a set of poll/question pairs.
@@ -112,4 +112,4 @@ def bubble_chart(
             hover_data=["question_text_wrap"],
             labels=variable_mapping_inverse,
         )
-    ubicenter.format_fig(show=False)
+    return ubicenter.format_fig(show=False)
