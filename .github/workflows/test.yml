@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Step 1 - Download Agent Data
         id: 'sheet_to_csv'
-        uses: dolthub/gsheets-to-csv@v0.5
+        uses: fedderw/gsheets-to-csv
         with:
           creds: ${{ secrets.GOOGLE_CREDENTIAL }}
           tempdir: ${{ github.workspace }} #/github/workspace
