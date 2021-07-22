@@ -13,7 +13,8 @@ from py import visualize
 
 # Import data.
 r = pd.read_csv("data/responses_merged.csv")
-poll_ids = r.poll_id.unique()
+polls = pd.read_csv("data/polls.csv").set_index("poll_id")
+poll_ids = r.poll_id.unique().astype(int)
 question_ids = r.question_id.unique()
 
 
@@ -23,6 +24,7 @@ cards = dbc.CardDeck(
         # define first card with state-dropdown component
         dbc.Card(
             [
+                # select a poll
                 dbc.CardBody(
                     [
                         html.Label(
@@ -34,6 +36,7 @@ cards = dbc.CardDeck(
                                 "fontSize": 20,
                             },
                         ),
+                        # TODO: show poll names instead of poll_id
                         dcc.Dropdown(
                             # define component_id for input of app@callback function
                             id="poll-dropdown",
@@ -41,7 +44,10 @@ cards = dbc.CardDeck(
                             value=22,
                             # create a list of dicts of states and their labels
                             # to be selected by user in dropdown
-                            options=[{"label": x, "value": x} for x in poll_ids],
+                            options=[{"label": "{} - {} ({})".format(polls.loc[id, "pollster"], 
+                                                                     polls.loc[id, "date"], 
+                                                                     polls.loc[id, "country"]),
+                                      "value": id} for id in poll_ids],
                         ),
                     ]
                 ),
@@ -81,6 +87,11 @@ charts = dbc.CardDeck(
             body=True,
             color="info",
         ),
+        dbc.Card(
+            dcc.Graph(id="bubble-graph", figure={}),
+            body=True,
+            color="info",
+        ),
     ]
 )
 
@@ -98,8 +109,9 @@ app = dash.Dash(
     # Pass the url base pathname to Dash.
     url_base_pathname=url_base_pathname,
 )
-
-server = app.server
+# used to debug the app maybe 
+application = app.server
+# server = app.server
 
 # Design the app
 app.layout = html.Div(
