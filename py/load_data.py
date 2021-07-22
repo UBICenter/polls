@@ -9,7 +9,7 @@ VARIABLE_MAPPING = {
     "Cross-tab value 2": "xtab2_val",
     "Sample size": "sample_size",
     "Question text": "question_text",
-    "Percentage": "pct",
+    "percentage": "pct",
     "Response": "response",
     "Favorability": "favorability",
     "Date": "date",

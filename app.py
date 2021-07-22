@@ -15,8 +15,9 @@ from py import visualize
 r = pd.read_csv("data/responses_merged.csv")
 polls = pd.read_csv("data/polls.csv").set_index("poll_id")
 poll_ids = r.poll_id.unique().astype(int)
-question_ids = r.question_id.unique()
-
+question_ids = r.question_id.unique().astype(int)
+xtab1_vars = r.xtab1_var.unique()
+xtab2_vars = r.xtab2_var.unique()
 
 # Create the 4 input cards
 cards = dbc.CardDeck(
@@ -51,6 +52,7 @@ cards = dbc.CardDeck(
                         ),
                     ]
                 ),
+                # select a question
                 dbc.CardBody(
                     [
                         html.Label(
@@ -62,6 +64,8 @@ cards = dbc.CardDeck(
                                 "fontSize": 20,
                             },
                         ),
+                        # TODO: show question names instead of question_id
+                        # TODO: dynamically update dropdown options based on poll-dropdown`s value
                         dcc.Dropdown(
                             # define component_id for input of app@callback function
                             id="question-dropdown",
@@ -69,7 +73,31 @@ cards = dbc.CardDeck(
                             value=17,
                             # create a list of dicts of states and their labels
                             # to be selected by user in dropdown
-                            options=[{"label": x, "value": x} for x in question_ids],
+                            options=[{"label": "{}".format(r.loc[r.question_id==x, "question_text"].unique()), "value": x} for x in question_ids],
+                        ),
+                    ]
+                ),
+                # select a cross-tab
+                dbc.CardBody(
+                    [
+                        html.Label(
+                            ["Select cross-tab:"],
+                            style={
+                                "font-weight": "bold",
+                                "text-align": "center",
+                                "color": "white",
+                                "fontSize": 20,
+                            },
+                        ),
+                        # TODO: show question names instead of question_id
+                        dcc.Dropdown(
+                            # define component_id for input of app@callback function
+                            id="xtab1-dropdown",
+                            multi=False,
+                            value="-",
+                            # create a list of dicts of states and their labels
+                            # to be selected by user in dropdown
+                            options=[{"label": x, "value": x} for x in xtab1_vars],
                         ),
                     ]
                 ),
@@ -87,11 +115,11 @@ charts = dbc.CardDeck(
             body=True,
             color="info",
         ),
-        dbc.Card(
-            dcc.Graph(id="bubble-graph", figure={}),
-            body=True,
-            color="info",
-        ),
+        # dbc.Card(
+        #     dcc.Graph(id="bubble-graph", figure={}),
+        #     body=True,
+        #     color="info",
+        # ),
     ]
 )
 
@@ -207,22 +235,34 @@ app.layout = html.Div(
 
 
 @app.callback(
-    # Output(component_id="ubi-output", component_property="children"),
-    # Output(component_id="winners-output", component_property="children"),
-    # Output(component_id="resources-output", component_property="children"),
     Output(component_id="bar-graph", component_property="figure"),
-    # Output(component_id="my-graph2", component_property="figure"),
     Input(component_id="poll-dropdown", component_property="value"),
     Input(component_id="question-dropdown", component_property="value"),
-    # Input(component_id="level", component_property="value"),
-    # Input(component_id="agi-slider", component_property="value"),
-    # Input(component_id="benefits-checklist", component_property="value"),
-    # Input(component_id="taxes-checklist", component_property="value"),
-    # Input(component_id="exclude-checklist", component_property="value"),
+    Input(component_id="xtab1-dropdown", component_property="value"),
 )
-def test(poll, question):
-    return visualize.poll_vis(r, poll_id=poll, question_id=question)
+def test(poll, question, xtab1):
+    return visualize.poll_vis(r, poll_id=poll, question_id=question, crosstab_variable=xtab1)
 
+# @app.callback(
+#     Output("include-checklist", "options"),
+#     Input("include-checklist", "value"),
+# )
+# def update(checklist):
+#     """[summary]
+#     prevent users from excluding both adults and children
+#     Parameters
+#     ----------
+#     checklist : list
+#         takes the input "include-checklist" from the callback
+#     Returns
+#     -------
+#     "Include in UBI" checklist with correct options
+#     """
+#     return [
+#         {"label": "Non-Citizens", "value": "non_citizens"},
+#         {"label": "Children", "value": "children", "disabled": True},
+#         {"label": "Adults", "value": "adults"},
+#         ]
 
 if __name__ == "__main__":
     app.run_server(debug=True, port=8000, host="127.0.0.1")

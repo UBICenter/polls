@@ -40,12 +40,12 @@ jobs:
           before: |
             file_list=($FILES)
             head "${file_list[1]}"
-            dolt table import --update-table -pk poll_id polls "${file_list[1]}"
+            dolt table import --update-table -pk response response_favorability "${file_list[5]}"
             dolt table import --update-table -pk pollster pollsters "${file_list[2]}"
             dolt table import --update-table -pk question_id questions "${file_list[3]}"
+            dolt table import --update-table -pk poll_id polls "${file_list[1]}"
             dolt table import --update-table -pk region regions "${file_list[4]}"
-            dolt table import --update-table -pk response response_favorability "${file_list[5]}"
-            dolt table import --update-table -pk poll_id, question_id, response response_favorability "${file_list[6]}"
+            dolt table import --update-table -pk responses "${file_list[6]}"
           remote: ${{ env.remote }}
           branch: ${{ env.branch }}
           commit_message: 'Dolt action commit'

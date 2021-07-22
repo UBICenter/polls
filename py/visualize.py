@@ -1,5 +1,6 @@
 import ubicenter
 import plotly.express as px
+from py import preprocess_data as ppd
 
 VARIABLE_MAPPING = {
     "Poll ID": "poll_id",
@@ -50,7 +51,10 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         & (responses.question_id == question_id)
         & (responses.xtab1_var == crosstab_variable)
     ]
-    question_text = target_responses.question_text.iloc[0]
+    
+    target_responses["question_text_wrap"] = ppd.plotly_wrap(target_responses.question_text,80)
+    # question_text=target_responses["question_text_wrap"].iloc[0] 
+    question_text=target_responses["question_text_wrap"].unique()[0] 
 
     # if cross tabs, pull the corresponding responses, but if no crosstabs selected, pull the response
     # from the "-" rows
@@ -64,7 +68,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         title=question_text,
     )
     fig.update_layout(
-        xaxis_title="Percentage", yaxis_title=crosstab_variable, xaxis_tickformat="%"
+        xaxis_title="Percentage", yaxis_title=crosstab_variable, xaxis_tickformat="%",
     )
     return fig
 

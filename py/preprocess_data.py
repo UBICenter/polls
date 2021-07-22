@@ -10,6 +10,7 @@ questions = pd.read_csv("data/questions.csv")
 IDS = [
     "poll_id",
     "question_id",
+    # FIXME: xtab1_var or xtab_var1?
     "xtab1_var",
     "xtab1_val",
     "xtab2_var",
@@ -31,9 +32,10 @@ responses2["pct_fav"] = responses2.favorability * responses2.pct
 responses2.poll_id = responses2.poll_id.astype(float)
 responses2 = responses2.merge(polls, on="poll_id")
 # Make sample_size numeric, treat missing sample sizes as zero.
-responses2.sample_size = pd.to_numeric(
-    responses2.sample_size.str.replace(",", ""), errors="coerce"
-)
+# added data validation to spreadsheet
+# responses2.sample_size = pd.to_numeric(
+#     responses2.sample_size.str.replace(",", ""), errors="coerce"
+# )
 # Merge to get question text.
 responses2 = responses2.merge(questions, on="question_id")
 # Wrap question text and pollster
