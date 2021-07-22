@@ -23,7 +23,7 @@ jobs:
               { "id": "${{ env.id }}", "title": "Questions"},
               { "id": "${{ env.id }}", "title": "Regions"},
               { "id": "${{ env.id }}", "title": "Response Favorability"},
-              { "id": "${{ env.id }}", "title": "Responses"},
+              { "id": "${{ env.id }}", "title": "Responses"}
             ]
       - name: Step 2 - Dolt Import
         uses: dolthub/dolt-action@v0.5
