@@ -1,4 +1,4 @@
-poll_id,question_id,response,xtab1_var,xtab1_val,xtab2_var,xtab2_val,percentage,notes
+poll_id,question_id,response,xtab1_var,xtab1_val,xtab2_var,xtab2_val,pct,notes
 1,12,Support,-,-,-,-,11.0,
 1,12,Oppose,-,-,-,-,82.0,
 2,11,Would vote for,-,-,-,-,68.0,

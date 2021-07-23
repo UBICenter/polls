@@ -18,14 +18,40 @@ poll_ids = r.poll_id.unique().astype(int)
 question_ids = r.question_id.unique().astype(int)
 xtab1_vars = r.xtab1_var.unique()
 xtab2_vars = r.xtab2_var.unique()
+countries = r.country.unique()
 
-# Create the 4 input cards
+# Create the input cards
 cards = dbc.CardDeck(
     [
         # define first card with state-dropdown component
         dbc.Card(
             [
-                # select a poll
+                # ------------- select a country ------------ #
+                dbc.CardBody(
+                    [
+                        html.Label(
+                            ["Select country:"],
+                            style={
+                                "font-weight": "bold",
+                                "text-align": "center",
+                                "color": "white",
+                                "fontSize": 20,
+                            },
+                        ),
+                        # TODO: show poll names instead of poll_id
+                        dcc.Dropdown(
+                            # define component_id for input of app@callback function
+                            id="country-dropdown",
+                            multi=False,
+                            value=22,
+                            # create a list of dicts of states and their labels
+                            # to be selected by user in dropdown
+                            options=[{"label": c,
+                                      "value": c} for c in countries],
+                        ),
+                    ]
+                ),
+                # ------------- select a poll ------------ #
                 dbc.CardBody(
                     [
                         html.Label(
@@ -52,7 +78,7 @@ cards = dbc.CardDeck(
                         ),
                     ]
                 ),
-                # select a question
+                # ----------- select a question ---------- #
                 dbc.CardBody(
                     [
                         html.Label(
@@ -77,7 +103,7 @@ cards = dbc.CardDeck(
                         ),
                     ]
                 ),
-                # select a cross-tab
+                # ---------- select a cross-tab ---------- #
                 dbc.CardBody(
                     [
                         html.Label(
@@ -231,38 +257,60 @@ app.layout = html.Div(
     ]
 )
 
-# Assign callbacks
+# -------------------------------------------------------- #
+#                     Assign callbacks                     #
+# -------------------------------------------------------- #
 
 
 @app.callback(
     Output(component_id="bar-graph", component_property="figure"),
+    # Input(component_id="country-dropdown", component_property="value"),
     Input(component_id="poll-dropdown", component_property="value"),
     Input(component_id="question-dropdown", component_property="value"),
     Input(component_id="xtab1-dropdown", component_property="value"),
 )
 def test(poll, question, xtab1):
-    return visualize.poll_vis(r, poll_id=poll, question_id=question, crosstab_variable=xtab1)
+    return visualize.poll_vis(responses=r, poll_id=poll, question_id=question, crosstab_variable=xtab1)
 
-# @app.callback(
-#     Output("include-checklist", "options"),
-#     Input("include-checklist", "value"),
-# )
-# def update(checklist):
-#     """[summary]
-#     prevent users from excluding both adults and children
-#     Parameters
-#     ----------
-#     checklist : list
-#         takes the input "include-checklist" from the callback
-#     Returns
-#     -------
-#     "Include in UBI" checklist with correct options
-#     """
-#     return [
-#         {"label": "Non-Citizens", "value": "non_citizens"},
-#         {"label": "Children", "value": "children", "disabled": True},
-#         {"label": "Adults", "value": "adults"},
-#         ]
+# ------ update selections based on country dropdown ----- #
+@app.callback(
+    Output(component_id="poll-dropdown", component_property="options"),
+    Output(component_id="question-dropdown", component_property="options"),
+    Output(component_id="xtab1-dropdown", component_property="options"),
+    Input("country-dropdown", "value"),
+)
+def update(dropdown_value):
+    """[summary]
+    change the options of the checklist to match the selected countryes
+    Parameters
+    ----------
+    checklist : list
+        takes the input "country-dropdown" from the callback
+    Returns
+    -------
+    populates other checklist with country-specific options
+    """
+    poll_options = [
+        {
+            "label": "{} - {} ({})".format(
+                polls.loc[id, "pollster"], polls.loc[id, "date"], polls.loc[id, "country"]
+            ),
+            "value": id,
+        }
+        for id in r[r.country == dropdown_value].poll_id.unique()
+    ]
+    question_options = [
+        {
+            "label": "{}".format(r.loc[r.question_id == x, "question_text"].unique()),
+            "value": x,
+        }
+        for x in r[r.country == dropdown_value].question_id.unique()[0]
+    ]
+    xtab1_options = [
+        {"label": x, "value": x} for x in r[r.country == dropdown_value].xtab1_var.unique()
+    ]
+    
+    return poll_options, question_options, xtab1_options
 
 if __name__ == "__main__":
     app.run_server(debug=True, port=8000, host="127.0.0.1")

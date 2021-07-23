@@ -52,7 +52,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         & (responses.xtab1_var == crosstab_variable)
     ]
     
-    target_responses["question_text_wrap"] = ppd.plotly_wrap(target_responses.question_text,80)
+    target_responses["question_text_wrap"] = ppd.plotly_wrap(target_responses.question_text,80).copy()
     # question_text=target_responses["question_text_wrap"].iloc[0] 
     question_text=target_responses["question_text_wrap"].unique()[0] 
 
