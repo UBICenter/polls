@@ -18,11 +18,11 @@ jobs:
           tempdir: ${{ github.workspace }} #/github/workspace
           sheets: |
             [
-              { "id": "${{ env.id }}", "title": "Polls"},
+              { "id": "${{ env.id }}", "title": "Response Favorability"},
               { "id": "${{ env.id }}", "title": "Pollsters"},
               { "id": "${{ env.id }}", "title": "Questions"},
+              { "id": "${{ env.id }}", "title": "Polls"},
               { "id": "${{ env.id }}", "title": "Regions"},
-              { "id": "${{ env.id }}", "title": "Response Favorability"},
               { "id": "${{ env.id }}", "title": "Responses"}
             ]
       - name: Step 2 - Dolt Import
@@ -31,20 +31,14 @@ jobs:
         env:
           FILES: ${{ steps.sheet_to_csv.outputs.results }}
         with:
-          # before: |
-          #   file_list=($FILES)
-          #   head "${file_list[1]}"
-          #   for file in "${file_list[@]}"; do
-          #     dolt table import --update-table -pk id aminals "$file"
-          #   done
           before: |
             file_list=($FILES)
             head "${file_list[1]}"
-            dolt table import --update-table response_favorability "${file_list[5]}"
+            dolt table import --update-table response_favorability "${file_list[1]}"
             dolt table import --update-table pollsters "${file_list[2]}"
             dolt table import --update-table questions "${file_list[3]}"
-            dolt table import --update-table polls "${file_list[1]}"
-            dolt table import --update-table regions "${file_list[4]}"
+            dolt table import --update-table polls "${file_list[4]}"
+            dolt table import --update-table regions "${file_list[5]}"
             dolt table import --update-table responses "${file_list[6]}"
           remote: ${{ env.remote }}
           branch: ${{ env.branch }}
