@@ -14,6 +14,7 @@ from py import visualize
 
 # Import data.
 r = pd.read_csv("data/responses_merged.csv")
+r.date=r.date.apply(lambda x: pd.to_datetime(x))
 polls = pd.read_csv("data/polls.csv").set_index("poll_id")
 poll_ids = r.poll_id.unique().astype(int)
 question_ids = r.question_id.unique().astype(int)
@@ -307,6 +308,7 @@ app.layout = html.Div(
         html.Div([
         dbc.Row([dbc.Col(xtab2_card, width={"size": 9, "offset": 2})])
         ], style= {'display': 'block'}),
+        html.Br(),
         # ---------------- place charts --------------- #
         dbc.Row(
             [
@@ -373,7 +375,7 @@ def update(dropdown_value):
             ),
             "value": id,
         }
-        for id in r[r.country == dropdown_value].poll_id.unique()
+        for id in r[r.country == dropdown_value].sort_values("date",ascending=False).poll_id.unique()
     ]
     
     return poll_options
