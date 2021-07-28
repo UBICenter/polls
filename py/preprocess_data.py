@@ -26,7 +26,7 @@ total_by_poll = (
 # merge total_by_poll and responses, create new normalized percentage column
 responses2 = responses.merge(total_by_poll, on=IDS)
 responses2["percent_norm"] = responses2.pct / responses2.total_percentage
-responses2 = responses2.merge(favorability, on="response")
+responses2 = responses2.merge(favorability, on=["question_id", "response"])
 responses2["pct_fav"] = responses2.favorability * responses2.pct
 # Also merge to poll table.
 responses2.poll_id = responses2.poll_id.astype(float)
