@@ -11,6 +11,7 @@ import microdf as mdf
 import os
 from py import visualize
 
+
 # Import data.
 r = pd.read_csv("data/responses_merged.csv")
 polls = pd.read_csv("data/polls.csv").set_index("poll_id")
@@ -23,7 +24,7 @@ countries = r.country.unique()
 # Create the input cards
 cards = dbc.CardDeck(
     [
-        # define first card with state-dropdown component
+        # define first card with poll selection options
         dbc.Card(
             [
                 # ------------- select a country ------------ #
@@ -68,7 +69,7 @@ cards = dbc.CardDeck(
                             # define component_id for input of app@callback function
                             id="poll-dropdown",
                             multi=False,
-                            value=22,
+                            # value=22,
                             # create a list of dicts of states and their labels
                             # to be selected by user in dropdown
                             options=[{"label": "{} - {} ({})".format(polls.loc[id, "pollster"], 
@@ -96,7 +97,7 @@ cards = dbc.CardDeck(
                             # define component_id for input of app@callback function
                             id="question-dropdown",
                             multi=False,
-                            value=17,
+                            # value=17,
                             # create a list of dicts of states and their labels
                             # to be selected by user in dropdown
                             options=[{"label": "{}".format(r.loc[r.question_id==x, "question_text"].unique()), "value": x} for x in question_ids],
@@ -104,35 +105,103 @@ cards = dbc.CardDeck(
                     ]
                 ),
                 # ---------- select a cross-tab ---------- #
-                dbc.CardBody(
-                    [
-                        html.Label(
-                            ["Select cross-tab:"],
-                            style={
-                                "font-weight": "bold",
-                                "text-align": "center",
-                                "color": "white",
-                                "fontSize": 20,
-                            },
-                        ),
-                        # TODO: show question names instead of question_id
-                        dcc.Dropdown(
-                            # define component_id for input of app@callback function
-                            id="xtab1-dropdown",
-                            multi=False,
-                            value="-",
-                            # create a list of dicts of states and their labels
-                            # to be selected by user in dropdown
-                            options=[{"label": x, "value": x} for x in xtab1_vars],
-                        ),
-                    ]
-                ),
+                # dbc.CardBody(
+                #     [
+                #         html.Label(
+                #             ["Select cross-tab:"],
+                #             style={
+                #                 "font-weight": "bold",
+                #                 "text-align": "center",
+                #                 "color": "white",
+                #                 "fontSize": 20,
+                #             },
+                #         ),
+                #         # TODO: show question names instead of question_id
+                #         dcc.Dropdown(
+                #             # define component_id for input of app@callback function
+                #             id="xtab1-dropdown",
+                #             multi=False,
+                #             value="-",
+                #             # create a list of dicts of states and their labels
+                #             # to be selected by user in dropdown
+                #             options=[{"label": x, "value": x} for x in xtab1_vars],
+                #         ),
+                #     ]
+                # ),
             ],
             color="info",
             outline=False,
         ),
     ],
 )
+# Create the crosstab cards
+
+# define first card with poll selection options
+xtab1_card = dbc.Card(
+    [
+        # ---------- select a cross-tab ---------- #
+        dbc.CardBody(
+            [
+                html.Label(
+                    ["Select cross-tab:"],
+                    id="xtab1-label",
+                    style={
+                        "font-weight": "bold",
+                        "text-align": "center",
+                        "color": "white",
+                        "fontSize": 20,
+                    },
+                ),
+                # TODO: show question names instead of question_id
+                dcc.Dropdown(
+                    # define component_id for input of app@callback function
+                    id="xtab1-dropdown",
+                    multi=False,
+                    value="-",
+                    # create a list of dicts of states and their labels
+                    # to be selected by user in dropdown
+                    options=[{"label": x, "value": x} for x in xtab1_vars],
+                ),
+            ]
+        ,id="xtab1-cardbody",),
+    ],
+    id="xtab1-card",
+    color="info",
+    outline=False,
+)
+xtab2_card = dbc.Card(
+    [
+        # ---------- select a cross-tab ---------- #
+        dbc.CardBody(
+            [
+                html.Label(
+                    ["Select second cross-tab:"],
+                    id="xtab2-label",
+                    style={
+                        "font-weight": "bold",
+                        "text-align": "center",
+                        "color": "white",
+                        "fontSize": 20,
+                    },
+                ),
+                # TODO: show question names instead of question_id
+                dcc.Dropdown(
+                    # define component_id for input of app@callback function
+                    id="xtab2-dropdown",
+                    multi=False,
+                    value="-",
+                    # create a list of dicts of states and their labels
+                    # to be selected by user in dropdown
+                    options=[{"label": x, "value": x} for x in xtab2_vars],
+                ),
+            ]
+        ,id="xtab2-cardbody",),
+    ],
+    id="xtab2-card",
+    color="info",
+    outline=False,
+)
+
 
 charts = dbc.CardDeck(
     [
@@ -193,6 +262,7 @@ app.layout = html.Div(
             ]
         ),
         html.Br(),
+        # --------------------- place title -------------------- #
         dbc.Row(
             [
                 dbc.Col(
@@ -212,6 +282,7 @@ app.layout = html.Div(
             ]
         ),
         html.Br(),
+        # -------------- explanation of app -------------- #
         dbc.Row(
             [
                 dbc.Col(
@@ -228,8 +299,15 @@ app.layout = html.Div(
             ]
         ),
         html.Br(),
+        # -------------------- place user inputs -------------------- #
         dbc.Row([dbc.Col(cards, width={"size": 10, "offset": 1})]),
-        html.Br(),
+        html.Div([
+        dbc.Row([dbc.Col(xtab1_card, width={"size": 9, "offset": 2})])
+        ], style= {'display': 'block'}),
+        html.Div([
+        dbc.Row([dbc.Col(xtab2_card, width={"size": 9, "offset": 2})])
+        ], style= {'display': 'block'}),
+        # ---------------- place charts --------------- #
         dbc.Row(
             [
                 dbc.Col(
@@ -261,7 +339,7 @@ app.layout = html.Div(
 #                     Assign callbacks                     #
 # -------------------------------------------------------- #
 
-
+# TODO create most obvious way to select question first
 @app.callback(
     Output(component_id="bar-graph", component_property="figure"),
     # Input(component_id="country-dropdown", component_property="value"),
@@ -272,23 +350,21 @@ app.layout = html.Div(
 def test(poll, question, xtab1):
     return visualize.poll_vis(responses=r, poll_id=poll, question_id=question, crosstab_variable=xtab1)
 
-# ------ update selections based on country dropdown ----- #
+# ------ update poll, question, crosstab options based on country dropdown ----- #
 @app.callback(
     Output(component_id="poll-dropdown", component_property="options"),
-    Output(component_id="question-dropdown", component_property="options"),
-    Output(component_id="xtab1-dropdown", component_property="options"),
     Input("country-dropdown", "value"),
 )
 def update(dropdown_value):
     """[summary]
-    change the options of the checklist to match the selected countryes
+    change the options of the checklist to match the selected countries
     Parameters
     ----------
-    checklist : list
+    dropdown : str
         takes the input "country-dropdown" from the callback
     Returns
     -------
-    populates other checklist with country-specific options
+    populates other dropdowns with country-specific options
     """
     poll_options = [
         {
@@ -299,18 +375,106 @@ def update(dropdown_value):
         }
         for id in r[r.country == dropdown_value].poll_id.unique()
     ]
+    
+    return poll_options
+
+# ------ update question options based on poll dropdown ----- #
+@app.callback(
+    Output(component_id="question-dropdown", component_property="options"),
+    Output(component_id="question-dropdown", component_property="value"),
+    # Output(component_id="xtab1-dropdown", component_property="options"),
+    Input("poll-dropdown", "value"),
+)
+def update(dropdown_value):
+    """[summary]
+    change the options of the questions dropdown to match the selected countries
+    Parameters
+    ----------
+    dropdown : str
+        takes the input "country-dropdown" from the callback
+    Returns
+    -------
+    populates other dropdowns with country-specific options
+    """
+    
     question_options = [
+        # this part returns the question text based on the provided question id
         {
-            "label": "{}".format(r.loc[r.question_id == x, "question_text"].unique()),
+            "label": "{}".format(r.loc[r.question_id == x, "question_text"].max()),
             "value": x,
         }
-        for x in r[r.country == dropdown_value].question_id.unique()[0]
-    ]
-    xtab1_options = [
-        {"label": x, "value": x} for x in r[r.country == dropdown_value].xtab1_var.unique()
+        # this part returns the unique question ids associated with the selected poll id in responses_merged.csv
+        for x in r[r.poll_id == dropdown_value].question_id.unique()
     ]
     
-    return poll_options, question_options, xtab1_options
+    default_question = question_options[0]["value"] if question_options else None
+    return question_options, default_question
+    
+    # return question_options, question_options[0]["value"]
+
+# ------ update xtab1 options based on question dropdown ----- #
+@app.callback(
+    Output(component_id="xtab1-dropdown", component_property="options"),
+    # Output(component_id="xtab1-card", component_property="style"),
+    # Output(component_id="xtab1-cardbody", component_property="style"),
+    # Output(component_id="xtab1-dropdown", component_property="style"),
+    # Output(component_id="xtab1-label", component_property="style"),
+    Output(component_id="xtab2-dropdown", component_property="options"),
+    # Output(component_id="xtab2-card", component_property="style"),
+    # Output(component_id="xtab2-cardbody", component_property="style"),
+    # Output(component_id="xtab2-dropdown", component_property="style"),
+    # Output(component_id="xtab2-label", component_property="style"),
+
+    Input("question-dropdown", "value"),
+)
+def update(dropdown_value):
+    # update xtab1 options based on question dropdown
+    
+    xtab1_options = [
+        {"label": x, "value": x} for x in r[r.question_id == dropdown_value].xtab1_var.unique()
+    ]
+    # xtab1_vis_style = {
+    #     "display": "block"
+    # } if len(xtab1_options) > 1 else {"display": "none"}
+    
+    xtab2_options = [
+        {"label": x, "value": x} for x in r[r.question_id == dropdown_value].xtab2_var.unique()
+    ]
+    # xtab2_vis_style = {
+    #     "display": "block"
+    # } if len(xtab2_options) > 1 else {"display": "none"}
+    
+    return xtab1_options, xtab2_options
+
+# ------ update xtab1 options based on question dropdown ----- #
+@app.callback(
+    Output(component_id="xtab1-card", component_property="style"),
+    Input("xtab1-dropdown", "options"),
+)
+def show_hide_xtab(dropdown_options):
+    if len(dropdown_options) > 1:
+        return {
+            "display": "block"
+        } 
+    else:
+        return {
+            "display": "none"
+        }
+
+# ------ update xtab2 options based on question dropdown ----- #
+@app.callback(
+    Output(component_id="xtab2-card", component_property="style"),
+    Input("xtab2-dropdown", "options"),
+)
+def show_hide_xtab(dropdown_options):
+    if len(dropdown_options) > 1:
+        return {
+            "display": "block"
+        } 
+    else:
+        return {
+            "display": "none"
+        }
 
 if __name__ == "__main__":
-    app.run_server(debug=True, port=8000, host="127.0.0.1")
+    app.run_server(debug=True, port=8050, host="127.0.0.1")

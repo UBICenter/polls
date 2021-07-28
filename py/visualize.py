@@ -52,9 +52,10 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         & (responses.xtab1_var == crosstab_variable)
     ]
     
-    target_responses["question_text_wrap"] = ppd.plotly_wrap(target_responses.question_text,80).copy()
+    target_responses["question_text_wrap"] = ppd.plotly_wrap(target_responses.question_text.copy(),130)
     # question_text=target_responses["question_text_wrap"].iloc[0] 
-    question_text=target_responses["question_text_wrap"].unique()[0] 
+    question_text=target_responses["question_text_wrap"].unique()[0] if target_responses.shape[0] > 0 else "No question text"
+    
 
     # if cross tabs, pull the corresponding responses, but if no crosstabs selected, pull the response
     # from the "-" rows
