@@ -1,0 +1,57 @@
+name: Import GSheets into Dolt
+on:
+  workflow_dispatch:
+env:
+  id: '1ulqohI6YLYFsz3wm8f5j6BS_JVelu2Ea8SXXa-wwkhQ'
+  remote: 'fedderw/polls'
+  branch: 'main'
+jobs:
+  plugin_tests:
+    runs-on: ubuntu-latest
+    name: Test Plugin
+    steps:
+      - name: Step 1 - Download Agent Data
+        id: 'sheet_to_csv'
+        uses: dolthub/gsheets-to-csv@v0.5
+        with:
+          creds: ${{ secrets.GOOGLE_CREDENTIAL }}
+          tempdir: ${{ github.workspace }} #/github/workspace
+          sheets: |
+            [
+              { "id": "${{ env.id }}", "title": "Response Favorability"},
+              { "id": "${{ env.id }}", "title": "Pollsters"},
+              { "id": "${{ env.id }}", "title": "Questions"},
+              { "id": "${{ env.id }}", "title": "Polls"},
+              { "id": "${{ env.id }}", "title": "Regions"},
+              { "id": "${{ env.id }}", "title": "Responses"}
+            ]
+      - name: Step 2 - Dolt Import
+        uses: dolthub/dolt-action@v0.5
+        id: 'dolt_import'
+        env:
+          FILES: ${{ steps.sheet_to_csv.outputs.results }}
+        with:
+          before: |
+            file_list=($FILES)
+            head "${file_list[1]}"
+            dolt table import --update-table response_favorability "${file_list[1]}"
+            dolt table import --update-table pollsters "${file_list[2]}"
+            dolt table import --update-table questions "${file_list[3]}"
+            dolt table import --update-table polls "${file_list[4]}"
+            dolt table import --update-table regions "${file_list[5]}"
+            dolt table import --update-table responses "${file_list[6]}"
+          remote: ${{ env.remote }}
+          branch: ${{ env.branch }}
+          commit_message: 'Dolt action commit'
+          dolthub_credential: ${{ secrets.DOLTHUB_CREDENTIAL }}
+          push: true
+      - name: Step 3 - Table Diff
+        uses: dolthub/dolt-action@v0.5
+        id: 'training_diff'
+        if: steps.dolt_import.outputs.commit != ''
+        with:
+          remote: ${{ env.remote }}
+          branch: ${{ env.branch }}
+          dolthub_credential: ${{ secrets.DOLTHUB_CREDENTIAL }}
+          before: |
+            dolt diff HEAD^ HEAD

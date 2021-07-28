@@ -1,5 +1,6 @@
 import ubicenter
 import plotly.express as px
+from py import preprocess_data as ppd
 
 VARIABLE_MAPPING = {
     "Poll ID": "poll_id",
@@ -25,6 +26,19 @@ variable_mapping_inverse["pct_fav"] = "% favorability"
 
 
 def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
+    """[summary]
+
+    Parameters
+    ----------
+    responses : [type]
+        [description]
+    poll_id : [type]
+        [description]
+    question_id : [type], optional
+        [description], by default None
+    crosstab_variable : str, optional
+        [description], by default "-"
+    """
     if question_id is None:
         target_questions = responses[responses.poll_id == poll_id].question_id.unique()
         # check if there's only one question for the poll, if there's more than 1 --
@@ -37,7 +51,11 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         & (responses.question_id == question_id)
         & (responses.xtab1_var == crosstab_variable)
     ]
-    question_text = target_responses.question_text.iloc[0]
+    
+    target_responses["question_text_wrap"] = ppd.plotly_wrap(target_responses.question_text.copy(),130)
+    # question_text=target_responses["question_text_wrap"].iloc[0] 
+    question_text=target_responses["question_text_wrap"].unique()[0] if target_responses.shape[0] > 0 else "No question text"
+    
 
     # if cross tabs, pull the corresponding responses, but if no crosstabs selected, pull the response
     # from the "-" rows
@@ -51,7 +69,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         title=question_text,
     )
     fig.update_layout(
-        xaxis_title="Percentage", yaxis_title=crosstab_variable, xaxis_tickformat="%"
+        xaxis_title="Percentage", yaxis_title=crosstab_variable, xaxis_tickformat="%",
     )
     return fig
 
@@ -60,6 +78,21 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
 def bubble_chart(
     responses, poll_ids=None, question_ids=None, xtab1_var="-", xtab1_val="-"
 ):
+    """[summary]
+
+    Parameters
+    ----------
+    responses : [type]
+        [description]
+    poll_ids : [type], optional
+        [description], by default None
+    question_ids : [type], optional
+        [description], by default None
+    xtab1_var : str, optional
+        [description], by default "-"
+    xtab1_val : str, optional
+        [description], by default "-"
+    """
     # TODO (ideas):
     # 1) Add the line to zero for a "stem" chart (also add a zero hline)
     # 2) xtab2_var and xtab2_val
