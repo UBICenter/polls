@@ -46,7 +46,7 @@ question_id,response,favorability,response_order
 13,Don't know/can't say,0,0
 13,Moderately oppose,-1,-1
 13,Moderately support,1,1
-13,Strongly oppose,-1,2
+13,Strongly oppose,-1,-2
 13,Strongly support,1,2
 14,Don't know or neither agree or disagree,0,0
 14,Fully agree,1,2

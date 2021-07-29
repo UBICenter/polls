@@ -139,3 +139,6 @@ mysql*.png
 # dolt
 dolt_repo/
 .dolt/
+
+# scratch
+*scratch*.*
