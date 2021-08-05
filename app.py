@@ -14,13 +14,20 @@ from py import visualize
 
 # Import data.
 r = pd.read_csv("data/responses_merged.csv")
-r.date=r.date.apply(lambda x: pd.to_datetime(x))
+r.date = r.date.apply(lambda x: pd.to_datetime(x))
 polls = pd.read_csv("data/polls.csv").set_index("poll_id")
 poll_ids = r.poll_id.unique().astype(int)
 question_ids = r.question_id.unique().astype(int)
 xtab1_vars = r.xtab1_var.unique()
 xtab2_vars = r.xtab2_var.unique()
 countries = r.country.unique()
+
+# create defualt bubble chart
+bubble_fig = visualize.bubble_chart(
+    responses=r,
+    # poll_ids=r.poll_id.unique(),
+    # question_ids=r.question_id.unique()
+)
 
 # Create the input cards
 cards = dbc.CardDeck(
@@ -48,8 +55,7 @@ cards = dbc.CardDeck(
                             value=22,
                             # create a list of dicts of states and their labels
                             # to be selected by user in dropdown
-                            options=[{"label": c,
-                                      "value": c} for c in countries],
+                            options=[{"label": c, "value": c} for c in countries],
                         ),
                     ]
                 ),
@@ -73,10 +79,17 @@ cards = dbc.CardDeck(
                             # value=22,
                             # create a list of dicts of states and their labels
                             # to be selected by user in dropdown
-                            options=[{"label": "{} - {} ({})".format(polls.loc[id, "pollster"], 
-                                                                     polls.loc[id, "date"], 
-                                                                     polls.loc[id, "country"]),
-                                      "value": id} for id in poll_ids],
+                            options=[
+                                {
+                                    "label": "{} - {} ({})".format(
+                                        polls.loc[id, "pollster"],
+                                        polls.loc[id, "date"],
+                                        polls.loc[id, "country"],
+                                    ),
+                                    "value": id,
+                                }
+                                for id in poll_ids
+                            ],
                         ),
                     ]
                 ),
@@ -101,7 +114,17 @@ cards = dbc.CardDeck(
                             # value=17,
                             # create a list of dicts of states and their labels
                             # to be selected by user in dropdown
-                            options=[{"label": "{}".format(r.loc[r.question_id==x, "question_text"].unique()), "value": x} for x in question_ids],
+                            options=[
+                                {
+                                    "label": "{}".format(
+                                        r.loc[
+                                            r.question_id == x, "question_text"
+                                        ].unique()
+                                    ),
+                                    "value": x,
+                                }
+                                for x in question_ids
+                            ],
                         ),
                     ]
                 ),
@@ -163,8 +186,9 @@ xtab1_card = dbc.Card(
                     # to be selected by user in dropdown
                     options=[{"label": x, "value": x} for x in xtab1_vars],
                 ),
-            ]
-        ,id="xtab1-cardbody",),
+            ],
+            id="xtab1-cardbody",
+        ),
     ],
     id="xtab1-card",
     color="info",
@@ -195,27 +219,30 @@ xtab2_card = dbc.Card(
                     # to be selected by user in dropdown
                     options=[{"label": x, "value": x} for x in xtab2_vars],
                 ),
-            ]
-        ,id="xtab2-cardbody",),
+            ],
+            id="xtab2-cardbody",
+        ),
     ],
     id="xtab2-card",
     color="info",
     outline=False,
 )
 
-
-charts = dbc.CardDeck(
-    [
-        dbc.Card(
+bubblecard = dbc.Card(
+        dcc.Graph(id="bubble-graph", figure={}),
+        body=True,
+        color="info",
+    )
+barcard = dbc.Card(
             dcc.Graph(id="bar-graph", figure={}),
             body=True,
             color="info",
-        ),
-        # dbc.Card(
-        #     dcc.Graph(id="bubble-graph", figure={}),
-        #     body=True,
-        #     color="info",
-        # ),
+        )
+
+charts = dbc.CardDeck(
+    [
+        bubblecard,
+        barcard,
     ]
 )
 
@@ -233,7 +260,7 @@ app = dash.Dash(
     # Pass the url base pathname to Dash.
     url_base_pathname=url_base_pathname,
 )
-# used to debug the app maybe 
+# used to debug the app maybe
 application = app.server
 # server = app.server
 
@@ -300,14 +327,76 @@ app.layout = html.Div(
             ]
         ),
         html.Br(),
-        # -------------------- place user inputs -------------------- #
+        # -------------------- place user inputs in 2 columns -------------------- #
+        # dbc.Row(
+        #     [
+        #         # -------------- left column with bubble graph -------------- #
+        #         # dbc.Col(
+        #         #     [
+        #         #         dbc.Row([dbc.Col(bubblecard, width={"size": "auto", "offset": 1})]),
+        #         #     ]
+        #         # ),
+        #         # -------------- right column with charts -------------- #
+        #         dbc.Col(
+        #             [
+        #                 dbc.Row([dbc.Col(cards, width={"size": 4, "offset": 1})]),
+        #                 html.Div(
+        #                     [
+        #                         dbc.Row(
+        #                             [
+        #                                 dbc.Col(
+        #                                     xtab1_card, width={"size": "auto", "offset": 2}
+        #                                 )
+        #                             ]
+        #                         )
+        #                     ],
+        #                     style={"display": "block"},
+        #                 ),
+        #                 html.Div(
+        #                     [
+        #                         dbc.Row(
+        #                             [
+        #                                 dbc.Col(
+        #                                     xtab2_card, width={"size": "auto", "offset": 2}
+        #                                 )
+        #                             ]
+        #                         )
+        #                     ],
+        #                     style={"display": "block"},
+        #                 ),
+        #                 html.Br(),
+        #                 # ---------------- place charts --------------- #
+        #                 dbc.Row(
+        #                     [
+        #                         dbc.Col(
+        #                             html.H1(
+        #                                 "Poll results:",
+        #                                 style={
+        #                                     "text-align": "center",
+        #                                     "color": "#1976D2",
+        #                                     "fontSize": 30,
+        #                                 },
+        #                             ),
+        #                             width={"size": "auto", "offset": 2},
+        #                         ),
+        #                     ]
+        #                 ),
+        #                 # dbc.Row([dbc.Col(text, width={"size": 6, "offset": 3})]),
+        #                 html.Br(),
+        #                 dbc.Row([dbc.Col(charts, width={"size": "auto", "offset": 1})]),
+        #             ]
+        #         ),
+        #     ]
+        # ),
         dbc.Row([dbc.Col(cards, width={"size": 10, "offset": 1})]),
-        html.Div([
-        dbc.Row([dbc.Col(xtab1_card, width={"size": 9, "offset": 2})])
-        ], style= {'display': 'block'}),
-        html.Div([
-        dbc.Row([dbc.Col(xtab2_card, width={"size": 9, "offset": 2})])
-        ], style= {'display': 'block'}),
+        html.Div(
+            [dbc.Row([dbc.Col(xtab1_card, width={"size": "auto", "offset": 2})])],
+            style={"display": "block"},
+        ),
+        html.Div(
+            [dbc.Row([dbc.Col(xtab2_card, width={"size": "auto", "offset": 2})])],
+            style={"display": "block"},
+        ),
         html.Br(),
         # ---------------- place charts --------------- #
         dbc.Row(
@@ -321,13 +410,13 @@ app.layout = html.Div(
                             "fontSize": 30,
                         },
                     ),
-                    width={"size": 8, "offset": 2},
+                    width={"size": "auto", "offset": 2},
                 ),
             ]
         ),
         # dbc.Row([dbc.Col(text, width={"size": 6, "offset": 3})]),
         html.Br(),
-        dbc.Row([dbc.Col(charts, width={"size": 10, "offset": 1})]),
+        dbc.Row([dbc.Col(charts, width={"size": "auto", "offset": 1})]),
         html.Br(),
         html.Br(),
         html.Br(),
@@ -350,11 +439,18 @@ app.layout = html.Div(
     Input(component_id="xtab1-dropdown", component_property="value"),
 )
 def test(poll, question, xtab1):
-    return visualize.poll_vis(responses=r, poll_id=poll, question_id=question, crosstab_variable=xtab1)
+
+    bar = visualize.poll_vis(
+        responses=r, poll_id=poll, question_id=question, crosstab_variable=xtab1
+    )
+
+    return bar
+
 
 # ------ update poll, question, crosstab options based on country dropdown ----- #
 @app.callback(
     Output(component_id="poll-dropdown", component_property="options"),
+    Output(component_id="bubble-graph", component_property="figure"),
     Input("country-dropdown", "value"),
 )
 def update(dropdown_value):
@@ -371,14 +467,25 @@ def update(dropdown_value):
     poll_options = [
         {
             "label": "{} - {} ({})".format(
-                polls.loc[id, "pollster"], polls.loc[id, "date"], polls.loc[id, "country"]
+                polls.loc[id, "pollster"],
+                polls.loc[id, "date"],
+                polls.loc[id, "country"],
             ),
             "value": id,
         }
-        for id in r[r.country == dropdown_value].sort_values("date",ascending=False).poll_id.unique()
+        for id in r[r.country == dropdown_value]
+        .sort_values("date", ascending=False)
+        .poll_id.unique()
     ]
-    
-    return poll_options
+
+    bubble = visualize.bubble_chart(
+        responses=r,
+        # poll_ids=r.poll_id.unique(),
+        # question_ids=r.question_id.unique()
+    )
+
+    return poll_options, bubble
+
 
 # ------ update question options based on poll dropdown ----- #
 @app.callback(
@@ -398,7 +505,7 @@ def update(dropdown_value):
     -------
     populates other dropdowns with country-specific options
     """
-    
+
     question_options = [
         # this part returns the question text based on the provided question id
         {
@@ -408,11 +515,12 @@ def update(dropdown_value):
         # this part returns the unique question ids associated with the selected poll id in responses_merged.csv
         for x in r[r.poll_id == dropdown_value].question_id.unique()
     ]
-    
+
     default_question = question_options[0]["value"] if question_options else None
     return question_options, default_question
-    
+
     # return question_options, question_options[0]["value"]
+
 
 # ------ update xtab1 options based on question dropdown ----- #
 @app.callback(
@@ -426,27 +534,29 @@ def update(dropdown_value):
     # Output(component_id="xtab2-cardbody", component_property="style"),
     # Output(component_id="xtab2-dropdown", component_property="style"),
     # Output(component_id="xtab2-label", component_property="style"),
-
     Input("question-dropdown", "value"),
 )
 def update(dropdown_value):
     # update xtab1 options based on question dropdown
-    
+
     xtab1_options = [
-        {"label": x, "value": x} for x in r[r.question_id == dropdown_value].xtab1_var.unique()
+        {"label": x, "value": x}
+        for x in r[r.question_id == dropdown_value].xtab1_var.unique()
     ]
     # xtab1_vis_style = {
     #     "display": "block"
     # } if len(xtab1_options) > 1 else {"display": "none"}
-    
+
     xtab2_options = [
-        {"label": x, "value": x} for x in r[r.question_id == dropdown_value].xtab2_var.unique()
+        {"label": x, "value": x}
+        for x in r[r.question_id == dropdown_value].xtab2_var.unique()
     ]
     # xtab2_vis_style = {
     #     "display": "block"
     # } if len(xtab2_options) > 1 else {"display": "none"}
-    
+
     return xtab1_options, xtab2_options
+
 
 # ------ update xtab1 options based on question dropdown ----- #
 @app.callback(
@@ -455,13 +565,10 @@ def update(dropdown_value):
 )
 def show_hide_xtab(dropdown_options):
     if len(dropdown_options) > 1:
-        return {
-            "display": "block"
-        } 
+        return {"display": "block"}
     else:
-        return {
-            "display": "none"
-        }
+        return {"display": "none"}
+
 
 # ------ update xtab2 options based on question dropdown ----- #
 @app.callback(
@@ -470,13 +577,10 @@ def show_hide_xtab(dropdown_options):
 )
 def show_hide_xtab(dropdown_options):
     if len(dropdown_options) > 1:
-        return {
-            "display": "block"
-        } 
+        return {"display": "block"}
     else:
-        return {
-            "display": "none"
-        }
+        return {"display": "none"}
+
 
 if __name__ == "__main__":
     app.run_server(debug=True, port=8050, host="127.0.0.1")
