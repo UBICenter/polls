@@ -19,6 +19,7 @@ polls = pd.read_csv("data/polls.csv").set_index("poll_id")
 poll_ids = r.poll_id.unique().astype(int)
 question_ids = r.question_id.unique().astype(int)
 xtab1_vars = r.xtab1_var.unique()
+xtab1_vals = r.xtab1_val.unique()
 xtab2_vars = r.xtab2_var.unique()
 countries = r.country.unique()
 
@@ -158,7 +159,6 @@ cards = dbc.CardDeck(
         ),
     ],
 )
-# Create the crosstab cards
 
 # define first card with poll selection options
 xtab1_card = dbc.Card(
@@ -228,16 +228,79 @@ xtab2_card = dbc.Card(
     outline=False,
 )
 
-bubblecard = dbc.Card(
-        dcc.Graph(id="bubble-graph", figure={}),
-        body=True,
-        color="info",
-    )
-barcard = dbc.Card(
-            dcc.Graph(id="bar-graph", figure={}),
-            body=True,
+# tab two cards 
+# Create the input cards
+cards2 = dbc.CardDeck(
+    [
+        # define first card with poll selection options
+        dbc.Card(
+            [
+                # ------------- select a country ------------ #
+                dbc.CardBody(
+                    [
+                        html.Label(
+                            ["Select country:"],
+                            style={
+                                "font-weight": "bold",
+                                "text-align": "center",
+                                "color": "white",
+                                "fontSize": 20,
+                            },
+                        ),
+                        # TODO: show poll names instead of poll_id
+                        dcc.Dropdown(
+                            # define component_id for input of app@callback function
+                            id="country-dropdown-2",
+                            multi=False,
+                            value=22,
+                            # create a list of dicts of states and their labels
+                            # to be selected by user in dropdown
+                            options=[{"label": c, "value": c} for c in countries],
+                        ),
+                    ]
+                ),
+                # ---------- select a cross-tab value ---------- #
+                dbc.CardBody(
+                    [
+                        html.Label(
+                            ["Select cross-tab:"],
+                            style={
+                                "font-weight": "bold",
+                                "text-align": "center",
+                                "color": "white",
+                                "fontSize": 20,
+                            },
+                        ),
+                        # TODO: show question names instead of question_id
+                        dcc.Dropdown(
+                            # define component_id for input of app@callback function
+                            id="xtab1-dropdown-2",
+                            multi=False,
+                            value="-",
+                            # create a list of dicts of states and their labels
+                            # to be selected by user in dropdown
+                            options=[{"label": x, "value": x} for x in xtab1_vals],
+                        ),
+                    ]
+                ),
+            ],
             color="info",
-        )
+            outline=False,
+        ),
+    ],
+)
+
+
+bubblecard = dbc.Card(
+    dcc.Graph(id="bubble-graph", figure={}),
+    body=True,
+    color="info",
+)
+barcard = dbc.Card(
+    dcc.Graph(id="bar-graph", figure={}),
+    body=True,
+    color="info",
+)
 
 charts = dbc.CardDeck(
     [
@@ -267,7 +330,6 @@ application = app.server
 # Design the app
 app.layout = html.Div(
     [
-        # navbar
         dbc.Navbar(
             [
                 html.A(
@@ -295,7 +357,7 @@ app.layout = html.Div(
             [
                 dbc.Col(
                     html.H1(
-                        "Explore funding mechanisms of UBI",
+                        "Explore polling about UBI reforms",
                         id="header",
                         style={
                             "text-align": "center",
@@ -315,7 +377,7 @@ app.layout = html.Div(
             [
                 dbc.Col(
                     html.H4(
-                        "Use the interactive below to explore different funding mechanisms for a UBI and their impact. You may choose between repealing benefits or adding new taxes.  When a benefit is repealed or a new tax is added, the new revenue automatically funds a UBI to all people equally to ensure each plan is budget neutral.",
+                        "Use the interactive below to explore different the current state of UBI's favorability accross different countries, polls, and questions.",
                         style={
                             "text-align": "left",
                             "color": "black",
@@ -327,102 +389,92 @@ app.layout = html.Div(
             ]
         ),
         html.Br(),
-        # -------------------- place user inputs in 2 columns -------------------- #
-        # dbc.Row(
-        #     [
-        #         # -------------- left column with bubble graph -------------- #
-        #         # dbc.Col(
-        #         #     [
-        #         #         dbc.Row([dbc.Col(bubblecard, width={"size": "auto", "offset": 1})]),
-        #         #     ]
-        #         # ),
-        #         # -------------- right column with charts -------------- #
-        #         dbc.Col(
-        #             [
-        #                 dbc.Row([dbc.Col(cards, width={"size": 4, "offset": 1})]),
-        #                 html.Div(
-        #                     [
-        #                         dbc.Row(
-        #                             [
-        #                                 dbc.Col(
-        #                                     xtab1_card, width={"size": "auto", "offset": 2}
-        #                                 )
-        #                             ]
-        #                         )
-        #                     ],
-        #                     style={"display": "block"},
-        #                 ),
-        #                 html.Div(
-        #                     [
-        #                         dbc.Row(
-        #                             [
-        #                                 dbc.Col(
-        #                                     xtab2_card, width={"size": "auto", "offset": 2}
-        #                                 )
-        #                             ]
-        #                         )
-        #                     ],
-        #                     style={"display": "block"},
-        #                 ),
-        #                 html.Br(),
-        #                 # ---------------- place charts --------------- #
-        #                 dbc.Row(
-        #                     [
-        #                         dbc.Col(
-        #                             html.H1(
-        #                                 "Poll results:",
-        #                                 style={
-        #                                     "text-align": "center",
-        #                                     "color": "#1976D2",
-        #                                     "fontSize": 30,
-        #                                 },
-        #                             ),
-        #                             width={"size": "auto", "offset": 2},
-        #                         ),
-        #                     ]
-        #                 ),
-        #                 # dbc.Row([dbc.Col(text, width={"size": 6, "offset": 3})]),
-        #                 html.Br(),
-        #                 dbc.Row([dbc.Col(charts, width={"size": "auto", "offset": 1})]),
-        #             ]
-        #         ),
-        #     ]
-        # ),
-        dbc.Row([dbc.Col(cards, width={"size": 10, "offset": 1})]),
-        html.Div(
-            [dbc.Row([dbc.Col(xtab1_card, width={"size": "auto", "offset": 2})])],
-            style={"display": "block"},
-        ),
-        html.Div(
-            [dbc.Row([dbc.Col(xtab2_card, width={"size": "auto", "offset": 2})])],
-            style={"display": "block"},
-        ),
-        html.Br(),
-        # ---------------- place charts --------------- #
-        dbc.Row(
+        dcc.Tabs(
             [
-                dbc.Col(
-                    html.H1(
-                        "Poll results:",
-                        style={
-                            "text-align": "center",
-                            "color": "#1976D2",
-                            "fontSize": 30,
-                        },
-                    ),
-                    width={"size": "auto", "offset": 2},
+                dcc.Tab(
+                    label="Bar Chart",
+                    children=[
+                        # navbar
+                        dbc.Row([dbc.Col(cards, width={"size": 10, "offset": 1})]),
+                        html.Div(
+                            [
+                                dbc.Row(
+                                    [
+                                        dbc.Col(
+                                            xtab1_card,
+                                            width={"size": 10, "offset": 1},
+                                        )
+                                    ]
+                                )
+                            ],
+                            style={"display": "block"},
+                        ),
+                        html.Div(
+                            [
+                                dbc.Row(
+                                    [
+                                        dbc.Col(
+                                            xtab2_card,
+                                            width={"size": 10, "offset": 1},
+                                        )
+                                    ]
+                                )
+                            ],
+                            style={"display": "block"},
+                        ),
+                        html.Br(),
+                        # ---------------- place charts --------------- #
+                        dbc.Row(
+                            [
+                                dbc.Col(
+                                    html.H1(
+                                        "Poll results:",
+                                        style={
+                                            "text-align": "center",
+                                            "color": "#1976D2",
+                                            "fontSize": 30,
+                                        },
+                                    ),
+                                    width={"size": "auto", "offset": 2},
+                                ),
+                            ]
+                        ),
+                        # dbc.Row([dbc.Col(text, width={"size": 6, "offset": 3})]),
+                        html.Br(),
+                        dbc.Row([dbc.Col(barcard, width={"size": 10, "offset": 1})]),
+                        html.Br(),
+                        html.Br(),
+                        html.Br(),
+                        html.Br(),
+                        html.Br(),
+                        html.Br(),
+                    ],
                 ),
+                dcc.Tab(label="Compare Across Polls", children=[
+                        # navbar
+                        dbc.Row([dbc.Col(cards2, width={"size": 10, "offset": 1})]),
+                        html.Br(),
+                        # ---------------- place charts --------------- #
+                        dbc.Row(
+                            [
+                                dbc.Col(
+                                    html.H1(
+                                        "Trends:",
+                                        style={
+                                            "text-align": "center",
+                                            "color": "#1976D2",
+                                            "fontSize": 30,
+                                        },
+                                    ),
+                                    width={"size": "auto", "offset": 2},
+                                ),
+                            ]
+                        ),
+                        # dbc.Row([dbc.Col(text, width={"size": 6, "offset": 3})]),
+                        html.Br(),
+                        dbc.Row([dbc.Col(bubblecard, width={"size": 10, "offset": 1})]),]),
             ]
         ),
-        # dbc.Row([dbc.Col(text, width={"size": 6, "offset": 3})]),
-        html.Br(),
-        dbc.Row([dbc.Col(charts, width={"size": "auto", "offset": 1})]),
-        html.Br(),
-        html.Br(),
-        html.Br(),
-        html.Br(),
-        html.Br(),
-        html.Br(),
     ]
 )
 
@@ -450,7 +502,7 @@ def test(poll, question, xtab1):
 # ------ update poll, question, crosstab options based on country dropdown ----- #
 @app.callback(
     Output(component_id="poll-dropdown", component_property="options"),
-    Output(component_id="bubble-graph", component_property="figure"),
+    # Output(component_id="bubble-graph", component_property="figure"),
     Input("country-dropdown", "value"),
 )
 def update(dropdown_value):
@@ -478,13 +530,13 @@ def update(dropdown_value):
         .poll_id.unique()
     ]
 
-    bubble = visualize.bubble_chart(
-        responses=r,
-        # poll_ids=r.poll_id.unique(),
-        # question_ids=r.question_id.unique()
-    )
+    # bubble = visualize.bubble_chart(
+    #     responses=r,
+    #     # poll_ids=r.poll_id.unique(),
+    #     # question_ids=r.question_id.unique()
+    # )
 
-    return poll_options, bubble
+    return poll_options
 
 
 # ------ update question options based on poll dropdown ----- #
