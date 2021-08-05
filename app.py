@@ -1,3 +1,4 @@
+from re import S
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
@@ -23,15 +24,10 @@ xtab1_vals = r.xtab1_val.unique()
 xtab2_vars = r.xtab2_var.unique()
 countries = r.country.unique()
 
-# create defualt bubble chart
-bubble_fig = visualize.bubble_chart(
-    responses=r,
-    # poll_ids=r.poll_id.unique(),
-    # question_ids=r.question_id.unique()
-)
+
 
 # Create the input cards
-cards = dbc.CardDeck(
+cards1 = dbc.CardDeck(
     [
         # define first card with poll selection options
         dbc.Card(
@@ -129,30 +125,6 @@ cards = dbc.CardDeck(
                         ),
                     ]
                 ),
-                # ---------- select a cross-tab ---------- #
-                # dbc.CardBody(
-                #     [
-                #         html.Label(
-                #             ["Select cross-tab:"],
-                #             style={
-                #                 "font-weight": "bold",
-                #                 "text-align": "center",
-                #                 "color": "white",
-                #                 "fontSize": 20,
-                #             },
-                #         ),
-                #         # TODO: show question names instead of question_id
-                #         dcc.Dropdown(
-                #             # define component_id for input of app@callback function
-                #             id="xtab1-dropdown",
-                #             multi=False,
-                #             value="-",
-                #             # create a list of dicts of states and their labels
-                #             # to be selected by user in dropdown
-                #             options=[{"label": x, "value": x} for x in xtab1_vars],
-                #         ),
-                #     ]
-                # ),
             ],
             color="info",
             outline=False,
@@ -228,8 +200,10 @@ xtab2_card = dbc.Card(
     outline=False,
 )
 
-# tab two cards 
-# Create the input cards
+# -------------------------------------------------------- #
+#                       tab two cards                      #
+# -------------------------------------------------------- #
+# Create the input cards for tab 2
 cards2 = dbc.CardDeck(
     [
         # define first card with poll selection options
@@ -290,14 +264,24 @@ cards2 = dbc.CardDeck(
     ],
 )
 
+# ------------ create cards to contain charts ------------ #
 
-bubblecard = dbc.Card(
-    dcc.Graph(id="bubble-graph", figure={}),
+# default style for the chart
+style={'width': '90vh', 'height': '90vh'}
+
+# place the bar chart in a card
+barcard = dbc.CardDeck([dbc.Card(
+    dcc.Graph(id="bar-graph", figure={}, config={"displayModeBar": False}),
     body=True,
     color="info",
+)])
+
+# create defualt bubble chart
+bubble_fig = visualize.bubble_chart(
+    responses=r,
 )
-barcard = dbc.Card(
-    dcc.Graph(id="bar-graph", figure={}),
+bubblecard = dbc.Card(
+    dcc.Graph(id="bubble-graph", figure=bubble_fig,config={"displayModeBar": False}),
     body=True,
     color="info",
 )
@@ -327,6 +311,13 @@ app = dash.Dash(
 application = app.server
 # server = app.server
 
+# -------------------------------------------------------- #
+#                        app layout                        #
+# -------------------------------------------------------- #
+default_size = "auto"
+input_width = {"size": 10, "offset": 1}
+chart_width = {"size": 10, "offset": 1}
+default_offset = "1"
 # Design the app
 app.layout = html.Div(
     [
@@ -357,7 +348,7 @@ app.layout = html.Div(
             [
                 dbc.Col(
                     html.H1(
-                        "Explore polling about UBI reforms",
+                        "Explore the state of public opinion on UBI",
                         id="header",
                         style={
                             "text-align": "center",
@@ -367,7 +358,7 @@ app.layout = html.Div(
                             "font-weight": 300,
                         },
                     ),
-                    width={"size": 8, "offset": 2},
+                    width={"size": default_size, "offset": default_offset},
                 ),
             ]
         ),
@@ -384,44 +375,46 @@ app.layout = html.Div(
                             "fontSize": 25,
                         },
                     ),
-                    width={"size": 8, "offset": 2},
+                    width={"size": default_size, "offset": default_offset},
                 ),
             ]
         ),
         html.Br(),
+        # --------------------- tabs --------------------- #
         dcc.Tabs(
             [
+                # ----------------- tab 1 ---------------- #
                 dcc.Tab(
                     label="Bar Chart",
                     children=[
                         # navbar
-                        dbc.Row([dbc.Col(cards, width={"size": 10, "offset": 1})]),
+                        dbc.Row([dbc.Col(cards1, width=input_width)]),
                         html.Div(
                             [
                                 dbc.Row(
                                     [
                                         dbc.Col(
                                             xtab1_card,
-                                            width={"size": 10, "offset": 1},
+                                            width=input_width,
                                         )
                                     ]
                                 )
                             ],
                             style={"display": "block"},
                         ),
-                        html.Div(
-                            [
-                                dbc.Row(
-                                    [
-                                        dbc.Col(
-                                            xtab2_card,
-                                            width={"size": 10, "offset": 1},
-                                        )
-                                    ]
-                                )
-                            ],
-                            style={"display": "block"},
-                        ),
+                        # html.Div(
+                        #     [
+                        #         dbc.Row(
+                        #             [
+                        #                 dbc.Col(
+                        #                     xtab2_card,
+                        #                     width=input_width,
+                        #                 )
+                        #             ]
+                        #         )
+                        #     ],
+                        #     style={"display": "block"},
+                        # ),
                         html.Br(),
                         # ---------------- place charts --------------- #
                         dbc.Row(
@@ -435,13 +428,13 @@ app.layout = html.Div(
                                             "fontSize": 30,
                                         },
                                     ),
-                                    width={"size": "auto", "offset": 2},
+                                    width={"size": default_size, "offset": default_offset},
                                 ),
                             ]
                         ),
                         # dbc.Row([dbc.Col(text, width={"size": 6, "offset": 3})]),
                         html.Br(),
-                        dbc.Row([dbc.Col(barcard, width={"size": 10, "offset": 1})]),
+                        dbc.Row([dbc.Col(barcard, width=chart_width)]),
                         html.Br(),
                         html.Br(),
                         html.Br(),
@@ -450,9 +443,10 @@ app.layout = html.Div(
                         html.Br(),
                     ],
                 ),
+                # ----------------- tab 2 ---------------- #
                 dcc.Tab(label="Compare Across Polls", children=[
                         # navbar
-                        dbc.Row([dbc.Col(cards2, width={"size": 10, "offset": 1})]),
+                        dbc.Row([dbc.Col(cards2, width=input_width)]),
                         html.Br(),
                         # ---------------- place charts --------------- #
                         dbc.Row(
@@ -472,7 +466,7 @@ app.layout = html.Div(
                         ),
                         # dbc.Row([dbc.Col(text, width={"size": 6, "offset": 3})]),
                         html.Br(),
-                        dbc.Row([dbc.Col(bubblecard, width={"size": 10, "offset": 1})]),]),
+                        dbc.Row([dbc.Col(bubblecard, width=chart_width)]),]),
             ]
         ),
     ]
@@ -577,15 +571,8 @@ def update(dropdown_value):
 # ------ update xtab1 options based on question dropdown ----- #
 @app.callback(
     Output(component_id="xtab1-dropdown", component_property="options"),
-    # Output(component_id="xtab1-card", component_property="style"),
-    # Output(component_id="xtab1-cardbody", component_property="style"),
-    # Output(component_id="xtab1-dropdown", component_property="style"),
-    # Output(component_id="xtab1-label", component_property="style"),
-    Output(component_id="xtab2-dropdown", component_property="options"),
-    # Output(component_id="xtab2-card", component_property="style"),
-    # Output(component_id="xtab2-cardbody", component_property="style"),
-    # Output(component_id="xtab2-dropdown", component_property="style"),
-    # Output(component_id="xtab2-label", component_property="style"),
+    # NOTE: deactivate second crosstab for now
+    # Output(component_id="xtab2-dropdown", component_property="options"),
     Input("question-dropdown", "value"),
 )
 def update(dropdown_value):
@@ -595,19 +582,15 @@ def update(dropdown_value):
         {"label": x, "value": x}
         for x in r[r.question_id == dropdown_value].xtab1_var.unique()
     ]
-    # xtab1_vis_style = {
-    #     "display": "block"
-    # } if len(xtab1_options) > 1 else {"display": "none"}
 
-    xtab2_options = [
-        {"label": x, "value": x}
-        for x in r[r.question_id == dropdown_value].xtab2_var.unique()
-    ]
-    # xtab2_vis_style = {
-    #     "display": "block"
-    # } if len(xtab2_options) > 1 else {"display": "none"}
+    # NOTE: deactivate this for now
+    # xtab2_options = [
+    #     {"label": x, "value": x}
+    #     for x in r[r.question_id == dropdown_value].xtab2_var.unique()
+    # ]
 
-    return xtab1_options, xtab2_options
+    return xtab1_options
+    # return xtab1_options, xtab2_options
 
 
 # ------ update xtab1 options based on question dropdown ----- #
@@ -615,23 +598,23 @@ def update(dropdown_value):
     Output(component_id="xtab1-card", component_property="style"),
     Input("xtab1-dropdown", "options"),
 )
-def show_hide_xtab(dropdown_options):
-    if len(dropdown_options) > 1:
+def show_hide_xtab(xtab1_dropdown_options):
+    if len(xtab1_dropdown_options) > 1:
         return {"display": "block"}
     else:
         return {"display": "none"}
 
 
-# ------ update xtab2 options based on question dropdown ----- #
-@app.callback(
-    Output(component_id="xtab2-card", component_property="style"),
-    Input("xtab2-dropdown", "options"),
-)
-def show_hide_xtab(dropdown_options):
-    if len(dropdown_options) > 1:
-        return {"display": "block"}
-    else:
-        return {"display": "none"}
+# # ------ update xtab2 options based on question dropdown ----- #
+# @app.callback(
+#     Output(component_id="xtab2-card", component_property="style"),
+#     Input("xtab2-dropdown", "options"),
+# )
+# def show_hide_xtab(xtab2_dropdown_options):
+#     if len(xtab2_dropdown_options) > 1:
+#         return {"display": "block"}
+#     else:
+#         return {"display": "none"}
 
 
 if __name__ == "__main__":
