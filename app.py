@@ -13,7 +13,7 @@ import os
 from py import visualize
 
 
-# Import data.
+#SECTION Import data.
 r = pd.read_csv("data/responses_merged.csv")
 r.date = r.date.apply(lambda x: pd.to_datetime(x))
 polls = pd.read_csv("data/polls.csv").set_index("poll_id")
@@ -26,7 +26,7 @@ countries = r.country.unique()
 
 
 
-# Create the input cards
+#SECTION Create the input cards
 cards1 = dbc.CardDeck(
     [
         # define first card with poll selection options
@@ -47,7 +47,7 @@ cards1 = dbc.CardDeck(
                         # TODO: show poll names instead of poll_id
                         dcc.Dropdown(
                             # define component_id for input of app@callback function
-                            id="country-dropdown",
+                            id="country-dropdown", #ID "country-dropdown"
                             multi=False,
                             value=22,
                             # create a list of dicts of states and their labels
@@ -71,7 +71,7 @@ cards1 = dbc.CardDeck(
                         # TODO: show poll names instead of poll_id
                         dcc.Dropdown(
                             # define component_id for input of app@callback function
-                            id="poll-dropdown",
+                            id="poll-dropdown", #ID "poll-dropdown"
                             multi=False,
                             # value=22,
                             # create a list of dicts of states and their labels
@@ -106,7 +106,7 @@ cards1 = dbc.CardDeck(
                         # TODO: dynamically update dropdown options based on poll-dropdown`s value
                         dcc.Dropdown(
                             # define component_id for input of app@callback function
-                            id="question-dropdown",
+                            id="question-dropdown", #ID "question-dropdown"
                             multi=False,
                             # value=17,
                             # create a list of dicts of states and their labels
@@ -132,7 +132,7 @@ cards1 = dbc.CardDeck(
     ],
 )
 
-# define first card with poll selection options
+#SECTION define first card with poll selection options
 xtab1_card = dbc.Card(
     [
         # ---------- select a cross-tab ---------- #
@@ -140,7 +140,7 @@ xtab1_card = dbc.Card(
             [
                 html.Label(
                     ["Select cross-tab:"],
-                    id="xtab1-label",
+                    id="xtab1-label", #ID "x-tab1-label"
                     style={
                         "font-weight": "bold",
                         "text-align": "center",
@@ -151,7 +151,7 @@ xtab1_card = dbc.Card(
                 # TODO: show question names instead of question_id
                 dcc.Dropdown(
                     # define component_id for input of app@callback function
-                    id="xtab1-dropdown",
+                    id="xtab1-dropdown", #ID "x-tab1-dropdown"
                     multi=False,
                     value="-",
                     # create a list of dicts of states and their labels
@@ -159,10 +159,10 @@ xtab1_card = dbc.Card(
                     options=[{"label": x, "value": x} for x in xtab1_vars],
                 ),
             ],
-            id="xtab1-cardbody",
+            id="xtab1-cardbody", #ID "xtab1-cardbody"
         ),
     ],
-    id="xtab1-card",
+    id="xtab1-card", #ID "xtab1-card"
     color="info",
     outline=False,
 )
@@ -173,7 +173,7 @@ xtab2_card = dbc.Card(
             [
                 html.Label(
                     ["Select second cross-tab:"],
-                    id="xtab2-label",
+                    id="xtab2-label", #ID "x-tab2-label"
                     style={
                         "font-weight": "bold",
                         "text-align": "center",
@@ -184,7 +184,7 @@ xtab2_card = dbc.Card(
                 # TODO: show question names instead of question_id
                 dcc.Dropdown(
                     # define component_id for input of app@callback function
-                    id="xtab2-dropdown",
+                    id="xtab2-dropdown", #ID "x-tab2-dropdown"
                     multi=False,
                     value="-",
                     # create a list of dicts of states and their labels
@@ -192,10 +192,10 @@ xtab2_card = dbc.Card(
                     options=[{"label": x, "value": x} for x in xtab2_vars],
                 ),
             ],
-            id="xtab2-cardbody",
+            id="xtab2-cardbody", #ID "xtab2-cardbody"
         ),
     ],
-    id="xtab2-card",
+    id="xtab2-card", #ID "xtab2-card"
     color="info",
     outline=False,
 )
@@ -224,7 +224,7 @@ cards2 = dbc.CardDeck(
                         # TODO: show poll names instead of poll_id
                         dcc.Dropdown(
                             # define component_id for input of app@callback function
-                            id="country-dropdown-2",
+                            id="country-dropdown-2", #ID "country-dropdown-2"
                             multi=False,
                             value=22,
                             # create a list of dicts of states and their labels
@@ -248,7 +248,7 @@ cards2 = dbc.CardDeck(
                         # TODO: show question names instead of question_id
                         dcc.Dropdown(
                             # define component_id for input of app@callback function
-                            id="xtab1-dropdown-2",
+                            id="xtab1-dropdown-2", #ID "xtab1-dropdown-2"
                             multi=False,
                             value="-",
                             # create a list of dicts of states and their labels
@@ -271,7 +271,11 @@ style={'width': '90vh', 'height': '90vh'}
 
 # place the bar chart in a card
 barcard = dbc.CardDeck([dbc.Card(
-    dcc.Graph(id="bar-graph", figure={}, config={"displayModeBar": False}),
+    dcc.Graph(
+        id="bar-graph", # ID "bar-graph"     
+        figure={}, 
+        config={"displayModeBar": False}
+        ),
     body=True,
     color="info",
 )])
@@ -281,7 +285,11 @@ bubble_fig = visualize.bubble_chart(
     responses=r,
 )
 bubblecard = dbc.Card(
-    dcc.Graph(id="bubble-graph", figure=bubble_fig,config={"displayModeBar": False}),
+    dcc.Graph(
+        id="bubble-graph", #ID "bubble-graph"
+        figure=bubble_fig,
+        config={"displayModeBar": False}
+        ),
     body=True,
     color="info",
 )
@@ -301,7 +309,7 @@ app = dash.Dash(
     __name__,
     external_stylesheets=[
         dbc.themes.FLATLY,
-        "https://fonts.googleapis.com/css2?family=Lato:wght@300;400&display=swap",
+        "https://fonts.googleapis.com/css2?family=Lato:wght@300;400&display=swap", #LINK TO FONT
         "/assets/style.css",
     ],
     # Pass the url base pathname to Dash.
@@ -328,7 +336,7 @@ app.layout = html.Div(
                         [
                             dbc.Col(
                                 html.Img(
-                                    src="https://blog.ubicenter.org/_static/ubi_center_logo_wide_blue.png",
+                                    src="https://blog.ubicenter.org/_static/ubi_center_logo_wide_blue.png", #LINK TO LOGO
                                     height="30px",
                                 )
                             ),
@@ -336,10 +344,10 @@ app.layout = html.Div(
                         align="center",
                         no_gutters=True,
                     ),
-                    href="https://www.ubicenter.org",
+                    href="https://www.ubicenter.org", #LINK TO WEBSITE
                     target="blank",
                 ),
-                dbc.NavbarToggler(id="navbar-toggler"),
+                dbc.NavbarToggler(id="navbar-toggler") #ID "navbar-toggler",
             ]
         ),
         html.Br(),
@@ -349,7 +357,7 @@ app.layout = html.Div(
                 dbc.Col(
                     html.H1(
                         "Explore the state of public opinion on UBI",
-                        id="header",
+                        id="header", #ID "header"
                         style={
                             "text-align": "center",
                             "color": "#1976D2",
@@ -368,7 +376,7 @@ app.layout = html.Div(
             [
                 dbc.Col(
                     html.H4(
-                        "Use the interactive below to explore different the current state of UBI's favorability accross different countries, polls, and questions.",
+                        "Use the interactive below to explore different the current state of UBI's favorability accross different countries, polls, and questions.", #REVIEW 
                         style={
                             "text-align": "left",
                             "color": "black",
@@ -380,10 +388,10 @@ app.layout = html.Div(
             ]
         ),
         html.Br(),
-        # --------------------- tabs --------------------- #
+        #SECTION --------------------- tabs --------------------- #
         dcc.Tabs(
             [
-                # ----------------- tab 1 ---------------- #
+                #SECTION ----------------- tab 1 ---------------- #
                 dcc.Tab(
                     label="Bar Chart",
                     children=[
@@ -443,7 +451,7 @@ app.layout = html.Div(
                         html.Br(),
                     ],
                 ),
-                # ----------------- tab 2 ---------------- #
+                #SECTION ----------------- tab 2 ---------------- #
                 dcc.Tab(label="Compare Across Polls", children=[
                         # navbar
                         dbc.Row([dbc.Col(cards2, width=input_width)]),
@@ -473,7 +481,7 @@ app.layout = html.Div(
 )
 
 # -------------------------------------------------------- #
-#                     Assign callbacks                     #
+#                     Assign Tab 1 callbacks                     #
 # -------------------------------------------------------- #
 
 # TODO create most obvious way to select question first
@@ -615,6 +623,11 @@ def show_hide_xtab(xtab1_dropdown_options):
 #         return {"display": "block"}
 #     else:
 #         return {"display": "none"}
+
+# -------------------------------------------------------- #
+#                bubble chart tab callbacks                #
+# -------------------------------------------------------- #
+
 
 
 if __name__ == "__main__":

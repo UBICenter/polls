@@ -221,7 +221,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
 
 
 # Function to create a bubble chart for % favorability across a set of poll/question pairs.
-def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_var="-", xtab1_val="-"):
+def bubble_chart(responses, poll_ids=None, question_ids=None,  xtab1_val="-"):
     """[summary]
 
     Parameters
@@ -243,9 +243,9 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_var="-", xta
     # 3) Formal function docstring.
     # 4) Set color palettes for ordinal xtabs (also something for gender?)
     # Subset the data per the specifications.
-    target_data = responses[responses.xtab1_var == xtab1_var]
+    target_data = responses[(responses.xtab1_val == xtab1_val)&(responses.xtab2_val=="-")]
     # Only subset by xtab1_val if we're not splitting by it.
-    xtab_split = (xtab1_var != "-") & (xtab1_val == "-")
+    xtab_split = (xtab1_val != "-")
     if not xtab_split:
         target_data = target_data[target_data.xtab1_val == xtab1_val]
     # Summarize to the poll/question level.
@@ -258,9 +258,11 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_var="-", xta
         "sample_size",
         "country"
     ]
+    # add xtab1_var and xtab1_val if we're \ splitting by it.
     if xtab_split:
-        GROUPBY += ["xtab1_val"]
+        GROUPBY += ["xtab1_var","xtab1_val","xtab2_var","xtab2_val"]
     poll_question = target_data.groupby(GROUPBY).pct_fav.sum().reset_index()
+    # filter poll_ids and question_ids if specified
     if poll_ids is not None:
         poll_question = poll_question[poll_question.poll_id.isin(poll_ids)]
     if question_ids is not None:
@@ -272,19 +274,25 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_var="-", xta
 
     if xtab_split:
         variable_mapping_inverse_tmp = variable_mapping_inverse.copy()
-        variable_mapping_inverse_tmp["xtab1_val"] = xtab1_var
+        variable_mapping_inverse_tmp["xtab1_val"] = xtab1_val
         fig = px.scatter(
             poll_question,
             x="date",
             y="pct_fav",
-            color="xtab1_val",
+            color="country", 
             text="pollster_wrap",
             # size=np.log(poll_question.sample_size+1),
-            size=size,
-            size_max=size_max,
+            size="sample_size",
+            # size_max=size_max,
             hover_data=["question_text_wrap"],
             labels=variable_mapping_inverse_tmp,
         )
+        
+        # add title based on xtab1_val
+        fig.update_layout(title=xtab1_val)
+        # fig.add_hline(y=0, line_color="red")        
+        
+        
     else:
         fig = px.scatter(
             poll_question,
