@@ -213,7 +213,7 @@ cards2 = dbc.CardDeck(
                 dbc.CardBody(
                     [
                         html.Label(
-                            ["Select country:"],
+                            ["Select countries:"],
                             style={
                                 "font-weight": "bold",
                                 "text-align": "center",
@@ -221,17 +221,42 @@ cards2 = dbc.CardDeck(
                                 "fontSize": 20,
                             },
                         ),
-                        # TODO: show poll names instead of poll_id
-                        dcc.Dropdown(
+                        # TODO: for the EU polls with country crosstab, have those as selectable options
+                        dcc.Checklist(
                             # define component_id for input of app@callback function
                             id="country-dropdown-2", #ID "country-dropdown-2"
-                            multi=False,
-                            value=22,
-                            # create a list of dicts of states and their labels
+                            # multi=True,
+                            # create a list of dicts of countries and their labels
                             # to be selected by user in dropdown
-                            options=[{"label": c, "value": c} for c in countries],
+                            options=[{"label": c+str(" "), "value": c} for c in countries],
+                            value= [c for c in countries],
                         ),
                     ]
+                ),
+                dbc.CardBody(
+                    [
+                        html.Label(
+                            ["Select cross-tab category group:"],
+                            id="xtab1-bubble-label", #ID "xtab1-bubble-label"
+                            style={
+                                "font-weight": "bold",
+                                "text-align": "center",
+                                "color": "white",
+                                "fontSize": 20,
+                            },
+                        ),
+                        # TODO: show question names instead of question_id
+                        dcc.Dropdown(
+                            # define component_id for input of app@callback function
+                            id="xtab1-bubble-dropdown", #ID         "xtab1-bubble-dropdown"
+                            multi=False,
+                            value="-",
+                            # create a list of dicts of states and their labels
+                            # to be selected by user in dropdown
+                            options=[{"label": x, "value": x} for x in xtab1_vars],
+                        ),
+                    ],
+                    id="xtab1-bubble-cardbody", #ID "xtab1-bubble-cardbody"
                 ),
                 # ---------- select a cross-tab value ---------- #
                 dbc.CardBody(
@@ -248,7 +273,7 @@ cards2 = dbc.CardDeck(
                         # TODO: show question names instead of question_id
                         dcc.Dropdown(
                             # define component_id for input of app@callback function
-                            id="xtab1-dropdown-2", #ID "xtab1-dropdown-2"
+                            id="xtab1_val-bubble-dropdown", #ID "xtab1_val-bubble-dropdown"
                             multi=False,
                             value="-",
                             # create a list of dicts of states and their labels
@@ -628,6 +653,41 @@ def show_hide_xtab(xtab1_dropdown_options):
 #                bubble chart tab callbacks                #
 # -------------------------------------------------------- #
 
+# update bubble chart based on country dropdown, crosstab variable, crosstab value
+@app.callback(
+    # output the relevent xtab1_val based on selected xtab1_var
+    Output(component_id="xtab1-bubble-dropdown", component_property="options"),
+    # output the relevent xtab1_val based on selected xtab1_var
+    Output(component_id="xtab1_val-bubble-dropdown", component_property="options"),
+    # country input will be list
+    Output(component_id="bubble-graph", component_property="figure"),
+    Input(component_id="country-dropdown-2", component_property="value"),
+    # xtab1-bubble-dropdown input will be a string
+    Input(component_id="xtab1-bubble-dropdown", component_property="value"),
+    Input(component_id="xtab1_val-bubble-dropdown", component_property="value"),
+)
+def update_bubble_chart(
+    country_dropdown, xtab1_bubble_dropdown, xtab1_val_bubble_dropdown
+):
+    # subsets r to only include the selected countries
+    r_sub = r[r.country.isin(country_dropdown)]
+    
+    # updates xtab1-bubble-dropdown options based on selected country
+    xtab1_options = [
+        {"label": x, "value": x}
+        for x in r_sub.xtab1_var.unique()
+    ]
+    
+    # updates xtab1_val-bubble-dropdown options based on selected xtab1_var
+    xtab1_val_options = [
+        {"label": x, "value": x}
+        for x in r_sub[r_sub.xtab1_var == xtab1_bubble_dropdown].xtab1_val.unique()
+    ]
+    
+    updated_fig = visualize.bubble_chart(r_sub, xtab1_val=xtab1_val_bubble_dropdown)
+    
+    return xtab1_options, xtab1_val_options, updated_fig
+    
 
 
 if __name__ == "__main__":
