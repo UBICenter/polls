@@ -44,6 +44,20 @@ barcard = dbc.CardDeck(
     ]
 )
 
+barcard_bubble_click = dbc.CardDeck(
+    [
+        dbc.Card(
+            dcc.Graph(
+                id="bar-graph-bubble-click",  # ID "bar-graph-bubble-click"
+                figure={},
+                config={"displayModeBar": False},
+            ),
+            body=True,
+            color="info",
+        )
+    ]
+)
+
 # create defualt bubble chart
 bubble_fig = visualize.bubble_chart(
     responses=r,
@@ -58,6 +72,12 @@ bubblecard = dbc.Card(
     color="info",
 )
 
+bubble_carddeck = dbc.CardDeck(
+    [
+        bubblecard,
+        barcard_bubble_click,
+    ]
+)
 # charts = dbc.CardDeck(
 #     [
 #         bubblecard,
@@ -275,6 +295,12 @@ cards2 = dbc.CardDeck(
                         ),
                     ]
                 ),
+            ],
+            color="info",
+            outline=False,
+        ),
+        dbc.Card(
+            [
                 dbc.CardBody(
                     [
                         html.Label(
@@ -300,6 +326,12 @@ cards2 = dbc.CardDeck(
                     ],
                     id="xtab1-bubble-cardbody",  # ID "xtab1-bubble-cardbody"
                 ),
+            ],
+            color="info",
+            outline=False,
+        ),
+        dbc.Card(
+            [
                 # ---------- select a cross-tab value ---------- #
                 dbc.CardBody(
                     [
@@ -322,15 +354,15 @@ cards2 = dbc.CardDeck(
                             # to be selected by user in dropdown
                             options=[{"label": x, "value": x} for x in xtab1_vals],
                         ),
-                    ]
+                    ],
                 ),
             ],
             color="info",
             outline=False,
         ),
-        # bubblecard,
-    ],
+    ]
 )
+# bubblecard,
 
 
 # Get base pathname from an environment variable that CS will provide.
@@ -489,10 +521,6 @@ app.layout = html.Div(
                 dcc.Tab(
                     label="Compare Across Polls",
                     children=[
-                        # navbar
-                        dbc.Row([dbc.Col(cards2, width=input_width)]),
-                        html.Br(),
-                        # ---------------- place charts --------------- #
                         dbc.Row(
                             [
                                 dbc.Col(
@@ -510,7 +538,10 @@ app.layout = html.Div(
                         ),
                         # dbc.Row([dbc.Col(text, width={"size": 6, "offset": 3})]),
                         html.Br(),
-                        dbc.Row([dbc.Col(bubblecard, width=chart_width)]),
+                        dbc.Row([dbc.Col(cards2, width=input_width)]),
+                        html.Br(),
+                        # ---------------- place charts --------------- #
+                        dbc.Row([dbc.Col(bubble_carddeck, width=chart_width)]),
                     ],
                 ),
             ]
@@ -699,13 +730,18 @@ def show_hide_xtab(xtab1_dropdown_options):
     Output(component_id="xtab1_val-bubble-dropdown", component_property="options"),
     # country input will be list
     Output(component_id="bubble-graph", component_property="figure"),
+    Output(component_id="bar-graph-bubble-click", component_property="figure"),
     Input(component_id="country-dropdown-2", component_property="value"),
     # xtab1-bubble-dropdown input will be a string
     Input(component_id="xtab1-bubble-dropdown", component_property="value"),
     Input(component_id="xtab1_val-bubble-dropdown", component_property="value"),
+    Input(component_id="bubble-graph", component_property="clickData"),
 )
 def update_bubble_chart(
-    country_dropdown, xtab1_bubble_dropdown, xtab1_val_bubble_dropdown
+    country_dropdown,
+    xtab1_bubble_dropdown,
+    xtab1_val_bubble_dropdown,
+    clickData,
 ):
     # subsets r to only include the selected countries
     r_sub = r[r.country.isin(country_dropdown)]
@@ -719,9 +755,31 @@ def update_bubble_chart(
         for x in r_sub[r_sub.xtab1_var == xtab1_bubble_dropdown].xtab1_val.unique()
     ]
 
-    updated_fig = visualize.bubble_chart(r_sub, xtab1_val=xtab1_val_bubble_dropdown)
+    if (xtab1_bubble_dropdown in [None, "-"]) | (
+        xtab1_val_bubble_dropdown in [None, "-"]
+    ):
+        bubble = visualize.bubble_chart(r_sub)
+    else:
+        bubble = visualize.bubble_chart(r_sub, xtab1_val=xtab1_val_bubble_dropdown)
 
-    return xtab1_options, xtab1_val_options, updated_fig
+    bubble.update_layout(transition_duration=300)
+
+    print(clickData)
+    # if a bubble is clicked, update the bar chart to the side. else, update the bubble chart with an empty dict
+    if clickData is not None:
+        poll_id = clickData["points"][0]["customdata"][0]
+        question_id = clickData["points"][0]["customdata"][1]
+
+        updated_bar = visualize.poll_vis(
+            r_sub,
+            poll_id=poll_id,
+            question_id=question_id,
+            crosstab_variable=xtab1_bubble_dropdown,
+        )
+    else:
+        updated_bar = {}
+
+    return xtab1_options, xtab1_val_options, bubble, updated_bar
 
 
 # callback to download responses_merged.csv

@@ -284,7 +284,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None,  xtab1_val="-"):
             # size=np.log(poll_question.sample_size+1),
             size="sample_size",
             # size_max=size_max,
-            hover_data=["question_text_wrap"],
+            hover_data=["poll_id","question_id","sample_size"],
             labels=variable_mapping_inverse_tmp,
         )
         
@@ -299,14 +299,17 @@ def bubble_chart(responses, poll_ids=None, question_ids=None,  xtab1_val="-"):
             x="date",
             y="pct_fav",
             color="country",
-            text="pollster_wrap",
+            # text="pollster_wrap",
             # size=np.log(poll_question.sample_size+1),
             size=size,
             size_max=size_max,
-            hover_data=["poll_id","question_id","sample_size","question_text_wrap"],
+            hover_data=["poll_id","question_id","sample_size",],
             labels=variable_mapping_inverse,
+            trendline='ols'
         )
-        
+    
+    fig.update_layout(clickmode="event+select",)
+    
     return format_fig(fig,show=False)   
     # FIXME: this breaks the size of the bubble chart.     
     # return ubicenter.format_fig(fig,show=False)
