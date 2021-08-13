@@ -1,4 +1,5 @@
 from re import S
+from dash_bootstrap_components._components.CardHeader import CardHeader
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
@@ -6,12 +7,20 @@ import plotly.express as px
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 import microdf as mdf
 import os
 from py import visualize
+import json
+from textwrap import dedent as d
 
+# Define UBI Center colors
+BLUE = "#1976D2"
+DARK_BLUE = "#1565C0"
+LIGHT_BLUE = "#90CAF9"
+GRAY = "#BDBDBD"
+BARELY_BLUE = "#E3F2FD"
 
 # SECTION Import data.
 r = pd.read_csv("data/responses_merged.csv")
@@ -22,72 +31,42 @@ question_ids = r.question_id.unique().astype(int)
 xtab1_vars = r.xtab1_var.unique()
 xtab1_vals = r.xtab1_val.unique()
 xtab2_vars = r.xtab2_var.unique()
-countries = r.country.unique()
+countries = sorted(r.country.unique().tolist())
+
+
+def get_unique(df, col, sorted=False):
+    if sorted:
+        return sorted(df[col].unique())
+    else:
+        return df[col].unique()
+
+
+def dash_options(df, col):
+    return [{"label": i, "value": i} for i in df[col].unique()]
+
 
 # ------------ create cards to contain charts ------------ #
 
 # default style for the chart
 style = {"width": "90vh", "height": "90vh"}
 
-# place the bar chart in a card
-barcard = dbc.CardDeck(
-    [
-        dbc.Card(
-            dcc.Graph(
-                id="bar-graph",  # ID "bar-graph"
-                figure={},
-                config={"displayModeBar": False},
-            ),
-            body=True,
-            color="info",
-        )
-    ]
-)
 
-barcard_bubble_click = dbc.CardDeck(
-    [
-        dbc.Card(
-            dcc.Graph(
-                id="bar-graph-bubble-click",  # ID "bar-graph-bubble-click"
-                figure={},
-                config={"displayModeBar": False},
-            ),
-            body=True,
-            color="info",
-        )
-    ]
-)
-
-# create defualt bubble chart
-bubble_fig = visualize.bubble_chart(
-    responses=r,
-)
-bubblecard = dbc.Card(
+barcard_bubble_click = dbc.Card(
     dcc.Graph(
-        id="bubble-graph",  # ID "bubble-graph"
-        figure=bubble_fig,
+        id="bar-graph-bubble-click",  # ID "bar-graph-bubble-click"
+        figure={},
         config={"displayModeBar": False},
     ),
     body=True,
     color="info",
 )
 
-bubble_carddeck = dbc.CardDeck(
-    [
-        bubblecard,
-        barcard_bubble_click,
-    ]
+# create defualt bubble chart
+bubble_fig = visualize.bubble_chart(
+    responses=r,
 )
-# charts = dbc.CardDeck(
-#     [
-#         bubblecard,
-#         barcard,
-#     ]
-# )
 
-
-# SECTION Create the input cards
-cards1 = dbc.CardDeck(
+bubble_dropdown_deck = dbc.CardDeck(
     [
         # define first card with poll selection options
         dbc.Card(
@@ -96,188 +75,11 @@ cards1 = dbc.CardDeck(
                 dbc.CardBody(
                     [
                         html.Label(
-                            ["Select country:"],
+                            ["Filter countries:"],
                             style={
                                 "font-weight": "bold",
                                 "text-align": "center",
-                                "color": "white",
-                                "fontSize": 20,
-                            },
-                        ),
-                        # TODO: show poll names instead of poll_id
-                        dcc.Dropdown(
-                            # define component_id for input of app@callback function
-                            id="country-dropdown",  # ID "country-dropdown"
-                            multi=False,
-                            value=22,
-                            # create a list of dicts of states and their labels
-                            # to be selected by user in dropdown
-                            options=[{"label": c, "value": c} for c in countries],
-                        ),
-                    ]
-                ),
-                # ------------- select a poll ------------ #
-                dbc.CardBody(
-                    [
-                        html.Label(
-                            ["Select poll:"],
-                            style={
-                                "font-weight": "bold",
-                                "text-align": "center",
-                                "color": "white",
-                                "fontSize": 20,
-                            },
-                        ),
-                        # TODO: show poll names instead of poll_id
-                        dcc.Dropdown(
-                            # define component_id for input of app@callback function
-                            id="poll-dropdown",  # ID "poll-dropdown"
-                            multi=False,
-                            # value=22,
-                            # create a list of dicts of states and their labels
-                            # to be selected by user in dropdown
-                            options=[
-                                {
-                                    "label": "{} - {} ({})".format(
-                                        polls.loc[id, "pollster"],
-                                        polls.loc[id, "date"],
-                                        polls.loc[id, "country"],
-                                    ),
-                                    "value": id,
-                                }
-                                for id in poll_ids
-                            ],
-                        ),
-                    ]
-                ),
-                # ----------- select a question ---------- #
-                dbc.CardBody(
-                    [
-                        html.Label(
-                            ["Select question:"],
-                            style={
-                                "font-weight": "bold",
-                                "text-align": "center",
-                                "color": "white",
-                                "fontSize": 20,
-                            },
-                        ),
-                        # TODO: show question names instead of question_id
-                        # TODO: dynamically update dropdown options based on poll-dropdown`s value
-                        dcc.Dropdown(
-                            # define component_id for input of app@callback function
-                            id="question-dropdown",  # ID "question-dropdown"
-                            multi=False,
-                            # value=17,
-                            # create a list of dicts of states and their labels
-                            # to be selected by user in dropdown
-                            options=[
-                                {
-                                    "label": "{}".format(
-                                        r.loc[
-                                            r.question_id == x, "question_text"
-                                        ].unique()
-                                    ),
-                                    "value": x,
-                                }
-                                for x in question_ids
-                            ],
-                        ),
-                    ]
-                ),
-            ],
-            color="info",
-            outline=False,
-        ),
-    ],
-)
-
-# SECTION define first card with poll selection options
-xtab1_card = dbc.Card(
-    [
-        # ---------- select a cross-tab ---------- #
-        dbc.CardBody(
-            [
-                html.Label(
-                    ["Select cross-tab:"],
-                    id="xtab1-label",  # ID "x-tab1-label"
-                    style={
-                        "font-weight": "bold",
-                        "text-align": "center",
-                        "color": "white",
-                        "fontSize": 20,
-                    },
-                ),
-                # TODO: show question names instead of question_id
-                dcc.Dropdown(
-                    # define component_id for input of app@callback function
-                    id="xtab1-dropdown",  # ID "x-tab1-dropdown"
-                    multi=False,
-                    value="-",
-                    # create a list of dicts of states and their labels
-                    # to be selected by user in dropdown
-                    options=[{"label": x, "value": x} for x in xtab1_vars],
-                ),
-            ],
-            id="xtab1-cardbody",  # ID "xtab1-cardbody"
-        ),
-    ],
-    id="xtab1-card",  # ID "xtab1-card"
-    color="info",
-    outline=False,
-)
-xtab2_card = dbc.Card(
-    [
-        # ---------- select a cross-tab ---------- #
-        dbc.CardBody(
-            [
-                html.Label(
-                    ["Select second cross-tab:"],
-                    id="xtab2-label",  # ID "x-tab2-label"
-                    style={
-                        "font-weight": "bold",
-                        "text-align": "center",
-                        "color": "white",
-                        "fontSize": 20,
-                    },
-                ),
-                # TODO: show question names instead of question_id
-                dcc.Dropdown(
-                    # define component_id for input of app@callback function
-                    id="xtab2-dropdown",  # ID "x-tab2-dropdown"
-                    multi=False,
-                    value="-",
-                    # create a list of dicts of states and their labels
-                    # to be selected by user in dropdown
-                    options=[{"label": x, "value": x} for x in xtab2_vars],
-                ),
-            ],
-            id="xtab2-cardbody",  # ID "xtab2-cardbody"
-        ),
-    ],
-    id="xtab2-card",  # ID "xtab2-card"
-    color="info",
-    outline=False,
-)
-
-# -------------------------------------------------------- #
-#                       tab two cards                      #
-# -------------------------------------------------------- #
-# Create the input cards for tab 2
-cards2 = dbc.CardDeck(
-    [
-        # define first card with poll selection options
-        dbc.Card(
-            [
-                # ------------- select a country ------------ #
-                dbc.CardBody(
-                    [
-                        html.Label(
-                            ["Select countries:"],
-                            style={
-                                "font-weight": "bold",
-                                "text-align": "center",
-                                "color": "white",
+                                "color": BLUE,
                                 "fontSize": 20,
                             },
                         ),
@@ -288,28 +90,27 @@ cards2 = dbc.CardDeck(
                             multi=True,
                             # create a list of dicts of countries and their labels
                             # to be selected by user in dropdown
-                            options=[
-                                {"label": c + str(" "), "value": c} for c in countries
-                            ],
-                            value=[c for c in countries],
+                            options=[{"label": c, "value": c} for c in countries],
+                            value=countries,
                         ),
-                    ]
+                    ],
+                    # style={"height": "100px"},
                 ),
             ],
-            color="info",
-            outline=False,
+            # color="info",
+            outline=True,
         ),
         dbc.Card(
             [
                 dbc.CardBody(
                     [
                         html.Label(
-                            ["Select cross-tab category group:"],
+                            ["Filter demographics based on:"],
                             id="xtab1-bubble-label",  # ID "xtab1-bubble-label"
                             style={
                                 "font-weight": "bold",
                                 "text-align": "center",
-                                "color": "white",
+                                "color": BLUE,
                                 "fontSize": 20,
                             },
                         ),
@@ -323,24 +124,13 @@ cards2 = dbc.CardDeck(
                             # to be selected by user in dropdown
                             options=[{"label": x, "value": x} for x in xtab1_vars],
                         ),
-                    ],
-                    id="xtab1-bubble-cardbody",  # ID "xtab1-bubble-cardbody"
-                ),
-            ],
-            color="info",
-            outline=False,
-        ),
-        dbc.Card(
-            [
-                # ---------- select a cross-tab value ---------- #
-                dbc.CardBody(
-                    [
+                        html.Br(),
                         html.Label(
-                            ["Select cross-tab:"],
+                            ["Select demographic:"],
                             style={
                                 "font-weight": "bold",
                                 "text-align": "center",
-                                "color": "white",
+                                "color": BLUE,
                                 "fontSize": 20,
                             },
                         ),
@@ -354,15 +144,275 @@ cards2 = dbc.CardDeck(
                             # to be selected by user in dropdown
                             options=[{"label": x, "value": x} for x in xtab1_vals],
                         ),
+                        # dbc.Button(
+                        #     "Apply demographic filter",
+                        #     color="primary",
+                        #     outline=True,
+                        #     block=True
+                        # )
                     ],
+                    id="xtab1-bubble-cardbody",  # ID "xtab1-bubble-cardbody"
                 ),
             ],
-            color="info",
+            # color="info",
             outline=False,
+        ),
+    ],
+)
+
+bubble_graph_component = (
+    dcc.Graph(
+        id="bubble-graph",  # ID "bubble-graph"
+        figure=bubble_fig,
+        config={"displayModeBar": False},
+    ),
+)
+
+bubble_input_components = [
+    # ------ filter countries with these components ------ #
+    html.Label(
+        ["Select countries:"],
+        style={
+            "font-weight": "bold",
+            "text-align": "left",
+            "color": BLUE,
+            "fontSize": 20,
+        },
+    ),
+    # TODO: for the EU polls with country crosstab, have those as selectable options
+    dcc.Dropdown(
+        # define component_id for input of app@callback function
+        id="country-dropdown-2",  # ID "country-dropdown-2"
+        multi=True,
+        # create a list of dicts of countries and their labels
+        # to be selected by user in dropdown
+        options=[{"label": c, "value": c} for c in countries],
+        value=countries,
+        # shrink the fontsize of the country selections to make the buble a little mroe readable
+        style={"fontSize": 10},
+    ),
+    html.Br(),
+    # ---------- filter demographics with these ---------- #
+    dbc.Card(
+        [
+            dbc.CardHeader(
+                html.H6(
+                    [
+                        "Compare polls across selected demographic ",
+                        dbc.Badge("Optional", color="secondary", className="mr-1"),
+                    ]
+                )
+            ),
+            dbc.CardBody(
+                [
+                    html.Label(
+                        ["1. Choose a category"],
+                        id="xtab1-bubble-label",  # ID "xtab1-bubble-label"
+                        style={
+                            "font-weight": "bold",
+                            "text-align": "center",
+                            # "color": BLUE,
+                            # "fontSize": 20,
+                        },
+                    ),
+                    # TODO: show question names instead of question_id
+                    dcc.Dropdown(
+                        # define component_id for input of app@callback function
+                        id="xtab1-bubble-dropdown",  # ID         "xtab1-bubble-dropdown"
+                        multi=False,
+                        value="-",
+                        # create a list of dicts of states and their labels
+                        # to be selected by user in dropdown
+                        options=[{"label": x, "value": x} for x in xtab1_vars],
+                    ),
+                    html.Br(),
+                    html.Label(
+                        ["2. Select demographic:"],
+                        style={
+                            "font-weight": "bold",
+                            "text-align": "center",
+                            # "color": BLUE,
+                            # "fontSize": 20,
+                        },
+                    ),
+                    # TODO: show question names instead of question_id
+                    dcc.Dropdown(
+                        # define component_id for input of app@callback function
+                        id="xtab1_val-bubble-dropdown",  # ID "xtab1_val-bubble-dropdown"
+                        multi=False,
+                        value="-",
+                        # create a list of dicts of states and their labels
+                        # to be selected by user in dropdown
+                        options=[{"label": x, "value": x} for x in xtab1_vals],
+                    ),
+                    # dbc.Button(
+                    #     "Apply demographic filter",
+                    #     color="primary",
+                    #     outline=True,
+                    #     block=True
+                    # )
+                ],
+                id="xtab1-bubble-cardbody",  # ID "xtab1-bubble-cardbody"
+            ),
+        ],
+        # color="info",
+        outline=False,
+    ),
+]
+
+bubble_big_card = dbc.Card(
+    [
+        dbc.CardHeader(html.H5("Compare Across Polls")),
+        dbc.CardBody(
+            [
+                html.P("Configure the below options to filter the bubble chart:"),
+                dbc.Row(
+                    [
+                        dbc.Col(bubble_input_components, md=3),
+                        dbc.Col(
+                            bubble_graph_component,
+                            md=9,
+                        ),
+                    ],
+                    no_gutters=True,
+                ),
+            ]
         ),
     ]
 )
-# bubblecard,
+
+bar_col_components = [
+    dcc.Graph(
+        id="bar-graph",  # ID "bar-graph"
+        figure={},
+        config={"displayModeBar": False},
+    ),
+    # TODO: show question names instead of question_id
+    # TODO: dynamically update dropdown options based on poll-dropdown`s value
+]
+
+bar_input_components = [
+    html.Label(
+        ["Select country:"],
+        style={
+            "font-weight": "bold",
+            "text-align": "center",
+            "color": BLUE,
+            "fontSize": 20,
+        },
+    ),
+    # TODO: show poll names instead of poll_id
+    dcc.Dropdown(
+        # define component_id for input of app@callback function
+        id="country-dropdown",  # ID "country-dropdown"
+        multi=False,
+        value=22,
+        # create a list of dicts of states and their labels
+        # to be selected by user in dropdown
+        options=[{"label": c, "value": c} for c in countries],
+        # make persistent
+        persistence=True,
+    ),
+    html.Br(),
+    html.Label(
+        ["Select poll:"],
+        style={
+            "font-weight": "bold",
+            "text-align": "center",
+            "color": BLUE,
+            "fontSize": 20,
+        },
+    ),
+    # TODO: show poll names instead of poll_id
+    dcc.Dropdown(
+        # define component_id for input of app@callback function
+        id="poll-dropdown",  # ID "poll-dropdown"
+        multi=False,
+        style={
+            "fontSize": 14,
+        },
+        options=[
+            {
+                "label": "{} - {} ({})".format(
+                    polls.loc[id, "pollster"],
+                    polls.loc[id, "date"],
+                    polls.loc[id, "country"],
+                ),
+                "value": id,
+            }
+            for id in poll_ids
+        ],
+    ),
+    html.Br(),
+    html.Label(
+        ["  Select question:"],
+        style={
+            "font-weight": "bold",
+            "text-align": "center",
+            "color": BLUE,
+            "fontSize": 20,
+        },
+    ),
+    dcc.RadioItems(
+        # define component_id for input of app@callback function
+        id="question-dropdown",  # ID "question-dropdown"\
+        options=[
+            {
+                "label": "{}".format(
+                    r.loc[r.question_id == x, "question_text"].unique()
+                ),
+                "value": x,
+            }
+            for x in question_ids
+        ],
+        # try addding a right mark to the question text
+        inputStyle={"margin-right": "10px"},
+    ),
+    html.Br(),
+    html.Label(
+        ["Select cross-tab:"],
+        id="xtab1-label",  # ID "x-tab1-label"
+        style={
+            "font-weight": "bold",
+            "text-align": "center",
+            "color": BLUE,
+            "fontSize": 20,
+        },
+    ),
+    # TODO: show question names instead of question_id
+    dcc.RadioItems(
+        # define component_id for input of app@callback function
+        id="xtab1-dropdown",  # ID "x-tab1-dropdown"
+        # multi=False,
+        value="-",
+        # create a list of dicts of states and their labels
+        # to be selected by user in dropdown
+        options=[{"label": x, "value": x} for x in xtab1_vars],
+    ),
+]
+
+
+bar_big_card = dbc.Card(
+    [
+        dbc.CardHeader(html.H5("Drill down on individual polls")),
+        dbc.CardBody(
+            [
+                dbc.Row(
+                    [
+                        dbc.Col(bar_input_components, md=3),
+                        dbc.Col(bar_col_components, md=9),
+                    ],
+                    no_gutters=True,
+                ),
+            ]
+        ),
+    ]
+)
+
+
+# -------------------------------------------------------- #
+#                       tab two cards                      #
+# -------------------------------------------------------- #
 
 
 # Get base pathname from an environment variable that CS will provide.
@@ -423,7 +473,7 @@ app.layout = html.Div(
                         id="header",  # ID "header"
                         style={
                             "text-align": "center",
-                            "color": "#1976D2",
+                            "color": BLUE,
                             "fontSize": 50,
                             "letter-spacing": "2px",
                             "font-weight": 300,
@@ -439,7 +489,11 @@ app.layout = html.Div(
             [
                 dbc.Col(
                     html.H4(
-                        "Use the interactive below to explore different the current state of UBI's favorability accross different countries, polls, and questions.",  # REVIEW
+                        "Use the interactive below to explore different the current state of UBI's favorability from "
+                        + str(len(poll_ids))
+                        + " different polls across "
+                        + str(len(countries))
+                        + " countries.",  # REVIEW
                         style={
                             "text-align": "left",
                             "color": "black",
@@ -451,104 +505,11 @@ app.layout = html.Div(
             ]
         ),
         html.Br(),
-        # SECTION --------------------- tabs --------------------- #
-        dcc.Tabs(
-            [
-                # SECTION ----------------- tab 1 ---------------- #
-                dcc.Tab(
-                    label="Bar Chart",
-                    children=[
-                        # navbar
-                        dbc.Row([dbc.Col(cards1, width=input_width)]),
-                        html.Div(
-                            [
-                                dbc.Row(
-                                    [
-                                        dbc.Col(
-                                            xtab1_card,
-                                            width=input_width,
-                                        )
-                                    ]
-                                )
-                            ],
-                            style={"display": "block"},
-                        ),
-                        # html.Div(
-                        #     [
-                        #         dbc.Row(
-                        #             [
-                        #                 dbc.Col(
-                        #                     xtab2_card,
-                        #                     width=input_width,
-                        #                 )
-                        #             ]
-                        #         )
-                        #     ],
-                        #     style={"display": "block"},
-                        # ),
-                        html.Br(),
-                        # ---------------- place charts --------------- #
-                        dbc.Row(
-                            [
-                                dbc.Col(
-                                    html.H1(
-                                        "Poll results:",
-                                        style={
-                                            "text-align": "center",
-                                            "color": "#1976D2",
-                                            "fontSize": 30,
-                                        },
-                                    ),
-                                    width={
-                                        "size": default_size,
-                                        "offset": default_offset,
-                                    },
-                                ),
-                            ]
-                        ),
-                        # dbc.Row([dbc.Col(text, width={"size": 6, "offset": 3})]),
-                        html.Br(),
-                        dbc.Row([dbc.Col(barcard, width=chart_width)]),
-                        html.Br(),
-                        html.Br(),
-                        html.Br(),
-                        html.Br(),
-                        html.Br(),
-                        html.Br(),
-                    ],
-                ),
-                # SECTION ----------------- tab 2 ---------------- #
-                dcc.Tab(
-                    label="Compare Across Polls",
-                    children=[
-                        dbc.Row(
-                            [
-                                dbc.Col(
-                                    html.H1(
-                                        "Trends:",
-                                        style={
-                                            "text-align": "center",
-                                            "color": "#1976D2",
-                                            "fontSize": 30,
-                                        },
-                                    ),
-                                    width={"size": "auto", "offset": 2},
-                                ),
-                            ]
-                        ),
-                        # dbc.Row([dbc.Col(text, width={"size": 6, "offset": 3})]),
-                        html.Br(),
-                        dbc.Row([dbc.Col(cards2, width=input_width)]),
-                        html.Br(),
-                        # ---------------- place charts --------------- #
-                        dbc.Row([dbc.Col(bubble_carddeck, width=chart_width)]),
-                    ],
-                ),
-            ]
-        ),
+        # ---------------- place charts --------------- #
+        dbc.Row([dbc.Col(bubble_big_card, width=chart_width)]),
+        dbc.Row([dbc.Col(bar_big_card, width=chart_width)]),
         html.Br(),
-        html.Br(),
-        # add download button
+        # --------------- download button --------------- #
         dbc.Row(
             [
                 dbc.Col(
@@ -562,15 +523,40 @@ app.layout = html.Div(
                 ),
             ]
         ),
-        # html.Div(
-        #     dbc.Card(
-        #         [
-        #             dbc.Button("Download data as CSV", id="btn_csv"),
-        #             dcc.Download(id="download-dataframe-csv"),
-        #         ],
-        #     )
-        #     # style={"display": "none"},
-        # ),
+        html.Br(),
+        # link to contact email and github issue tracker
+        dbc.Row(
+            [
+                dbc.Col(
+                    html.H4(
+                        [
+                            "Questions or feedback? ",
+                            "Email ",
+                            html.A(
+                                "contact@ubicenter.org",
+                                href="mailto:contact@ubicenter.org",
+                            ),
+                            " or file an issue at ",
+                            html.A(
+                                "github.com/UBICenter/polls/issues",
+                                href="http://github.com/UBICenter/polls/issues",
+                            ),
+                        ],
+                        style={
+                            "text-align": "left",
+                            "color": "gray",
+                            "fontSize": 12,
+                            "font-family": "Roboto",
+                        },
+                    ),
+                    width={
+                        "size": "auto",
+                        # "offset": 2
+                    },
+                    md={"size": 8, "offset": 1},
+                ),
+            ]
+        ),
     ]
 )
 
@@ -697,14 +683,16 @@ def update(dropdown_value):
 
 # ------ update xtab1 options based on question dropdown ----- #
 @app.callback(
-    Output(component_id="xtab1-card", component_property="style"),
+    Output(component_id="xtab1-label", component_property="style"),
+    Output(component_id="xtab1-dropdown", component_property="style"),
     Input("xtab1-dropdown", "options"),
 )
 def show_hide_xtab(xtab1_dropdown_options):
+    # change visibilty of xtab1-dropdown based on xtab1-card
     if len(xtab1_dropdown_options) > 1:
-        return {"display": "block"}
+        return {"display": "block"}, {"display": "block"}
     else:
-        return {"display": "none"}
+        return {"display": "none"}, {"display": "none"}
 
 
 # # ------ update xtab2 options based on question dropdown ----- #
@@ -722,6 +710,7 @@ def show_hide_xtab(xtab1_dropdown_options):
 #                bubble chart tab callbacks                #
 # -------------------------------------------------------- #
 
+
 # update bubble chart based on country dropdown, crosstab variable, crosstab value
 @app.callback(
     # output the relevent xtab1_val based on selected xtab1_var
@@ -730,21 +719,20 @@ def show_hide_xtab(xtab1_dropdown_options):
     Output(component_id="xtab1_val-bubble-dropdown", component_property="options"),
     # country input will be list
     Output(component_id="bubble-graph", component_property="figure"),
-    Output(component_id="bar-graph-bubble-click", component_property="figure"),
+    # # this is to update xtab1_val-bubble-dropdown VALUE based on selected xtab1_var
+    # Output(component_id="xtab1_val-bubble-dropdown", component_property="value"),
     Input(component_id="country-dropdown-2", component_property="value"),
     # xtab1-bubble-dropdown input will be a string
     Input(component_id="xtab1-bubble-dropdown", component_property="value"),
     Input(component_id="xtab1_val-bubble-dropdown", component_property="value"),
-    Input(component_id="bubble-graph", component_property="clickData"),
 )
 def update_bubble_chart(
-    country_dropdown,
-    xtab1_bubble_dropdown,
-    xtab1_val_bubble_dropdown,
-    clickData,
+    countries,
+    xtab1_var,
+    xtab1_val,
 ):
     # subsets r to only include the selected countries
-    r_sub = r[r.country.isin(country_dropdown)]
+    r_sub = r[r.country.isin(countries)]
 
     # updates xtab1-bubble-dropdown options based on selected country
     xtab1_options = [{"label": x, "value": x} for x in r_sub.xtab1_var.unique()]
@@ -752,35 +740,56 @@ def update_bubble_chart(
     # updates xtab1_val-bubble-dropdown options based on selected xtab1_var
     xtab1_val_options = [
         {"label": x, "value": x}
-        for x in r_sub[r_sub.xtab1_var == xtab1_bubble_dropdown].xtab1_val.unique()
+        for x in r_sub[r_sub.xtab1_var == xtab1_var].xtab1_val.unique()
     ]
 
-    if (xtab1_bubble_dropdown in [None, "-"]) | (
-        xtab1_val_bubble_dropdown in [None, "-"]
-    ):
+    # if (xtab1_var in [None, "-"]) & (xtab1_val in [None, "-"]):
+    #     bubble = visualize.bubble_chart(r_sub)
+
+    if xtab1_var in [None, "-"]:
         bubble = visualize.bubble_chart(r_sub)
+
+    # elif (xtab1_var not in [None, "-"]) & (
+    #     xtab1_val in [None, "-"]
+    # ):
+    #     bubble = visualize.bubble_chart(r_sub[r_sub.xtab1_var == xtab1_var])
+
     else:
-        bubble = visualize.bubble_chart(r_sub, xtab1_val=xtab1_val_bubble_dropdown)
+        bubble = visualize.bubble_chart(r_sub, xtab1_val=xtab1_val)
 
-    bubble.update_layout(transition_duration=300)
+    bubble.update_layout(transition_duration=200)
 
-    print(clickData)
+    return xtab1_options, xtab1_val_options, bubble
+
+
+# update bar-bubble-graph-click based on clickData from bubble-graph
+@app.callback(
+    Output(component_id="bar-graph-bubble-click", component_property="figure"),
+    Input(component_id="bubble-graph", component_property="clickData"),
+    State(component_id="xtab1-bubble-dropdown", component_property="value"),
+)
+def update_bar_graph_bubble_click(clickData, xtab1_var):
+    print(
+        clickData,
+    )
     # if a bubble is clicked, update the bar chart to the side. else, update the bubble chart with an empty dict
     if clickData is not None:
         poll_id = clickData["points"][0]["customdata"][0]
         question_id = clickData["points"][0]["customdata"][1]
 
         updated_bar = visualize.poll_vis(
-            r_sub,
+            r,
             poll_id=poll_id,
             question_id=question_id,
-            crosstab_variable=xtab1_bubble_dropdown,
+            crosstab_variable=xtab1_var,
         )
     else:
         updated_bar = {}
 
-    return xtab1_options, xtab1_val_options, bubble, updated_bar
+    return updated_bar
 
+
+# ----------- rewrite callbacks for bubble tab ----------- #
 
 # callback to download responses_merged.csv
 @app.callback(
