@@ -9,6 +9,8 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
+from dash.exceptions import PreventUpdate
+
 import microdf as mdf
 import os
 from py import visualize
@@ -45,12 +47,24 @@ def dash_options(df, col):
     return [{"label": i, "value": i} for i in df[col].unique()]
 
 
+# Get base pathname from an environment variable that CS will provide.
+url_base_pathname = os.environ.get("URL_BASE_PATHNAME", "/")
+
+app = dash.Dash(
+    __name__,
+    external_stylesheets=[
+        dbc.themes.FLATLY,
+        "https://fonts.googleapis.com/css2?family=Lato:wght@300;400&display=swap",  # LINK TO FONT
+        "/assets/style.css",
+    ],
+    # Pass the url base pathname to Dash.
+    url_base_pathname=url_base_pathname,
+)
+# used to debug the app maybe
+application = app.server
+# server = app.server
+
 # ------------ create cards to contain charts ------------ #
-
-# default style for the chart
-style = {"width": "90vh", "height": "90vh"}
-
-
 barcard_bubble_click = dbc.Card(
     dcc.Graph(
         id="bar-graph-bubble-click",  # ID "bar-graph-bubble-click"
@@ -171,7 +185,7 @@ bubble_graph_component = (
 bubble_input_components = [
     # ------ filter countries with these components ------ #
     html.Label(
-        ["Select countries:"],
+        ["Filter polls by country:"],
         style={
             "font-weight": "bold",
             "text-align": "left",
@@ -195,13 +209,26 @@ bubble_input_components = [
     # ---------- filter demographics with these ---------- #
     dbc.Card(
         [
-            dbc.CardHeader(
-                html.H6(
+            # create a header for the card that indicates that the two dropdown options work together as a group
+            # dbc.CardHeader(
+            #     html.H6(
+            #         [
+            #             "Compare polls across selected demographic ",
+            #             dbc.Badge("Optional", color="secondary", className="mr-1"),
+            #         ]
+            #     )
+            # ),
+            html.H6(
                     [
-                        "Compare polls across selected demographic ",
-                        dbc.Badge("Optional", color="secondary", className="mr-1"),
-                    ]
-                )
+                        "Compare polls across selected demographic: ",
+                        dbc.Badge("Optional", color="light", className="mr-1"),
+                    ],
+            style={
+                            "font-weight": "bold",
+                            # "text-align": "center",
+                            "color": BLUE,
+                            "fontSize": 20,
+                        },
             ),
             dbc.CardBody(
                 [
@@ -210,7 +237,7 @@ bubble_input_components = [
                         id="xtab1-bubble-label",  # ID "xtab1-bubble-label"
                         style={
                             "font-weight": "bold",
-                            "text-align": "center",
+                            # "text-align": "center",
                             # "color": BLUE,
                             # "fontSize": 20,
                         },
@@ -230,7 +257,7 @@ bubble_input_components = [
                         ["2. Select demographic:"],
                         style={
                             "font-weight": "bold",
-                            "text-align": "center",
+                            # "text-align": "center",
                             # "color": BLUE,
                             # "fontSize": 20,
                         },
@@ -282,6 +309,19 @@ bubble_big_card = dbc.Card(
 )
 
 bar_col_components = [
+    dbc.Col(
+        html.Label(
+            ["Question:"],
+            id="question-label",
+            style={
+                # "font-weight": "bold",
+                # "text-align": "center",
+                # "color": BLUE,
+                "fontSize": 12,
+            },
+        ),
+        md={"width": 6, "offset": 3},
+    ),
     dcc.Graph(
         id="bar-graph",  # ID "bar-graph"
         figure={},
@@ -379,15 +419,15 @@ bar_input_components = [
             "fontSize": 20,
         },
     ),
-    # TODO: show question names instead of question_id
     dcc.RadioItems(
         # define component_id for input of app@callback function
         id="xtab1-dropdown",  # ID "x-tab1-dropdown"
         # multi=False,
         value="-",
-        # create a list of dicts of states and their labels
         # to be selected by user in dropdown
         options=[{"label": x, "value": x} for x in xtab1_vars],
+        # try addding a right mark to the question text
+        inputStyle={"margin-right": "10px"},
     ),
 ]
 
@@ -408,29 +448,6 @@ bar_big_card = dbc.Card(
         ),
     ]
 )
-
-
-# -------------------------------------------------------- #
-#                       tab two cards                      #
-# -------------------------------------------------------- #
-
-
-# Get base pathname from an environment variable that CS will provide.
-url_base_pathname = os.environ.get("URL_BASE_PATHNAME", "/")
-
-app = dash.Dash(
-    __name__,
-    external_stylesheets=[
-        dbc.themes.FLATLY,
-        "https://fonts.googleapis.com/css2?family=Lato:wght@300;400&display=swap",  # LINK TO FONT
-        "/assets/style.css",
-    ],
-    # Pass the url base pathname to Dash.
-    url_base_pathname=url_base_pathname,
-)
-# used to debug the app maybe
-application = app.server
-# server = app.server
 
 # -------------------------------------------------------- #
 #                        app layout                        #
@@ -479,7 +496,7 @@ app.layout = html.Div(
                             "font-weight": 300,
                         },
                     ),
-                    width={"size": default_size, "offset": default_offset},
+                    md={"size": default_size, "offset": default_offset},
                 ),
             ]
         ),
@@ -500,14 +517,14 @@ app.layout = html.Div(
                             "fontSize": 25,
                         },
                     ),
-                    width={"size": default_size, "offset": default_offset},
+                    md={"size": default_size, "offset": default_offset},
                 ),
             ]
         ),
         html.Br(),
-        # ---------------- place charts --------------- #
-        dbc.Row([dbc.Col(bubble_big_card, width=chart_width)]),
-        dbc.Row([dbc.Col(bar_big_card, width=chart_width)]),
+        # ---------------- place big cards --------------- #
+        dbc.Row([dbc.Col(bubble_big_card, md=chart_width)]),
+        dbc.Row([dbc.Col(bar_big_card, md=chart_width)]),
         html.Br(),
         # --------------- download button --------------- #
         dbc.Row(
@@ -519,7 +536,7 @@ app.layout = html.Div(
                             dcc.Download(id="download-dataframe-csv"),
                         ],
                     ),
-                    width={"size": "auto", "offset": 1},
+                    md={"size": "auto", "offset": 1},
                 ),
             ]
         ),
@@ -656,6 +673,18 @@ def update(dropdown_value):
     # return question_options, question_options[0]["value"]
 
 
+# update question-label above bar-graph based on question-dropdown selection
+@app.callback(
+    Output(component_id="question-label", component_property="children"),
+    Input(component_id="question-dropdown", component_property="value"),
+)
+def update_question_label(question_dropdown_value):
+    question = "{}".format(
+        r.loc[r.question_id == question_dropdown_value, "question_text"].max()
+    )
+    return "Question text: " + str(question)
+
+
 # ------ update xtab1 options based on question dropdown ----- #
 @app.callback(
     Output(component_id="xtab1-dropdown", component_property="options"),
@@ -685,6 +714,7 @@ def update(dropdown_value):
 @app.callback(
     Output(component_id="xtab1-label", component_property="style"),
     Output(component_id="xtab1-dropdown", component_property="style"),
+    # Output(component_id="xtab1-dropdown", component_property="value"),
     Input("xtab1-dropdown", "options"),
 )
 def show_hide_xtab(xtab1_dropdown_options):
@@ -764,29 +794,25 @@ def update_bubble_chart(
 
 # update bar-bubble-graph-click based on clickData from bubble-graph
 @app.callback(
-    Output(component_id="bar-graph-bubble-click", component_property="figure"),
+    Output(component_id="country-dropdown", component_property="value"),
+    Output(component_id="poll-dropdown", component_property="value"),
     Input(component_id="bubble-graph", component_property="clickData"),
-    State(component_id="xtab1-bubble-dropdown", component_property="value"),
+    # this prevents the callback from loading when the app starts
+    prevent_initial_call=True,
 )
-def update_bar_graph_bubble_click(clickData, xtab1_var):
+def update_bar_graph_bubble_click(clickData):
     print(
         clickData,
     )
     # if a bubble is clicked, update the bar chart to the side. else, update the bubble chart with an empty dict
-    if clickData is not None:
-        poll_id = clickData["points"][0]["customdata"][0]
-        question_id = clickData["points"][0]["customdata"][1]
-
-        updated_bar = visualize.poll_vis(
-            r,
-            poll_id=poll_id,
-            question_id=question_id,
-            crosstab_variable=xtab1_var,
-        )
+    if clickData is None:
+        # raise PreventUpdate
+        pass
     else:
-        updated_bar = {}
-
-    return updated_bar
+        poll_id = clickData["points"][0]["customdata"][0]
+        # country = r.loc[r.poll_id == poll_id, "country"].max()
+        country = clickData["points"][0]["customdata"][2]
+        return country, poll_id
 
 
 # ----------- rewrite callbacks for bubble tab ----------- #
@@ -802,4 +828,4 @@ def func(n_clicks):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True, port=8050, host="127.0.0.1")
+    app.run_server(debug=True, port=8060, host="127.0.0.1")

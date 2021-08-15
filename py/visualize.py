@@ -62,16 +62,16 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         & (responses.question_id == question_id)
         & (responses.xtab1_var == crosstab_variable)
     ]
-    
-    
+
     def wrap_label(text, n):
         """wraps text to multiple line string"""
         return "\n".join(textwrap.wrap(str(text), n, break_long_words=False))
+
     # create a list comprehsion to get the response labels in the same order as the response order
     top_labels = [
         x for x in target_responses.sort_values(by=["response_order"]).response.unique()
     ]
-    # FIXME - this works when you print it, but not in the plot 
+    # FIXME - this works when you print it, but not in the plot
     # wrap top_labels to a manageable width
     def wrap_labels(labels, n):
         return [
@@ -122,8 +122,8 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         ]
         for val in target_responses.xtab1_val.unique()
     ]
-    
-    #NOTE this updates the figure with an empty fig so the function plays nice with the callbacks    
+
+    # NOTE this updates the figure with an empty fig so the function plays nice with the callbacks
     if len(x_data) < 1:
         return {}
 
@@ -306,6 +306,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
     size = (poll_question.sample_size + 1) ** 0.4
     size_max = 30
     opacity = 0.7
+    hover_data = ["poll_id", "question_id", "country", "sample_size"]
 
     if xtab_split:
         variable_mapping_inverse_tmp = variable_mapping_inverse.copy()
@@ -320,7 +321,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
             size="sample_size",
             opacity=opacity,
             # size_max=size_max,
-            hover_data=["poll_id", "question_id", "sample_size"],
+            hover_data=hover_data,
             labels=variable_mapping_inverse_tmp,
         )
 
@@ -339,11 +340,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
             size=size,
             size_max=size_max,
             opacity=opacity,
-            hover_data=[
-                "poll_id",
-                "question_id",
-                "sample_size",
-            ],
+            hover_data=hover_data,
             labels=variable_mapping_inverse,
             # trendline="lowess",
         )
