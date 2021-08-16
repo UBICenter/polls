@@ -3,7 +3,7 @@ poll_id,date,pollster,sample_size,margin_of_error,demographic,country,crosstabs_
 2.0,2016-04-30,Dalia Research,10000.0,,14-65,EU28,-,,False,Y,https://basicincome.org/wp-content/uploads/2017/05/DR-2017-survey.pdf,Only month specified
 3.0,2016-06-05,Swiss Referendum ,2494848.0,,Registered voters,Switzerland,-,,False,,"https://www.loc.gov/law/foreign-news/article/switzerland-voters-reject-unconditional-basic-income/#:~:text=(June%206%2C%202016)%20On,Income.%E2%80%9D%20(Vorlage%20Nr.",
 4.0,2016-12-31,ESS,880.0,,,Iceland,-,,False,,https://citizensincome.org/wp-content/uploads/2017/11/European-Social-Survey-survey-on-Basic-Income.pdf,Only year specified
-5.0,2016-12-31,Angus Reid Institute,1516.0,,,Canada,"Age, Gender, Education, Household Income",,False,,http://angusreid.org/wp-content/uploads/2016/08/2016.08.10_Basic_Income_PressReleaseTables.pdf,Only year specified
+5.0,2016-12-31,Angus Reid Institute,1516.0,,,Canada,"Age, Gender, Education, Income",,False,,http://angusreid.org/wp-content/uploads/2016/08/2016.08.10_Basic_Income_PressReleaseTables.pdf,Only year specified
 6.0,2017-03-31,Dalia Research,11021.0,,14-65,EU28,-,,False,Y,https://basicincome.org/wp-content/uploads/2017/05/DR-2017-survey.pdf,Only month specified
 7.0,2017-08-04,Ipsos MORI,1111.0,,Adults,UK,"Gender, Age, Region, Voting Intention, 2017 Election Vote",,False,,https://www.ipsos.com/ipsos-mori/en-uk/half-uk-adults-would-support-universal-basic-income-principle,
 8.0,2018-07-29,Populus,2070.0,,Adults,UK,-,"Gender, Age, Social Grade, Region, Employment Sector",False,,https://www.populus.co.uk/poll/universal-basic-income-survey/,
