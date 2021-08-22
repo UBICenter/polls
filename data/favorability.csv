@@ -1,102 +1,102 @@
-question_id,response,favorability,response_order
-1,Not sure,0,0
-1,Oppose,-1,-2
-1,Somewhat oppose,-1,-1
-1,Somewhat support,1,1
-1,Strongly support,1,2
-2,Somewhat favor,1,1
-2,Somewhat oppose,-1,-1
-2,Strongly favor,1,2
-2,Strongly oppose,-1,-2
-3,Neither supportive or unsupportive,0,0
-3,Supportive,1,1
-3,Unsupportive,-1,-1
-3,Very supportive,1,2
-3,Very unsupportive,-1,-2
-4,Oppose,-1,-1
-4,Support,1,1
-4,Undecided,0,0
-5,The government should have a universal basic income program,1,1
-5,The government should not offer universal income programs,-1,-1
-6,Bad idea,-1,-1
-6,Good idea,1,1
-6,Unsure,0,0
-7,Somewhat favor,1,1
-7,Somewhat oppose,-1,-1
-7,Strongly favor,1,2
-7,Strongly oppose,-1,-2
-7,Unsure,0,0
-8,No,-1,-1
-8,Yes,1,1
-9,Don't know,0,99
-9,I neither support nor oppose this idea in principle,0,0
-9,I oppose this idea in principle,-1,-1
-9,I support this idea in principle,1,1
-10,Don't Know,0,99
-10,Neither support nor oppose,0,0
-10,Strongly oppose,-1,-2
-10,Strongly support,1,2
-10,Tend to oppose,-1,-1
-10,Tend to support,1,1
-11,Would not vote,-1,0
-11,Would vote against,-1,-1
-11,Would vote for,1,1
-12,Oppose,-1,-1
-12,Support,1,1
-13,Don't know/can't say,0,0
-13,Moderately oppose,-1,-1
-13,Moderately support,1,1
-13,Strongly oppose,-1,-2
-13,Strongly support,1,2
-14,Don't know or neither agree or disagree,0,0
-14,Fully agree,1,2
-14,Fully opposed,-1,-2
-14,Somewhat opposed,-1,-1
-14,Somewhat supportive,1,1
-14,Strongly disagree or rather disagree,-1,-2
-14,Strongly agree or rather agree,1,2
-15,Against,-1,-1
-15,In favour,1,1
-15,Strongly against,-1,-2
-15,Strongly in favour,1,2
-16,No,-1,-1
-16,Yes,1,1
-17,Don't know,0,99
-17,Neither support nor oppose,0,0
-17,Oppose,-1,-1
-17,Strongly oppose,-1,-2
-17,Strongly support,1,2
-17,Support,1,1
-18,Don't know,0,0
-18,Less likely,-1,-1
-18,More likely,1,1
-18,Neither more likely nor less likely,0,0
-18,Significantly less likely,-1,-2
-18,Significantly more likely,1,2
-19,No,-1,-1
-19,Yes,1,1
-20,No,-1,-1
-20,Yes,1,1
-21,No,-1,-1
-21,Yes,1,1
-22,Not too/not at all,-1,-1
-22,Somewhat,1,1
-22,Very,1,2
-23,Not too/not at all,-1,-1
-23,Somewhat,1,1
-23,Very,1,2
-24,Don't know/can't say,0,0
-24,Moderately oppose,-1,-1
-24,Moderately support,1,1
-24,Strongly oppose,-1,-2
-24,Strongly support,1,2
-25,Don't know/can't say,0,0
-25,Moderately oppose,-1,-1
-25,Moderately support,1,1
-25,Strongly oppose,-1,-2
-25,Strongly support,1,2
-26,Don't know,0,0
-26,Somewhat oppose,-1,-1
-26,Somewhat support,1,1
-26,Strongly oppose,-1,-2
-26,Strongly support,1,2
+question_id,response,favorability,response_order,response_shortened
+1,Not sure,0,0,Not sure
+1,Oppose,-1,-2,Oppose
+1,Somewhat oppose,-1,-1,Somewhat oppose
+1,Somewhat support,1,1,Somewhat support
+1,Strongly support,1,2,Strongly support
+2,Somewhat favor,1,1,Somewhat favor
+2,Somewhat oppose,-1,-1,Somewhat oppose
+2,Strongly favor,1,2,Strongly favor
+2,Strongly oppose,-1,-2,Strongly oppose
+3,Neither supportive or unsupportive,0,0,Neither
+3,Supportive,1,1,Supportive
+3,Unsupportive,-1,-1,Unsupportive
+3,Very supportive,1,2,Very supportive
+3,Very unsupportive,-1,-2,Very unsupportive
+4,Oppose,-1,-1,Oppose
+4,Support,1,1,Support
+4,Undecided,0,0,Undecided
+5,The government should have a universal basic income program,1,1,Should have UBI
+5,The government should not offer universal income programs,-1,-1,Should not have UBI
+6,Bad idea,-1,-1,Bad idea
+6,Good idea,1,1,Good idea
+6,Unsure,0,0,Unsure
+7,Somewhat favor,1,1,Somewhat favor
+7,Somewhat oppose,-1,-1,Somewhat oppose
+7,Strongly favor,1,2,Strongly favor
+7,Strongly oppose,-1,-2,Strongly oppose
+7,Unsure,0,0,Unsure
+8,No,-1,-1,No
+8,Yes,1,1,Yes
+9,Don't know,0,0,Don't know
+9,I neither support nor oppose this idea in principle,0,0,Neither
+9,I oppose this idea in principle,-1,-1,Oppose in principle
+9,I support this idea in principle,1,1,Favor in principle
+10,Don't Know,0,0,Don't Know
+10,Neither support nor oppose,0,0,Neither
+10,Strongly oppose,-1,-2,Strongly oppose
+10,Strongly support,1,2,Strongly support
+10,Tend to oppose,-1,-1,Tend to oppose
+10,Tend to support,1,1,Tend to support
+11,Would not vote,-1,0,Would not vote
+11,Would vote against,-1,-1,Would vote against
+11,Would vote for,1,1,Would vote for
+12,Oppose,-1,-1,Oppose
+12,Support,1,1,Support
+13,Don't know/can't say,0,0,Don't know
+13,Moderately oppose,-1,-1,Moderately oppose
+13,Moderately support,1,1,Moderately support
+13,Strongly oppose,-1,-2,Strongly oppose
+13,Strongly support,1,2,Strongly support
+14,Don't know or neither agree or disagree,0,0,Don't know
+14,Fully agree,1,2,Fully agree
+14,Fully opposed,-1,-2,Fully opposed
+14,Somewhat opposed,-1,-1,Somewhat opposed
+14,Somewhat supportive,1,1,Somewhat supportive
+14,Strongly disagree or rather disagree,-1,-2,Strongly Disagree
+14,Strongly agree or rather agree,1,2,Strongly Agree
+15,Against,-1,-1,Against
+15,In favour,1,1,In favour
+15,Strongly against,-1,-2,Strongly against
+15,Strongly in favour,1,2,Strongly in favour
+16,No,-1,-1,No
+16,Yes,1,1,Yes
+17,Don't know,0,0,Don't know
+17,Neither support nor oppose,0,0,Neither
+17,Oppose,-1,-1,Oppose
+17,Strongly oppose,-1,-2,Strongly oppose
+17,Strongly support,1,2,Strongly support
+17,Support,1,1,Support
+18,Don't know,0,0,Don't know
+18,Less likely,-1,-1,Less likely
+18,More likely,1,1,More likely
+18,Neither more likely nor less likely,0,0,Neither more/less
+18,Significantly less likely,-1,-2,Much less
+18,Significantly more likely,1,2,Much more
+19,No,-1,-1,No
+19,Yes,1,1,Yes
+20,No,-1,-1,No
+20,Yes,1,1,Yes
+21,No,-1,-1,No
+21,Yes,1,1,Yes
+22,Not too/not at all,-1,-1,Not
+22,Somewhat,1,1,Somewhat
+22,Very,1,2,Very
+23,Not too/not at all,-1,-1,Not
+23,Somewhat,1,1,Somewhat
+23,Very,1,2,Very
+24,Don't know/can't say,0,0,Don't know
+24,Moderately oppose,-1,-1,Oppose
+24,Moderately support,1,1,Support
+24,Strongly oppose,-1,-2,Strongly oppose
+24,Strongly support,1,2,Strongly support
+25,Don't know/can't say,0,0,Don't know
+25,Moderately oppose,-1,-1,Oppose
+25,Moderately support,1,1,Support
+25,Strongly oppose,-1,-2,Strongly oppose
+25,Strongly support,1,2,Strongly support
+26,Don't know,0,0,Don't know
+26,Somewhat oppose,-1,-1,Somewhat oppose
+26,Somewhat support,1,1,Somewhat support
+26,Strongly oppose,-1,-2,Strongly oppose
+26,Strongly support,1,2,Strongly support

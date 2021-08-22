@@ -69,9 +69,8 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
 
     # create a list comprehsion to get the response labels in the same order as the response order
     top_labels = [
-        x for x in target_responses.sort_values(by=["response_order"]).response.unique()
+        x for x in target_responses.sort_values(by=["response_order"]).response_shortened.unique()
     ]
-    # FIXME - this works when you print it, but not in the plot
     # wrap top_labels to a manageable width
     def wrap_labels(labels, n):
         return [
@@ -178,7 +177,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
                 x=0.14,
                 y=yd,
                 xanchor="right",
-                text=str(yd),
+                text=wrap_label(str(yd), 15),
                 font=dict(family="Arial", size=14, color="rgb(67, 67, 67)"),
                 showarrow=False,
                 align="right",
@@ -197,7 +196,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
                 showarrow=False,
             )
         )
-        # labeling the first Likert scale (on the top)
+        # labeling the first Likert scale (#NOTE on the top)
         if yd == y_data[-1]:
             annotations.append(
                 dict(

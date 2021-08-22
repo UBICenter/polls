@@ -10,7 +10,6 @@ questions = pd.read_csv("data/questions.csv")
 IDS = [
     "poll_id",
     "question_id",
-    # FIXME: xtab1_var or xtab_var1?
     "xtab1_var",
     "xtab1_val",
     "xtab2_var",
