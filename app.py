@@ -219,21 +219,21 @@ bubble_input_components = [
             #     )
             # ),
             html.H6(
-                    [
-                        "Compare polls across selected demographic: ",
-                        dbc.Badge("Optional", color="light", className="mr-1"),
-                    ],
-            style={
-                            "font-weight": "bold",
-                            # "text-align": "center",
-                            "color": BLUE,
-                            "fontSize": 20,
-                        },
+                [
+                    "Compare polls across selected demographic: ",
+                    # dbc.Badge("Optional", color="light", className="mr-1"),
+                ],
+                style={
+                    "font-weight": "bold",
+                    # "text-align": "center",
+                    "color": BLUE,
+                    "fontSize": 20,
+                },
             ),
             dbc.CardBody(
                 [
                     html.Label(
-                        ["1. Choose a category"],
+                        ["1. Choose category"],
                         id="xtab1-bubble-label",  # ID "xtab1-bubble-label"
                         style={
                             "font-weight": "bold",
@@ -317,10 +317,10 @@ bar_col_components = [
                 # "font-weight": "bold",
                 # "text-align": "center",
                 # "color": BLUE,
-                "fontSize": 12,
+                # "fontSize": 12,
             },
         ),
-        md={"width": 6, "offset": 3},
+        md={"width": 6, "offset": 2},
     ),
     dcc.Graph(
         id="bar-graph",  # ID "bar-graph"
@@ -406,7 +406,7 @@ bar_input_components = [
             for x in question_ids
         ],
         # try addding a right mark to the question text
-        inputStyle={"margin-right": "10px"},
+        inputStyle={"margin-right": "5px"},
     ),
     html.Br(),
     html.Label(
@@ -425,9 +425,9 @@ bar_input_components = [
         # multi=False,
         value="-",
         # to be selected by user in dropdown
-        options=[{"label": x, "value": x} for x in xtab1_vars],
+        options=[{"label": "{} ".format(x), "value": x} for x in xtab1_vars],
         # try addding a right mark to the question text
-        inputStyle={"margin-right": "10px"},
+        inputStyle={"margin-right": "5px"},
     ),
 ]
 
@@ -589,7 +589,11 @@ app.layout = html.Div(
     Input(component_id="question-dropdown", component_property="value"),
     Input(component_id="xtab1-dropdown", component_property="value"),
 )
-def test(poll, question, xtab1):
+def return_bar_graph(poll, question, xtab1):
+
+    # if not xtab selected then choose default value
+    if (xtab1 is None) or (xtab1 == []):
+        xtab1 = "-"
 
     bar = visualize.poll_vis(
         responses=r, poll_id=poll, question_id=question, crosstab_variable=xtab1
@@ -601,10 +605,9 @@ def test(poll, question, xtab1):
 # ------ update poll, question, crosstab options based on country dropdown ----- #
 @app.callback(
     Output(component_id="poll-dropdown", component_property="options"),
-    # Output(component_id="bubble-graph", component_property="figure"),
     Input("country-dropdown", "value"),
 )
-def update(dropdown_value):
+def update_poll_options(dropdown_value):
     """[summary]
     change the options of the checklist to match the selected countries
     Parameters
@@ -629,34 +632,21 @@ def update(dropdown_value):
         .poll_id.unique()
     ]
 
-    # bubble = visualize.bubble_chart(
-    #     responses=r,
-    #     # poll_ids=r.poll_id.unique(),
-    #     # question_ids=r.question_id.unique()
-    # )
-
     return poll_options
 
 
 # ------ update question options based on poll dropdown ----- #
 @app.callback(
     Output(component_id="question-dropdown", component_property="options"),
+    #NOTE value is output here
     Output(component_id="question-dropdown", component_property="value"),
-    # Output(component_id="xtab1-dropdown", component_property="options"),
+    # we want to update the default question based on the poll selected
     Input("poll-dropdown", "value"),
+    # we also want to update the default question when a new country is selected
+    Input("country-dropdown", "value"),
 )
-def update(dropdown_value):
-    """[summary]
-    change the options of the questions dropdown to match the selected countries
-    Parameters
-    ----------
-    dropdown : str
-        takes the input "country-dropdown" from the callback
-    Returns
-    -------
-    populates other dropdowns with country-specific options
-    """
-
+def update_question_options(poll_dropdown_value, country_dropdown_value):
+    
     question_options = [
         # this part returns the question text based on the provided question id
         {
@@ -664,7 +654,7 @@ def update(dropdown_value):
             "value": x,
         }
         # this part returns the unique question ids associated with the selected poll id in responses_merged.csv
-        for x in r[r.poll_id == dropdown_value].question_id.unique()
+        for x in r[r.poll_id == poll_dropdown_value].question_id.unique()
     ]
 
     default_question = question_options[0]["value"] if question_options else None
@@ -692,8 +682,8 @@ def update_question_label(question_dropdown_value):
     # Output(component_id="xtab2-dropdown", component_property="options"),
     Input("question-dropdown", "value"),
 )
-def update(dropdown_value):
-    # update xtab1 options based on question dropdown
+def update_xtab1_options(dropdown_value):
+    """update xtab1 options based on question dropdown"""
 
     xtab1_options = [
         {"label": x, "value": x}
@@ -709,6 +699,15 @@ def update(dropdown_value):
     return xtab1_options
     # return xtab1_options, xtab2_options
 
+@app.callback(
+    Output(component_id="xtab1-dropdown", component_property="value"),
+    Input('country-dropdown', 'value'),
+    Input('poll-dropdown', 'value'),
+    Input('question-dropdown', 'value'),
+)
+def set_xtab1_value(country, poll, question):
+    """set xtab1 value to default value if country, poll, question changed"""
+    return "-"
 
 # ------ update xtab1 options based on question dropdown ----- #
 @app.callback(
@@ -718,23 +717,18 @@ def update(dropdown_value):
     Input("xtab1-dropdown", "options"),
 )
 def show_hide_xtab(xtab1_dropdown_options):
-    # change visibilty of xtab1-dropdown based on xtab1-card
+    """change visibilty of xtab1-dropdown based on xtab1-card"""
+    label_style = {
+        "font-weight": "bold",
+        "text-align": "center",
+        "color": BLUE,
+        "fontSize": 20,
+        "display": "block",
+    }
     if len(xtab1_dropdown_options) > 1:
-        return {"display": "block"}, {"display": "block"}
+        return label_style, {"display": "block"}
     else:
         return {"display": "none"}, {"display": "none"}
-
-
-# # ------ update xtab2 options based on question dropdown ----- #
-# @app.callback(
-#     Output(component_id="xtab2-card", component_property="style"),
-#     Input("xtab2-dropdown", "options"),
-# )
-# def show_hide_xtab(xtab2_dropdown_options):
-#     if len(xtab2_dropdown_options) > 1:
-#         return {"display": "block"}
-#     else:
-#         return {"display": "none"}
 
 # -------------------------------------------------------- #
 #                bubble chart tab callbacks                #
@@ -823,7 +817,7 @@ def update_bar_graph_bubble_click(clickData):
     Input("btn_csv", "n_clicks"),
     prevent_initial_call=True,
 )
-def func(n_clicks):
+def clickd_bubble(n_clicks):
     return dcc.send_data_frame(r.to_csv, "responses.csv")
 
 

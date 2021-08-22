@@ -65,7 +65,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
 
     def wrap_label(text, n):
         """wraps text to multiple line string"""
-        return "\n".join(textwrap.wrap(str(text), n, break_long_words=False))
+        return "<br>".join(textwrap.wrap(str(text), n, break_long_words=False))
 
     # create a list comprehsion to get the response labels in the same order as the response order
     top_labels = [
@@ -75,7 +75,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
     # wrap top_labels to a manageable width
     def wrap_labels(labels, n):
         return [
-            "\n".join(textwrap.wrap(str(x), n, break_long_words=False)) for x in labels
+            "<br>".join(textwrap.wrap(str(x), n, break_long_words=False)) for x in labels
         ]
 
     # Define UBI Center colors
@@ -221,7 +221,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
                     y=yd,
                     text="{:.0%}".format(xd[i]),
                     # text=str(xd[i]) + '%',
-                    font=dict(family="Arial", size=14, color=TEXTCOLORS[i]),
+                    font=dict(family="Arial", size=14, color="rgb(248, 248, 255)"),
                     showarrow=False,
                 )
             )
@@ -244,6 +244,8 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         annotations=annotations,
         margin=dict(l=10, r=10, t=80, b=80),
     )
+    
+    
     fig.update_yaxes(automargin=True)
     fig.update_xaxes(automargin=True)
 
@@ -306,7 +308,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
     size = (poll_question.sample_size + 1) ** 0.4
     size_max = 30
     opacity = 0.7
-    hover_data = ["poll_id", "question_id", "country", "sample_size"]
+    hover_data = ["poll_id", "question_id", "country","question_text_wrap", "sample_size"]
 
     if xtab_split:
         variable_mapping_inverse_tmp = variable_mapping_inverse.copy()
