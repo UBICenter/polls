@@ -344,7 +344,7 @@ bar_input_components = [
         # define component_id for input of app@callback function
         id="country-dropdown",  # ID "country-dropdown"
         multi=False,
-        value=22,
+        value="USA",
         # create a list of dicts of states and their labels
         # to be selected by user in dropdown
         options=[{"label": c, "value": c} for c in countries],
@@ -366,6 +366,7 @@ bar_input_components = [
         # define component_id for input of app@callback function
         id="poll-dropdown",  # ID "poll-dropdown"
         multi=False,
+        value=29,
         style={
             "fontSize": 14,
         },
@@ -394,6 +395,7 @@ bar_input_components = [
     dcc.RadioItems(
         # define component_id for input of app@callback function
         id="question-dropdown",  # ID "question-dropdown"\
+        value=26,
         options=[
             {
                 "label": "{}".format(
