@@ -348,8 +348,6 @@ bar_input_components = [
         # create a list of dicts of states and their labels
         # to be selected by user in dropdown
         options=[{"label": c, "value": c} for c in countries],
-        # make persistent
-        persistence=True,
     ),
     html.Br(),
     html.Label(
@@ -434,7 +432,7 @@ bar_input_components = [
 
 bar_big_card = dbc.Card(
     [
-        dbc.CardHeader(html.H5("Drill down on individual polls")),
+        dbc.CardHeader(html.H5("Drill down into individual polls")),
         dbc.CardBody(
             [
                 dbc.Row(
@@ -578,16 +576,46 @@ app.layout = html.Div(
 )
 
 # -------------------------------------------------------- #
-#                     Assign Tab 1 callbacks                     #
+#                     Assign Bar Graph module callbacks                     #
 # -------------------------------------------------------- #
-
-# TODO create most obvious way to select question first
+# TODO make conditional callback based on ctxctx
+# @app.callback(
+#     Output("poll-dropdown", "value"),
+#     Output("question-dropdown", "value"),
+#     Output("xtab1-dropdown", "value"),
+# )
+# update bar-bubble-graph-click based on clickData from bubble-graph
 @app.callback(
-    Output(component_id="bar-graph", component_property="figure"),
+    Output(component_id="country-dropdown", component_property="value"),
+    Output(component_id="poll-dropdown", component_property="value"),
+    #TODO: output should include selected question
+    Input(component_id="bubble-graph", component_property="clickData"),
+    # this prevents the callback from loading when the app starts
+    prevent_initial_call=True,
+)
+def update_bar_graph_with_click(clickData):
+    print(
+        clickData,
+    )
+    # if a bubble is clicked, update the bar chart to the side. else, update the bubble chart with an empty dict
+    if clickData is None:
+        # raise PreventUpdate
+        pass
+    else:
+        # the hover_data arg of the bubble chart should be a list - ["poll_id", "question_id", "country","question_text_wrap", "sample_size"]
+        poll_id = clickData["points"][0]["customdata"][0]
+        question_id = clickData["points"][0]["customdata"][1]
+        # country = r.loc[r.poll_id == poll_id, "country"].max()
+        country = clickData["points"][0]["customdata"][2]
+        return country, poll_id
+
+#NOTE this one is probabably fine as is
+@app.callback(
+    Output("bar-graph", "figure"),
     # Input(component_id="country-dropdown", component_property="value"),
-    Input(component_id="poll-dropdown", component_property="value"),
-    Input(component_id="question-dropdown", component_property="value"),
-    Input(component_id="xtab1-dropdown", component_property="value"),
+    Input("poll-dropdown", "value"),
+    Input("question-dropdown", "value"),
+    Input("xtab1-dropdown", "value"),
 )
 def return_bar_graph(poll, question, xtab1):
 
@@ -604,23 +632,24 @@ def return_bar_graph(poll, question, xtab1):
 
 # ------ update poll, question, crosstab options based on country dropdown ----- #
 @app.callback(
-    Output(component_id="poll-dropdown", component_property="options"),
+    Output("poll-dropdown", "options"),
     Input("country-dropdown", "value"),
 )
-def update_poll_options(dropdown_value):
+def update_poll_options(country_dropdown_value):
     """update poll options based on country dropdown"""
+    # get list of poll_ids for selected country, sorted by newest to oldest
+    poll_ids_sorted = r[r.country == country_dropdown_value].sort_values("date", ascending=False).poll_id.unique()
+    
     poll_options = [
         {
-            "label": "{} - {} ({})".format(
+            # shoud look like "Pew Research Center (2021-4-22)"
+            "label": "{} ({})".format(
                 polls.loc[id, "pollster"],
                 polls.loc[id, "date"],
-                polls.loc[id, "country"],
             ),
             "value": id,
         }
-        for id in r[r.country == dropdown_value]
-        .sort_values("date", ascending=False)
-        .poll_id.unique()
+        for id in poll_ids_sorted
     ]
 
     return poll_options
@@ -628,16 +657,26 @@ def update_poll_options(dropdown_value):
 
 # ------ update question options based on poll dropdown ----- #
 @app.callback(
-    Output(component_id="question-dropdown", component_property="options"),
+    Output("question-dropdown", "options"),
     # NOTE value is output here
-    Output(component_id="question-dropdown", component_property="value"),
+    Output("question-dropdown", "value"),
     # we want to update the default question based on the poll selected
     Input("poll-dropdown", "value"),
     # we also want to update the default question when a new country is selected
     Input("country-dropdown", "value"),
 )
-def update_question_options(poll_dropdown_value, country_dropdown_value):
+def update_question_options_and_value(poll_dropdown_value, country_dropdown_value):
 
+    #NOTE This section is the view callback context, #TODO delete
+    ctx = dash.callback_context
+    print("ctx.triggered")
+    print(ctx.triggered)
+    print("ctx.triggered[0]")
+    print(ctx.triggered[0])
+    trigger_id = ctx.triggered[0]["prop_id"].split(".")[0]
+    print("trigger_id")
+    print(trigger_id)
+    # ---------------------------------------------------- #
     question_options = [
         # this part returns the question text based on the provided question id
         {
@@ -661,67 +700,32 @@ def update_question_options(poll_dropdown_value, country_dropdown_value):
 
     # return question_options, question_options[0]["value"]
 
-
-# update question-label above bar-graph based on question-dropdown selection
-@app.callback(
-    Output(component_id="question-label", component_property="children"),
-    Input(component_id="question-dropdown", component_property="value"),
-)
-def update_question_label(question_dropdown_value):
-    question_label = "Question text: {}".format(
-        r.loc[r.question_id == question_dropdown_value, "question_text"].max()
-    )
-    return question_label
-
-
 # ------ update xtab1 options based on question dropdown ----- #
 @app.callback(
-    Output(component_id="xtab1-dropdown", component_property="options"),
+    Output("question-label", "children"),
+    Output("xtab1-dropdown", "options"),
+    Output("xtab1-label", "style"),
+    Output("xtab1-dropdown", "style"),
     # NOTE: deactivate second crosstab for now
     # Output(component_id="xtab2-dropdown", component_property="options"),
     Input("question-dropdown", "value"),
 )
-def update_xtab1_options(dropdown_value):
+def update_xtab1_options_and_visibility(question_dropdown_value):
     """update xtab1 options based on question dropdown"""
 
+    # this places the question text above the bar graph
+    question_label = "Question text: {}".format(
+        r.loc[r.question_id == question_dropdown_value, "question_text"].max()
+    )
     xtab1_options = [
         {
             "label": "{value:{fill}{align}}".format(value=x, fill=" ", align="<"),
             "value": x,
         }
-        for x in r[r.question_id == dropdown_value].xtab1_var.unique()
+        for x in r[r.question_id == question_dropdown_value].xtab1_var.unique()
     ]
-
-    # NOTE: deactivate this for now
-    # xtab2_options = [
-    #     {"label": x, "value": x}
-    #     for x in r[r.question_id == dropdown_value].xtab2_var.unique()
-    # ]
-
-    return xtab1_options
-    # return xtab1_options, xtab2_options
-
-
-@app.callback(
-    Output(component_id="xtab1-dropdown", component_property="value"),
-    Input("country-dropdown", "value"),
-    Input("poll-dropdown", "value"),
-    Input("question-dropdown", "value"),
-)
-def set_xtab1_value(country, poll, question):
-    """set xtab1 value to default value if country, poll, question changed"""
-    return "-"
-
-
-# ------ update xtab1 options based on question dropdown ----- #
-@app.callback(
-    Output(component_id="xtab1-label", component_property="style"),
-    Output(component_id="xtab1-dropdown", component_property="style"),
-    # Output(component_id="xtab1-dropdown", component_property="value"),
-    Input("xtab1-dropdown", "options"),
-)
-def show_hide_xtab(xtab1_dropdown_options):
-    """change visibilty of xtab1-dropdown based on xtab1-card"""
+    
+    # define the style for xtab1-label (if relevant)
     label_style = {
         "font-weight": "bold",
         "text-align": "center",
@@ -729,10 +733,47 @@ def show_hide_xtab(xtab1_dropdown_options):
         "fontSize": 20,
         "display": "block",
     }
-    if len(xtab1_dropdown_options) > 1:
-        return label_style, {"display": "block"}
+    
+    
+    if len(xtab1_options) > 1:
+        return question_label, xtab1_options, label_style, {"display": "block"}
     else:
-        return {"display": "none"}, {"display": "none"}
+        return question_label, xtab1_options, {"display": "none"}, {"display": "none"}
+
+# # ------ change visibility of xtab1 components based on question dropdown ----- #
+# @app.callback(
+#     Output("xtab1-label", "style"),
+#     Output("xtab1-dropdown", "style"),
+#     # Output(component_id="xtab1-dropdown", component_property="value"),
+#     Input("xtab1-dropdown", "options"),
+# )
+# def show_hide_xtab(xtab1_dropdown_options):
+#     """change visibilty of xtab1-dropdown based on xtab1-card"""
+#     label_style = {
+#         "font-weight": "bold",
+#         "text-align": "center",
+#         "color": BLUE,
+#         "fontSize": 20,
+#         "display": "block",
+#     }
+#     if len(xtab1_dropdown_options) > 1:
+#         return label_style, {"display": "block"}
+#     else:
+#         return {"display": "none"}, {"display": "none"}
+    
+#NOTE MAYBE couuld combine with below callback. actually no - maybe 
+@app.callback(
+    Output("xtab1-dropdown", "value"),
+    Input("country-dropdown", "value"),
+    Input("poll-dropdown", "value"),
+    Input("question-dropdown", "value"),
+)
+def set_default_xtab1_value(country, poll, question):
+    """set xtab1 value to default value if country, poll, question changed"""
+    return "-"
+
+
+
 
 
 # -------------------------------------------------------- #
@@ -743,17 +784,17 @@ def show_hide_xtab(xtab1_dropdown_options):
 # update bubble chart based on country dropdown, crosstab variable, crosstab value
 @app.callback(
     # output the relevent xtab1_val based on selected xtab1_var
-    Output(component_id="xtab1-bubble-dropdown", component_property="options"),
+    Output("xtab1-bubble-dropdown", "options"),
     # output the relevent xtab1_val based on selected xtab1_var
-    Output(component_id="xtab1_val-bubble-dropdown", component_property="options"),
+    Output("xtab1_val-bubble-dropdown", "options"),
     # country input will be list
-    Output(component_id="bubble-graph", component_property="figure"),
+    Output("bubble-graph", "figure"),
     # # this is to update xtab1_val-bubble-dropdown VALUE based on selected xtab1_var
     # Output(component_id="xtab1_val-bubble-dropdown", component_property="value"),
-    Input(component_id="country-dropdown-2", component_property="value"),
+    Input("country-dropdown-2", "value"),
     # xtab1-bubble-dropdown input will be a string
-    Input(component_id="xtab1-bubble-dropdown", component_property="value"),
-    Input(component_id="xtab1_val-bubble-dropdown", component_property="value"),
+    Input("xtab1-bubble-dropdown", "value"),
+    Input("xtab1_val-bubble-dropdown", "value"),
 )
 def update_bubble_chart(
     countries,
@@ -790,32 +831,9 @@ def update_bubble_chart(
 
     return xtab1_options, xtab1_val_options, bubble
 
-
-# update bar-bubble-graph-click based on clickData from bubble-graph
-@app.callback(
-    Output(component_id="country-dropdown", component_property="value"),
-    Output(component_id="poll-dropdown", component_property="value"),
-    Input(component_id="bubble-graph", component_property="clickData"),
-    # this prevents the callback from loading when the app starts
-    prevent_initial_call=True,
-)
-def update_bar_graph_with_click(clickData):
-    print(
-        clickData,
-    )
-    # if a bubble is clicked, update the bar chart to the side. else, update the bubble chart with an empty dict
-    if clickData is None:
-        # raise PreventUpdate
-        pass
-    else:
-        poll_id = clickData["points"][0]["customdata"][0]
-        # country = r.loc[r.poll_id == poll_id, "country"].max()
-        country = clickData["points"][0]["customdata"][2]
-        return country, poll_id
-
-
-# ----------- rewrite callbacks for bubble tab ----------- #
-
+# -------------------------------------------------------- #
+#                      other callbacks                     #
+# -------------------------------------------------------- #
 # callback to download responses_merged.csv
 @app.callback(
     Output("download-dataframe-csv", "data"),

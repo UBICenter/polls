@@ -5,6 +5,17 @@ from py import preprocess_data as ppd
 import ubicenter
 import numpy as np
 import textwrap
+from datetime import datetime
+
+# Define UBI Center colors
+BLUE = "#1976D2"
+DARK_BLUE = "#1565C0"
+LIGHT_BLUE = "#90CAF9"
+GRAY = "#BDBDBD"
+BARELY_BLUE = "#E3F2FD"
+# Define other colors
+VERY_DARK_GRAY = "#333333"
+DARK_GRAY = "#444444"
 
 VARIABLE_MAPPING = {
     "Poll ID": "poll_id",
@@ -69,23 +80,17 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
 
     # create a list comprehsion to get the response labels in the same order as the response order
     top_labels = [
-        x for x in target_responses.sort_values(by=["response_order"]).response_shortened.unique()
+        x
+        for x in target_responses.sort_values(
+            by=["response_order"]
+        ).response_shortened.unique()
     ]
     # wrap top_labels to a manageable width
     def wrap_labels(labels, n):
         return [
-            "<br>".join(textwrap.wrap(str(x), n, break_long_words=False)) for x in labels
+            "<br>".join(textwrap.wrap(str(x), n, break_long_words=False))
+            for x in labels
         ]
-
-    # Define UBI Center colors
-    BLUE = "#1976D2"
-    DARK_BLUE = "#1565C0"
-    LIGHT_BLUE = "#90CAF9"
-    GRAY = "#BDBDBD"
-    BARELY_BLUE = "#E3F2FD"
-    # Define other colors
-    VERY_DARK_GRAY = "#333333"
-    DARK_GRAY = "#444444"
 
     if len(top_labels) == 6:
         colors = [VERY_DARK_GRAY, DARK_GRAY, GRAY, GRAY, BLUE, DARK_BLUE]
@@ -243,8 +248,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         annotations=annotations,
         margin=dict(l=10, r=10, t=80, b=80),
     )
-    
-    
+
     fig.update_yaxes(automargin=True)
     fig.update_xaxes(automargin=True)
 
@@ -302,12 +306,22 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
         poll_question = poll_question[poll_question.poll_id.isin(poll_ids)]
     if question_ids is not None:
         poll_question = poll_question[poll_question.question_id.isin(question_ids)]
-    # return poll_question
-    # Visualize as a scatter chart.
-    size = (poll_question.sample_size + 1) ** 0.4
+
+    # set arguements that are common accross figures conditionally create by the xtab_split
+
+    # scheck if "Switzerland" is in poll_question.country.unique()
+    switzerland = "Switzerland" in poll_question.country.unique()
+    # the swiss referendum question really thhrows off the chart, so do this weird slightly-less-than-square-root transofrmation
+    size = (poll_question.sample_size + 1) ** 0.4 if switzerland else "sample_size"
     size_max = 30
     opacity = 0.7
-    hover_data = ["poll_id", "question_id", "country","question_text_wrap", "sample_size"]
+    hover_data = [
+        "poll_id",
+        "question_id",
+        "country",
+        "question_text_wrap",
+        "sample_size",
+    ]
 
     if xtab_split:
         variable_mapping_inverse_tmp = variable_mapping_inverse.copy()
@@ -345,6 +359,32 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
             labels=variable_mapping_inverse,
             # trendline="lowess",
         )
+
+    # add line for zero net fav
+    fig.add_hline(
+        y=0,
+        line_width=3,
+        line_dash="dot",
+        line_color=GRAY,
+        annotation_text="Zero net favorability",
+        annotation_position="bottom left",
+    )
+
+    # add shading for post-covid-19 favorability
+    # today = datetime.today().strftime('%Y-%m-%d')
+    # get the maximum visible date
+    max_date = max(fig.full_figure_for_development().layout.xaxis.range)
+    # add rectangle shading for covid-19 pandemic, started with data WHO declaration of covid-19 pandemic on 2020-03-11
+    fig.add_vrect(
+        x0="2020-03-11",
+        x1=max_date,
+        annotation_text="COVID-19 Pandemic",
+        annotation_position="top left",
+        #   annotation=dict(font_size=20, font_family="Roboto"),
+        fillcolor=BARELY_BLUE,
+        opacity=0.25,
+        line_width=0,
+    )
 
     fig.update_layout(
         clickmode="event+select",
