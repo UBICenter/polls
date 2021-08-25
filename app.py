@@ -577,37 +577,55 @@ app.layout = html.Div(
 
 # -------------------------------------------------------- #
 #                     Assign Bar Graph module callbacks                     #
-# -------------------------------------------------------- #
-# TODO make conditional callback based on ctxctx
-# @app.callback(
-#     Output("poll-dropdown", "value"),
-#     Output("question-dropdown", "value"),
-#     Output("xtab1-dropdown", "value"),
-# )
-# update bar-bubble-graph-click based on clickData from bubble-graph
+# -------------------------------------------------------- 
+# update bar graph dropdown selections based on clickData from bubble-graph
 @app.callback(
-    Output(component_id="country-dropdown", component_property="value"),
-    Output(component_id="poll-dropdown", component_property="value"),
+    Output("country-dropdown", "value"),
+    Output("poll-dropdown", "value"),
+    Output("question-dropdown", "value"),
     #TODO: output should include selected question
-    Input(component_id="bubble-graph", component_property="clickData"),
+    Input("bubble-graph", "clickData"),
+    Input("country-dropdown", "value"),
+    Input("poll-dropdown", "value"),
+    Input("question-dropdown", "value"),
     # this prevents the callback from loading when the app starts
     prevent_initial_call=True,
 )
-def update_bar_graph_with_click(clickData):
-    print(
-        clickData,
-    )
-    # if a bubble is clicked, update the bar chart to the side. else, update the bubble chart with an empty dict
-    if clickData is None:
-        # raise PreventUpdate
-        pass
-    else:
-        # the hover_data arg of the bubble chart should be a list - ["poll_id", "question_id", "country","question_text_wrap", "sample_size"]
-        poll_id = clickData["points"][0]["customdata"][0]
-        question_id = clickData["points"][0]["customdata"][1]
-        # country = r.loc[r.poll_id == poll_id, "country"].max()
-        country = clickData["points"][0]["customdata"][2]
-        return country, poll_id
+def update_bar_graph_selections_with_click(clickData, country_value_in, poll_value_in, question_value_in):
+    #NOTE This section is the view callback context, #TODO delete
+    ctx = dash.callback_context
+    print("update_bar_graph_selections_with_click")
+    prop_id = ctx.triggered[0]["prop_id"]
+    print("    prop_id "+str(prop_id) + " was triggered")
+    trigger_id = ctx.triggered[0]["prop_id"].split(".")[0]
+    print("    trigger_id " + str(trigger_id) + " was triggered")
+    if prop_id == "bubble-graph.clickData":
+        country_value_out = clickData["points"][0]["customdata"][2]
+        poll_value_out = clickData["points"][0]["customdata"][0]
+        question_value_out = clickData["points"][0]["customdata"][1]
+        return country_value_out, poll_value_out, question_value_out
+    elif prop_id == "country-dropdown.value":
+        country_value_out = country_value_in
+        
+        # subset polls based on selected country
+        poll_ids_sorted = r[r.country == country_value_in].sort_values("date", ascending=False).poll_id.unique()
+        # populate poll-dropdown value with most recent poll as default
+        poll_value_out = poll_ids_sorted[0]
+        
+        # populate first question from poll as default
+        question_value_out=r[r.poll_id == poll_value_out].question_id.unique()[0]
+        
+        return country_value_out, poll_value_out, question_value_out
+    elif prop_id == "poll-dropdown.value":
+        country_value_out = country_value_in
+        poll_value_out = poll_value_in
+        question_value_out=r[r.poll_id == poll_value_out].question_id.unique()[0]
+        
+        return country_value_out, poll_value_out, question_value_out
+    
+
+
+""" [{'prop_id': 'bubble-graph.clickData', 'value': {'points': [{'curveNumber': 12, 'pointNumber': 0, 'pointIndex': 0, 'x': '2016-12-31', 'y': 17, 'marker.size': 19.573472545005718, 'customdata': [36, 15, 'Poland', 'Some countries are curre....?', 1694]}]}}] """
 
 #NOTE this one is probabably fine as is
 @app.callback(
@@ -619,6 +637,7 @@ def update_bar_graph_with_click(clickData):
 )
 def return_bar_graph(poll, question, xtab1):
 
+    #NOTE debugging here
     # if not xtab selected then choose default value
     if (xtab1 is None) or (xtab1 == []):
         xtab1 = "-"
@@ -628,6 +647,7 @@ def return_bar_graph(poll, question, xtab1):
     )
 
     return bar
+
 
 
 # ------ update poll, question, crosstab options based on country dropdown ----- #
@@ -659,7 +679,7 @@ def update_poll_options(country_dropdown_value):
 @app.callback(
     Output("question-dropdown", "options"),
     # NOTE value is output here
-    Output("question-dropdown", "value"),
+    # Output("question-dropdown", "value"),
     # we want to update the default question based on the poll selected
     Input("poll-dropdown", "value"),
     # we also want to update the default question when a new country is selected
@@ -667,15 +687,7 @@ def update_poll_options(country_dropdown_value):
 )
 def update_question_options_and_value(poll_dropdown_value, country_dropdown_value):
 
-    #NOTE This section is the view callback context, #TODO delete
-    ctx = dash.callback_context
-    print("ctx.triggered")
-    print(ctx.triggered)
-    print("ctx.triggered[0]")
-    print(ctx.triggered[0])
-    trigger_id = ctx.triggered[0]["prop_id"].split(".")[0]
-    print("trigger_id")
-    print(trigger_id)
+    
     # ---------------------------------------------------- #
     question_options = [
         # this part returns the question text based on the provided question id
@@ -694,11 +706,11 @@ def update_question_options_and_value(poll_dropdown_value, country_dropdown_valu
                 "value": "",
             }
         ]
+    return question_options
+    # NOTE commented out code below is only for if we still include the question-dropdown value in the column
+    # default_question = question_options[0]["value"] if question_options else None
+    # return question_options, default_question
 
-    default_question = question_options[0]["value"] if question_options else None
-    return question_options, default_question
-
-    # return question_options, question_options[0]["value"]
 
 # ------ update xtab1 options based on question dropdown ----- #
 @app.callback(
