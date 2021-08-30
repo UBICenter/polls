@@ -32,6 +32,8 @@ def get_data(gid, f):
         .reset_index()
         .rename(columns=VARIABLE_MAPPING)
     )
+    # strip any whitespace from the text
+    temp.columns = temp.columns.str.strip()
     temp.to_csv("data/" + f + ".csv", index=False)
 
 
@@ -40,3 +42,4 @@ get_data(1080881848, "polls")
 get_data(1983382452, "pollsters")
 get_data(109990425, "questions")
 get_data(1152857355, "favorability")
+get_data(935642594, "xtab_order")

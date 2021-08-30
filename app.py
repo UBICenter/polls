@@ -80,7 +80,7 @@ barcard_bubble_click = dbc.Card(
 
 # create defualt bubble chart
 bubble_fig = visualize.bubble_chart(
-    responses=r,
+    responses=r, poll_ids=poll_ids, question_ids=question_ids,
 )
 
 bubble_dropdown_deck = dbc.CardDeck(

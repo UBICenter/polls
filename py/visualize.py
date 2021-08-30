@@ -2,7 +2,6 @@
 from dash_html_components.Label import Label
 import plotly.express as px
 import plotly.graph_objects as go
-from py import preprocess_data as ppd
 import ubicenter
 import numpy as np
 import textwrap
@@ -161,14 +160,16 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         top_labels = wrap_labels(top_labels, 15)
 
     # ------------------ prepare inputs ------------------ #
+    # create list of unique xtab1_vals ordered by val_order
+    xtab1_vals = target_responses.sort_values(by=["val_order"]).xtab1_val.unique()
     # create list of lists of the percent_norm of each response in order of response_order
     x_data = [target_responses[target_responses.xtab1_val == val]
             .sort_values(by=["response_order"])
-            .percent_norm.values for val in target_responses.xtab1_val.unique()
+            .percent_norm.values for val in xtab1_vals
     ]
 
     # create list of y_data corresponding to the xtab1_val
-    y_data = target_responses.xtab1_val.unique()
+    y_data = xtab1_vals
     
     net_fav_df = target_responses.groupby(['xtab1_val'])['pct_fav'].sum()
     
@@ -343,11 +344,9 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
     
     source = "Source: {}. ({}). Retrieved from <br> <a href='blank'>{}</a>".format(pollster, date, url)
     source_text = "Source: {}, [<i>Country: {}</i>]. ({}). Retrieved from ".format(pollster,country, date)
-    # url_wrapped = wrap_label(url, 30)
     source_url="<br><a href='blank'>{}</a>".format(url)
     
     source = wrap_string(source_text, 100) + source_url
-    # source = wrap_label(source, 15)
     
     # add annotation for data source
     fig.add_annotation(
@@ -438,7 +437,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
     # set arguements that are common accross figures conditionally create by the xtab_split
 
     # scheck if "Switzerland" is in poll_question.country.unique()
-    switzerland = "Switzerland" in poll_question.country.unique()
+    switzerland = "Switzerland" in target_data.country.unique()
     # the swiss referendum question really thhrows off the chart, so do this weird slightly-less-than-square-root transofrmation
     size = (poll_question.sample_size + 1) ** 0.4 if switzerland else "sample_size"
     size_max = 30
@@ -480,7 +479,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
             color="country",
             # text="pollster_wrap",
             # size=np.log(poll_question.sample_size+1),
-            size=size,
+            size="sample_size",
             size_max=size_max,
             opacity=opacity,
             hover_data=hover_data,
