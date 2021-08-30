@@ -1,4 +1,5 @@
 # import ubicenter
+from dash_html_components.Label import Label
 import plotly.express as px
 import plotly.graph_objects as go
 from py import preprocess_data as ppd
@@ -6,6 +7,7 @@ import ubicenter
 import numpy as np
 import textwrap
 from datetime import datetime
+import pandas as pd
 
 # Define UBI Center colors
 BLUE = "#1976D2"
@@ -16,6 +18,12 @@ BARELY_BLUE = "#E3F2FD"
 # Define other colors
 VERY_DARK_GRAY = "#333333"
 DARK_GRAY = "#444444"
+DARK_GRAY = "#A9A9A9"
+LIGHT_GRAY = "#999999"
+VERY_LIGHT_GRAY = "#CCCCCC"
+BLACK = "#000000"
+WHITE_SMOKE = "#F5F5F5"
+SILVER = "#C0C0C0"
 
 VARIABLE_MAPPING = {
     "Poll ID": "poll_id",
@@ -58,9 +66,11 @@ def format_fig(fig, show=True):
         return fig
 
 
-# alternative version of the above function, with a different means of making plots
+
+
 def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
-    # --------------- copied from visualize.py --------------- #
+    """ returns bar graph """
+    # ------------------ subset the data ----------------- #
     if question_id is None:
         target_questions = responses[responses.poll_id == poll_id].question_id.unique()
         # check if there's only one question for the poll, if there's more than 1 --
@@ -74,66 +84,101 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         & (responses.xtab1_var == crosstab_variable)
     ]
 
-    def wrap_label(text, n):
-        """wraps text to multiple line string"""
-        return "<br>".join(textwrap.wrap(str(text), n, break_long_words=False))
 
     # create a list comprehsion to get the response labels in the same order as the response order
-    top_labels = [
-        x
-        for x in target_responses.sort_values(
+
+    
+    top_labels = target_responses.sort_values(
             by=["response_order"]
         ).response_shortened.unique()
-    ]
+    
+    
+    
+    resp_df=target_responses.sort_values(
+            by=["response_order"])[["response_shortened","percent_norm",	
+    "favorability",	
+    "response_order",	
+    "pct_fav",]]
+
+    def wrap_string(text, n):
+        """add plotly-compliant linebreaks to a string without breaking words across lines
+
+        Parameters
+        ----------
+        text : str
+            a string that you want to format
+        n : int
+            number of characters after which you want to add a linebreak
+
+        Returns
+        -------
+        string
+            formatted string
+        """        
+        return "<br>".join(textwrap.wrap(str(text), n, break_long_words=False))
+    
     # wrap top_labels to a manageable width
     def wrap_labels(labels, n):
+        """wraps each string in a list to a given length without breaking words across lines using plotly-compliant line breaks
+
+        Parameters
+        ----------
+        labels : list
+            list of strings to format
+        n : int
+            number of characters after which you want to add a linebreak
+
+        Returns
+        -------
+        list
+            list of formatted strings
+        """        
         return [
-            "<br>".join(textwrap.wrap(str(x), n, break_long_words=False))
-            for x in labels
+            wrap_string(label, n) for label in labels
         ]
+    # ---------------------- colors ---------------------- #
+    STRONG_OPP="#777777" 
+    WEAK_OPP="#A9A9A9" 
+    NUETRAL ="#F5F5F5" 
+    WEAK_SUP="#4998E2" 
+    STRONG_SUP="#1565C0"
 
     if len(top_labels) == 6:
-        colors = [VERY_DARK_GRAY, DARK_GRAY, GRAY, GRAY, BLUE, DARK_BLUE]
+        colors = [STRONG_OPP,WEAK_OPP,NUETRAL,NUETRAL,WEAK_SUP,STRONG_SUP]
         top_labels = wrap_labels(top_labels, 7)
     elif len(top_labels) == 5:
-        colors = [VERY_DARK_GRAY, DARK_GRAY, GRAY, BLUE, DARK_BLUE]
+        colors = [STRONG_OPP,WEAK_OPP,NUETRAL,WEAK_SUP,STRONG_SUP]
         top_labels = wrap_labels(top_labels, 7)
     elif len(top_labels) == 4:
-        colors = [VERY_DARK_GRAY, DARK_GRAY, BLUE, DARK_BLUE]
+        colors = [STRONG_OPP,WEAK_OPP,WEAK_SUP,STRONG_SUP]
         top_labels = wrap_labels(top_labels, 10)
     elif len(top_labels) == 3:
-        colors = [DARK_GRAY, GRAY, BLUE]
+        colors= [STRONG_OPP,NUETRAL,STRONG_SUP]
         top_labels = wrap_labels(top_labels, 15)
+
     elif len(top_labels) == 2:
-        colors = [DARK_GRAY, BLUE]
+        colors = [STRONG_OPP,STRONG_SUP]
         top_labels = wrap_labels(top_labels, 15)
 
-    TEXTCOLORS = [
-        "rgb(248, 248, 255)",
-        "rgb(248, 248, 255)",
-        "rgb(248, 248, 255)",
-        "rgb(248, 248, 255)",
-        "rgb(248, 248, 255)",
-    ]
-
+    # ------------------ prepare inputs ------------------ #
     # create list of lists of the percent_norm of each response in order of response_order
-    x_data = [
-        [
-            x
-            for x in target_responses[target_responses.xtab1_val == val]
+    x_data = [target_responses[target_responses.xtab1_val == val]
             .sort_values(by=["response_order"])
-            .percent_norm.values
-        ]
-        for val in target_responses.xtab1_val.unique()
+            .percent_norm.values for val in target_responses.xtab1_val.unique()
     ]
 
+    # create list of y_data corresponding to the xtab1_val
+    y_data = target_responses.xtab1_val.unique()
+    
+    net_fav_df = target_responses.groupby(['xtab1_val'])['pct_fav'].sum()
+    
     # NOTE this updates the figure with an empty fig so the function plays nice with the callbacks
     if len(x_data) < 1:
         return {}
 
-    # create list of y_data corresponding to the xtab1_val
-    y_data = [y for y in target_responses.xtab1_val.unique()]
-
+    # ---------------------------------------------------- #
+    #                 actual graph creation                #
+    # ---------------------------------------------------- #
     fig = go.Figure()
 
     # this is likely an artifact from constructing the dataset in the plotly example
@@ -144,9 +189,19 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
                     x=[xd[i]],
                     y=[yd],
                     orientation="h",
+                    text = ["{:.0%}".format(xd[i])], # NOTE test if we can do auto text to label the graphs 
+                    textposition = 'inside', # NOTE test if we can do auto text to label the graphs
+                    legendgroup=top_labels[i], # NOTE this might not work with this index
+                    insidetextanchor = "middle",
+                    insidetextfont = dict(
+                        family="Arial", 
+                        size=14, 
+                        # color="rgb(248, 248, 255)"
+                        ),
                     marker=dict(
                         color=colors[i], line=dict(color="rgb(248, 248, 249)", width=1)
                     ),
+                    width = 0.4 if len(x_data) == 1 else ()
                 )
             )
 
@@ -172,7 +227,10 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
     )
 
     annotations = []
-
+    
+    # ---------------------------------------------------- #
+    #                 Label the bar graphs                 #
+    # ---------------------------------------------------- #
     for yd, xd in zip(y_data, x_data):
         # labeling the y-axis
         annotations.append(
@@ -182,12 +240,27 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
                 x=0.14,
                 y=yd,
                 xanchor="right",
-                text=wrap_label(str(yd), 15),
+                text=wrap_string(str(yd), 15),
                 font=dict(family="Arial", size=14, color="rgb(67, 67, 67)"),
                 showarrow=False,
                 align="right",
             )
         )
+        # add the net favorability for each bar
+        annotations.append(
+            dict(
+                xref="x",
+                yref="y",
+                x=1.075,
+                y=yd,
+                xanchor="right",
+                text='<b>{fav:+.0f}</b>'.format(fav=net_fav_df[yd]),
+                font=dict(family="Arial", size=18, color="rgb(67, 67, 67)"),
+                showarrow=False,
+                align="right",
+            )
+        )
+        
         # labeling the first percentage of each bar (x_axis)
         annotations.append(
             dict(
@@ -196,7 +269,6 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
                 x=xd[0] / 2,
                 y=yd,
                 text="{:.0%}".format(xd[0]),
-                # text=str(xd[0]) + '%',
                 font=dict(family="Arial", size=14, color="rgb(248, 248, 255)"),
                 showarrow=False,
             )
@@ -208,7 +280,8 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
                     xref="x",
                     yref="paper",
                     x=xd[0] / 2,
-                    y=1.1,
+                    y=1.15,
+
                     text=top_labels[0],
                     font=dict(family="Arial", size=14, color="rgb(67, 67, 67)"),
                     showarrow=False,
@@ -216,19 +289,6 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
             )
         space = xd[0]
         for i in range(1, len(xd)):
-            # labeling the rest of percentages for each bar (x_axis)
-            annotations.append(
-                dict(
-                    xref="x",
-                    yref="y",
-                    x=space + (xd[i] / 2),
-                    y=yd,
-                    text="{:.0%}".format(xd[i]),
-                    # text=str(xd[i]) + '%',
-                    font=dict(family="Arial", size=14, color="rgb(248, 248, 255)"),
-                    showarrow=False,
-                )
-            )
             # labeling the Likert scale
             if yd == y_data[-1]:
                 annotations.append(
@@ -236,26 +296,94 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
                         xref="x",
                         yref="paper",
                         x=space + (xd[i] / 2),
-                        y=1.1,
+                        y=1.15,
                         text=top_labels[i],
                         font=dict(family="Arial", size=14, color="rgb(67, 67, 67)"),
                         showarrow=False,
                     )
                 )
             space += xd[i]
-
+    # labeling the END of TOP of y-axis with 'Net'
+    annotations.append(
+        dict(
+            xref="x",
+            yref="paper",
+            x=1.075,
+            y=1.1,
+            xanchor="right",
+            text='<b>Net</b>',
+            font=dict(family="Arial", size=14, color="rgb(67, 67, 67)"),
+            showarrow=False,
+            align="right",
+        )
+    )
+    
+    
+    
     fig.update_layout(
         annotations=annotations,
-        margin=dict(l=10, r=10, t=80, b=80),
+        margin=dict(l=10, r=20, t=110, b=80),
     )
 
     fig.update_yaxes(automargin=True)
     fig.update_xaxes(automargin=True)
+    
+   
+    # -------- format source information at bottom ------- #
+    pollster = target_responses.loc[:,['pollster']].values[0][0] 
+    xtab1_var = target_responses.loc[:,['xtab1_var']].values[0][0]  
+    date = target_responses.loc[:,['date']].values[0][0]
+    date = pd.to_datetime(date).strftime("%B %Y")
+    # date = target_responses.loc[:,['date']].values[0][0].datetime_as_string(t, unit='D')
+    url = target_responses.loc[:,['Link']].values[0][0]  
+    country = target_responses.loc[:,['country']].values[0][0]
+    
 
+
+    
+    source = "Source: {}. ({}). Retrieved from <br> <a href='blank'>{}</a>".format(pollster, date, url)
+    source_text = "Source: {}, [<i>Country: {}</i>]. ({}). Retrieved from ".format(pollster,country, date)
+    # url_wrapped = wrap_label(url, 30)
+    source_url="<br><a href='blank'>{}</a>".format(url)
+    
+    source = wrap_string(source_text, 100) + source_url
+    # source = wrap_label(source, 15)
+    
+    # add annotation for data source
+    fig.add_annotation(
+        xref="paper",
+        yref="paper",
+        xanchor="left",
+        # The arrow head will be 25% along the x axis, starting from the left
+        x=.15,
+        # The arrow head will be 40% along the y axis, starting from the bottom
+        y=-0.175,
+        text=source,
+        font=dict(family="Arial", size=12, color="rgb(67, 67, 67)"),
+        align='left',
+        # arrowhead=2,
+        showarrow=False,
+    )
+    
+    # ------------------ add title text ------------------ #
+    if crosstab_variable != "-":
+        title='Favorability by ' + str(xtab1_var).lower()
+    if crosstab_variable == "-":
+        title='Favorability among all respondents'
+    
+    fig.update_layout( title={
+        'text': title,
+        # 'xanchor': 'center',
+        'x': 0,
+        'xref': 'paper',
+        'xanchor': "left",
+        # 'yanchor': 'top'
+        },
+        font= dict(family="Arial", size=20, color="rgb(67, 67, 67)"),
+    )
     # fig.show()
     # NOTE: use format_fig as defined above instead of ubicenter.format_fig
-    return format_fig(fig, show=False)
-
+    return format_fig(fig, show=False).update_layout(autosize=True)
 
 # Function to create a bubble chart for % favorability across a set of poll/question pairs.
 def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
@@ -333,7 +461,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
             color="country",
             text="pollster_wrap",
             # size=np.log(poll_question.sample_size+1),
-            size="sample_size",
+            size=size,
             opacity=opacity,
             # size_max=size_max,
             hover_data=hover_data,
@@ -368,22 +496,6 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
         line_color=GRAY,
         annotation_text="Zero net favorability",
         annotation_position="bottom left",
-    )
-
-    # add shading for post-covid-19 favorability
-    # today = datetime.today().strftime('%Y-%m-%d')
-    # get the maximum visible date
-    max_date = max(fig.full_figure_for_development().layout.xaxis.range)
-    # add rectangle shading for covid-19 pandemic, started with data WHO declaration of covid-19 pandemic on 2020-03-11
-    fig.add_vrect(
-        x0="2020-03-11",
-        x1=max_date,
-        annotation_text="COVID-19 Pandemic",
-        annotation_position="top left",
-        #   annotation=dict(font_size=20, font_family="Roboto"),
-        fillcolor=BARELY_BLUE,
-        opacity=0.25,
-        line_width=0,
     )
 
     fig.update_layout(

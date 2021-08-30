@@ -37,6 +37,8 @@ responses2 = responses2.merge(polls, on="poll_id")
 # )
 # Merge to get question text.
 responses2 = responses2.merge(questions, on="question_id")
+# convert data column to yyyy-mm-dd format
+responses2["date"] = pd.to_datetime(responses2.date, format="%Y-%m-%d")
 # Wrap question text and pollster
 def plotly_wrap(x, length=30):
     return x.str.wrap(length).apply(lambda x: x.replace("\n", "<br>"))

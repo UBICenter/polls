@@ -4,8 +4,8 @@ question_id,response,favorability,response_order,response_shortened
 1,Somewhat oppose,-1,-1,Somewhat oppose
 1,Somewhat support,1,1,Somewhat support
 1,Strongly support,1,2,Strongly support
-2,Somewhat favor,1,1,Somewhat favor
-2,Somewhat oppose,-1,-1,Somewhat oppose
+2,Somewhat favor,1,1,Favor
+2,Somewhat oppose,-1,-1,Oppose
 2,Strongly favor,1,2,Strongly favor
 2,Strongly oppose,-1,-2,Strongly oppose
 3,Neither supportive or unsupportive,0,0,Neither

@@ -46,6 +46,9 @@ def get_unique(df, col, sorted=False):
 def dash_options(df, col):
     return [{"label": i, "value": i} for i in df[col].unique()]
 
+def dash_options(lst, col):
+    return [{"label": i, "value": i} for i in lst]
+
 
 # Get base pathname from an environment variable that CS will provide.
 url_base_pathname = os.environ.get("URL_BASE_PATHNAME", "/")
@@ -158,12 +161,6 @@ bubble_dropdown_deck = dbc.CardDeck(
                             # to be selected by user in dropdown
                             options=[{"label": x, "value": x} for x in xtab1_vals],
                         ),
-                        # dbc.Button(
-                        #     "Apply demographic filter",
-                        #     color="primary",
-                        #     outline=True,
-                        #     block=True
-                        # )
                     ],
                     id="xtab1-bubble-cardbody",  # ID "xtab1-bubble-cardbody"
                 ),
@@ -209,15 +206,6 @@ bubble_input_components = [
     # ---------- filter demographics with these ---------- #
     dbc.Card(
         [
-            # create a header for the card that indicates that the two dropdown options work together as a group
-            # dbc.CardHeader(
-            #     html.H6(
-            #         [
-            #             "Compare polls across selected demographic ",
-            #             dbc.Badge("Optional", color="secondary", className="mr-1"),
-            #         ]
-            #     )
-            # ),
             html.H6(
                 [
                     "Compare polls across selected demographic: ",
@@ -272,12 +260,6 @@ bubble_input_components = [
                         # to be selected by user in dropdown
                         options=[{"label": x, "value": x} for x in xtab1_vals],
                     ),
-                    # dbc.Button(
-                    #     "Apply demographic filter",
-                    #     color="primary",
-                    #     outline=True,
-                    #     block=True
-                    # )
                 ],
                 id="xtab1-bubble-cardbody",  # ID "xtab1-bubble-cardbody"
             ),
@@ -313,12 +295,6 @@ bar_col_components = [
         html.Label(
             ["Question:"],
             id="question-label",
-            style={
-                # "font-weight": "bold",
-                # "text-align": "center",
-                # "color": BLUE,
-                # "fontSize": 12,
-            },
         ),
         md={"width": 6, "offset": 2},
     ),
@@ -594,11 +570,7 @@ app.layout = html.Div(
 def update_bar_graph_selections_with_click(clickData, country_value_in, poll_value_in, question_value_in):
     #NOTE This section is the view callback context, #TODO delete
     ctx = dash.callback_context
-    print("update_bar_graph_selections_with_click")
     prop_id = ctx.triggered[0]["prop_id"]
-    print("    prop_id "+str(prop_id) + " was triggered")
-    trigger_id = ctx.triggered[0]["prop_id"].split(".")[0]
-    print("    trigger_id " + str(trigger_id) + " was triggered")
     if prop_id == "bubble-graph.clickData":
         country_value_out = clickData["points"][0]["customdata"][2]
         poll_value_out = clickData["points"][0]["customdata"][0]
@@ -624,13 +596,9 @@ def update_bar_graph_selections_with_click(clickData, country_value_in, poll_val
         return country_value_out, poll_value_out, question_value_out
     
 
-
-""" [{'prop_id': 'bubble-graph.clickData', 'value': {'points': [{'curveNumber': 12, 'pointNumber': 0, 'pointIndex': 0, 'x': '2016-12-31', 'y': 17, 'marker.size': 19.573472545005718, 'customdata': [36, 15, 'Poland', 'Some countries are curre....?', 1694]}]}}] """
-
 #NOTE this one is probabably fine as is
 @app.callback(
     Output("bar-graph", "figure"),
-    # Input(component_id="country-dropdown", component_property="value"),
     Input("poll-dropdown", "value"),
     Input("question-dropdown", "value"),
     Input("xtab1-dropdown", "value"),
@@ -743,35 +711,15 @@ def update_xtab1_options_and_visibility(question_dropdown_value):
         "text-align": "center",
         "color": BLUE,
         "fontSize": 20,
-        "display": "block",
+        # "display": "block",
     }
-    
     
     if len(xtab1_options) > 1:
         return question_label, xtab1_options, label_style, {"display": "block"}
     else:
         return question_label, xtab1_options, {"display": "none"}, {"display": "none"}
 
-# # ------ change visibility of xtab1 components based on question dropdown ----- #
-# @app.callback(
-#     Output("xtab1-label", "style"),
-#     Output("xtab1-dropdown", "style"),
-#     # Output(component_id="xtab1-dropdown", component_property="value"),
-#     Input("xtab1-dropdown", "options"),
-# )
-# def show_hide_xtab(xtab1_dropdown_options):
-#     """change visibilty of xtab1-dropdown based on xtab1-card"""
-#     label_style = {
-#         "font-weight": "bold",
-#         "text-align": "center",
-#         "color": BLUE,
-#         "fontSize": 20,
-#         "display": "block",
-#     }
-#     if len(xtab1_dropdown_options) > 1:
-#         return label_style, {"display": "block"}
-#     else:
-#         return {"display": "none"}, {"display": "none"}
+
     
 #NOTE MAYBE couuld combine with below callback. actually no - maybe 
 @app.callback(
