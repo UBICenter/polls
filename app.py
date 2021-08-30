@@ -36,11 +36,7 @@ xtab2_vars = r.xtab2_var.unique()
 countries = sorted(r.country.unique().tolist())
 
 
-def get_unique(df, col, sorted=False):
-    if sorted:
-        return sorted(df[col].unique())
-    else:
-        return df[col].unique()
+
 
 
 def dash_options(df, col):
@@ -68,19 +64,12 @@ application = app.server
 # server = app.server
 
 # ------------ create cards to contain charts ------------ #
-barcard_bubble_click = dbc.Card(
-    dcc.Graph(
-        id="bar-graph-bubble-click",  # ID "bar-graph-bubble-click"
-        figure={},
-        config={"displayModeBar": False},
-    ),
-    body=True,
-    color="info",
-)
 
 # create defualt bubble chart
 bubble_fig = visualize.bubble_chart(
-    responses=r, poll_ids=poll_ids, question_ids=question_ids,
+    responses=r, 
+    # poll_ids=poll_ids, 
+    # question_ids=question_ids,
 )
 
 bubble_dropdown_deck = dbc.CardDeck(
@@ -176,6 +165,7 @@ bubble_graph_component = (
         id="bubble-graph",  # ID "bubble-graph"
         figure=bubble_fig,
         config={"displayModeBar": False},
+        responsive=True,
     ),
 )
 
@@ -540,10 +530,6 @@ app.layout = html.Div(
                             "font-family": "Roboto",
                         },
                     ),
-                    width={
-                        "size": "auto",
-                        # "offset": 2
-                    },
                     md={"size": 8, "offset": 1},
                 ),
             ]

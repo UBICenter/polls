@@ -202,7 +202,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
                     marker=dict(
                         color=colors[i], line=dict(color="rgb(248, 248, 249)", width=1)
                     ),
-                    width = 0.4 if len(x_data) == 1 else ()
+                    width = 0.4 if len(y_data) == 1 else ()
                 )
             )
 
@@ -373,9 +373,9 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
     fig.update_layout( title={
         'text': title,
         # 'xanchor': 'center',
-        'x': 0,
-        'xref': 'paper',
-        'xanchor': "left",
+        'x': 0.55,
+        # 'xref': 'paper',
+        'xanchor': "center",
         # 'yanchor': 'top'
         },
         font= dict(family="Arial", size=20, color="rgb(67, 67, 67)"),
@@ -437,7 +437,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
     # set arguements that are common accross figures conditionally create by the xtab_split
 
     # scheck if "Switzerland" is in poll_question.country.unique()
-    switzerland = "Switzerland" in target_data.country.unique()
+    switzerland = "Switzerland" in poll_question.country.unique()
     # the swiss referendum question really thhrows off the chart, so do this weird slightly-less-than-square-root transofrmation
     size = (poll_question.sample_size + 1) ** 0.4 if switzerland else "sample_size"
     size_max = 30
@@ -471,6 +471,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
         fig.update_layout(title=xtab1_val)
         # fig.add_hline(y=0, line_color="red")
 
+    # this is also our default map when you first run the script
     else:
         fig = px.scatter(
             poll_question,
@@ -479,7 +480,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
             color="country",
             # text="pollster_wrap",
             # size=np.log(poll_question.sample_size+1),
-            size="sample_size",
+            size=size,
             size_max=size_max,
             opacity=opacity,
             hover_data=hover_data,
