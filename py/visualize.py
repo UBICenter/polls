@@ -52,11 +52,13 @@ variable_mapping_inverse["pct_fav"] = "% favorability"
 def format_fig(fig, show=True):
     CONFIG = {"displayModeBar": False}
     ubicenter.add_ubi_center_logo(fig)
-    fig.update_xaxes(title_font=dict(size=16, color="black"), tickfont={"size": 14})
-    fig.update_yaxes(title_font=dict(size=16, color="black"), tickfont={"size": 14})
+    fig.update_xaxes(title_font=dict(
+        size=16, color="black"), tickfont={"size": 14})
+    fig.update_yaxes(title_font=dict(
+        size=16, color="black"), tickfont={"size": 14})
     fig.update_layout(
         hoverlabel_align="right",
-        font_family="Roboto",
+        # font_family="Arial",
         title_font_size=20,
         plot_bgcolor="white",
         paper_bgcolor="white",
@@ -71,7 +73,8 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
     """returns bar graph"""
     # ------------------ subset the data ----------------- #
     if question_id is None:
-        target_questions = responses[responses.poll_id == poll_id].question_id.unique()
+        target_questions = responses[responses.poll_id ==
+                                     poll_id].question_id.unique()
         # check if there's only one question for the poll, if there's more than 1 --
         # tell the user that's not supported
         assert target_questions.size == 1, "Please select a question:"
@@ -160,7 +163,8 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
 
     # ------------------ prepare inputs ------------------ #
     # create list of unique xtab1_vals ordered by val_order
-    xtab1_vals = target_responses.sort_values(by=["val_order"]).xtab1_val.unique()
+    xtab1_vals = target_responses.sort_values(
+        by=["val_order"]).xtab1_val.unique()
     # create list of lists of the percent_norm of each response in order of response_order
     x_data = [
         target_responses[target_responses.xtab1_val == val]
@@ -205,7 +209,8 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
                         # color="rgb(248, 248, 255)"
                     ),
                     marker=dict(
-                        color=colors[i], line=dict(color="rgb(248, 248, 249)", width=1)
+                        color=colors[i], line=dict(
+                            color="rgb(248, 248, 249)", width=1)
                     ),
                     width=0.4 if len(y_data) == 1 else (),
                 )
@@ -288,7 +293,8 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
                     x=xd[0] / 2,
                     y=1.15,
                     text=top_labels[0],
-                    font=dict(family="Arial", size=14, color="rgb(67, 67, 67)"),
+                    font=dict(family="Arial", size=14,
+                              color="rgb(67, 67, 67)"),
                     showarrow=False,
                 )
             )
@@ -303,7 +309,8 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
                         x=space + (xd[i] / 2),
                         y=1.15,
                         text=top_labels[i],
-                        font=dict(family="Arial", size=14, color="rgb(67, 67, 67)"),
+                        font=dict(family="Arial", size=14,
+                                  color="rgb(67, 67, 67)"),
                         showarrow=False,
                     )
                 )
@@ -340,11 +347,8 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
     url = target_responses.loc[:, ["Link"]].values[0][0]
     country = target_responses.loc[:, ["country"]].values[0][0]
 
-    source = "Source: {}. ({}). Retrieved from <br> <a href='blank'>{}</a>".format(
-        pollster, date, url
-    )
-    source_text = "Source: {}, [<i>Country: {}</i>]. ({}). Retrieved from ".format(
-        pollster, country, date
+    source_text = "Country surveyed: {country}<br>Source: {pollster}, {date}. Retrieved from ".format(
+        pollster=pollster, country=country, date=date
     )
     source_url = "<br><a href='blank'>{}</a>".format(url)
 
@@ -436,14 +440,16 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
     if poll_ids is not None:
         poll_question = poll_question[poll_question.poll_id.isin(poll_ids)]
     if question_ids is not None:
-        poll_question = poll_question[poll_question.question_id.isin(question_ids)]
+        poll_question = poll_question[poll_question.question_id.isin(
+            question_ids)]
 
     # set arguements that are common accross figures conditionally create by the xtab_split
 
     # scheck if "Switzerland" is in poll_question.country.unique()
     switzerland = "Switzerland" in poll_question.country.unique()
     # the swiss referendum question really thhrows off the chart, so do this weird slightly-less-than-square-root transofrmation
-    size = (poll_question.sample_size + 1) ** 0.4 if switzerland else "sample_size"
+    size = (poll_question.sample_size +
+            1) ** 0.4 if switzerland else "sample_size"
     size_max = 30
     opacity = 0.7
     hover_data = [

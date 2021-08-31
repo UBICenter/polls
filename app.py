@@ -36,15 +36,21 @@ xtab2_vars = r.xtab2_var.unique()
 countries = sorted(r.country.unique().tolist())
 
 
-
-def list_options(lst, format_string=None):   
-    # returns a list of dicts with keys "label" and "value" that set options in dash components                               
+def list_options(lst, format_string=None):
+    # returns a list of dicts with keys "label" and "value" that set options in dash components
     if format_string:
-        return [{"label": format_string.format(x), "value": x} if x!="-" else {"label": "None", "value": x} for x in lst]
+        return [
+            {"label": format_string.format(x), "value": x}
+            if x != "-"
+            else {"label": "None", "value": x}
+            for x in lst
+        ]
     else:
-        return [{"label": x, "value": x} if x!="-" else {"label": "None", "value": x} for x in lst]
-        
-    
+        return [
+            {"label": x, "value": x} if x != "-" else {"label": "None", "value": x}
+            for x in lst
+        ]
+
 
 # Get base pathname from an environment variable that CS will provide.
 url_base_pathname = os.environ.get("URL_BASE_PATHNAME", "/")
@@ -68,8 +74,6 @@ application = app.server
 # create defualt bubble chart
 bubble_fig = visualize.bubble_chart(
     responses=r,
-    # poll_ids=poll_ids,
-    # question_ids=question_ids,
 )
 
 bubble_dropdown_deck = dbc.CardDeck(
@@ -126,7 +130,6 @@ bubble_dropdown_deck = dbc.CardDeck(
                             id="xtab1-bubble-dropdown",  # ID         "xtab1-bubble-dropdown"
                             multi=False,
                             value="-",
-                            # create a list of dicts of states and their labels
                             # to be selected by user in dropdown
                             options=list_options(xtab1_vars),
                         ),
@@ -146,7 +149,6 @@ bubble_dropdown_deck = dbc.CardDeck(
                             id="xtab1_val-bubble-dropdown",  # ID "xtab1_val-bubble-dropdown"
                             multi=False,
                             value="-",
-                            # create a list of dicts of states and their labels
                             # to be selected by user in dropdown
                             options=list_options(xtab1_vals),
                         ),
@@ -225,7 +227,6 @@ bubble_input_components = [
                         id="xtab1-bubble-dropdown",  # ID         "xtab1-bubble-dropdown"
                         multi=False,
                         value="-",
-                        # create a list of dicts of states and their labels
                         # to be selected by user in dropdown
                         options=list_options(xtab1_vars),
                     ),
@@ -245,7 +246,6 @@ bubble_input_components = [
                         id="xtab1_val-bubble-dropdown",  # ID "xtab1_val-bubble-dropdown"
                         multi=False,
                         value="-",
-                        # create a list of dicts of states and their labels
                         # to be selected by user in dropdown
                         options=list_options(xtab1_vals),
                     ),
@@ -263,7 +263,10 @@ bubble_big_card = dbc.Card(
         dbc.CardHeader(html.H5("Compare Across Polls")),
         dbc.CardBody(
             [
-                html.P("Configure the below options to filter the bubble chart:"),
+                html.P(
+                    "Hover over one of the bubbles to view question information. Click one of the polls to view more information in the drill down module. Configure the below options to filter the bubble chart.",
+                    # style={"font-family": "Roboto"}
+                ),
                 dbc.Row(
                     [
                         dbc.Col(bubble_input_components, md=3),
@@ -281,10 +284,20 @@ bubble_big_card = dbc.Card(
 
 bar_col_components = [
     dbc.Col(
-        html.Label(
+        [html.Label(
+            ["Question text:"],
+            id="question-label-heading",
+            style={
+                "font-weight": "bold",
+                # "text-align": "center",
+                # "color": BLUE,
+                # "fontSize": 20,
+            },
+        ),
+            html.Blockquote(
             ["Question:"],
             id="question-label",
-        ),
+        )],
         md={"width": 6, "offset": 2},
     ),
     dcc.Graph(
@@ -310,7 +323,6 @@ bar_input_components = [
         id="country-dropdown",  # ID "country-dropdown"
         multi=False,
         value="USA",
-        # create a list of dicts of states and their labels
         # to be selected by user in dropdown
         options=list_options(countries),
     ),
@@ -388,9 +400,9 @@ bar_input_components = [
         # multi=False,
         value="-",
         # to be selected by user in dropdown
-        options = list_options(xtab1_vars),
+        options=list_options(xtab1_vars),
         # try addding a right mark to the question text
-        inputStyle={"margin-right": "5px","margin-left": "5px"},
+        inputStyle={"margin-right": "5px", "margin-left": "5px"},
     ),
 ]
 
@@ -504,31 +516,54 @@ app.layout = html.Div(
             ]
         ),
         html.Br(),
-        # link to contact email and github issue tracker
+        # Link to contact email and github issue tracker
         dbc.Row(
             [
                 dbc.Col(
-                    html.H4(
-                        [
-                            "Questions or feedback? ",
-                            "Email ",
-                            html.A(
-                                "contact@ubicenter.org",
-                                href="mailto:contact@ubicenter.org",
-                            ),
-                            " or file an issue at ",
-                            html.A(
-                                "github.com/UBICenter/polls/issues",
-                                href="http://github.com/UBICenter/polls/issues",
-                            ),
-                        ],
-                        style={
-                            "text-align": "left",
-                            "color": "gray",
-                            "fontSize": 12,
-                            "font-family": "Roboto",
-                        },
-                    ),
+                    [
+                        # Create html header for general issues
+                        html.H4(
+                            [
+                                "Questions or feedback? ",
+                                "Email ",
+                                html.A(
+                                    "contact@ubicenter.org",
+                                    href="mailto:contact@ubicenter.org",
+                                    target="blank",
+                                ),
+                                " or file an issue at ",
+                                html.A(
+                                    "github.com/UBICenter/polls/issues",
+                                    href="http://github.com/UBICenter/polls/issues",
+                                    target="blank",
+                                ),
+                            ],
+                            style={
+                                "text-align": "left",
+                                "color": "gray",
+                                "fontSize": 12,
+                                "font-family": "Roboto",
+                            },
+                        ),
+                        # Create html header for submitting polls
+                        html.H4(
+                            [
+                                "Found a poll we're missing? ",
+                                "Let us know ",
+                                html.A(
+                                    "here",
+                                    href="https://github.com/UBICenter/polls/issues/new?assignees=&labels=new-poll&template=new-poll.md&title=Add+poll+from+%5Bpollster%5D+on+%5Bdates%5D",
+                                    target="blank",
+                                ),
+                            ],
+                            style={
+                                "text-align": "left",
+                                "color": "gray",
+                                "fontSize": 12,
+                                "font-family": "Roboto",
+                            },
+                        ),
+                    ],
                     md={"size": 8, "offset": 1},
                 ),
             ]
@@ -540,6 +575,8 @@ app.layout = html.Div(
 #                     Assign Bar Graph module callbacks                     #
 # --------------------------------------------------------
 # update bar graph dropdown selections based on clickData from bubble-graph
+
+
 @app.callback(
     Output("country-dropdown", "value"),
     Output("poll-dropdown", "value"),
@@ -576,13 +613,15 @@ def update_bar_graph_selections_with_click(
         poll_value_out = poll_ids_sorted[0]
 
         # populate first question from poll as default
-        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[0]
+        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[
+            0]
 
         return country_value_out, poll_value_out, question_value_out
     elif prop_id == "poll-dropdown.value":
         country_value_out = country_value_in
         poll_value_out = poll_value_in
-        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[0]
+        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[
+            0]
 
         return country_value_out, poll_value_out, question_value_out
 
@@ -687,12 +726,14 @@ def update_xtab1_options_and_visibility(question_dropdown_value):
     """update xtab1 options based on question dropdown"""
 
     # this places the question text above the bar graph
-    question_label = "Question text: {}".format(
+    question_label = 'Question text: "{}"'.format(
         r.loc[r.question_id == question_dropdown_value, "question_text"].max()
     )
-    
+
     # replace xtab1 dropdown options with the relavent options for the selected question
-    xtab1_options = list_options(r[r.question_id == question_dropdown_value].xtab1_var.unique())
+    xtab1_options = list_options(
+        r[r.question_id == question_dropdown_value].xtab1_var.unique()
+    )
 
     # define the style for xtab1-label (if relevant)
     label_style = {
@@ -750,10 +791,12 @@ def update_bubble_chart(
     r_sub = r[r.country.isin(countries)]
 
     # updates xtab1-bubble-dropdown options based on selected country
-    xtab1_options=list_options(r_sub.xtab1_var.unique())
+    xtab1_options = list_options(r_sub.xtab1_var.unique())
 
     # updates xtab1_val-bubble-dropdown options based on selected xtab1_var
-    xtab1_val_options = list_options(r_sub[r_sub.xtab1_var == xtab1_var].xtab1_val.unique())
+    xtab1_val_options = list_options(
+        r_sub[r_sub.xtab1_var == xtab1_var].xtab1_val.unique()
+    )
 
     # if (xtab1_var in [None, "-"]) & (xtab1_val in [None, "-"]):
     #     bubble = visualize.bubble_chart(r_sub)
