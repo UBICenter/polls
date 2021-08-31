@@ -36,13 +36,15 @@ xtab2_vars = r.xtab2_var.unique()
 countries = sorted(r.country.unique().tolist())
 
 
-def dash_options(df, col):
-    return [{"label": i, "value": i} for i in df[col].unique()]
 
-
-def dash_options(lst, col):
-    return [{"label": i, "value": i} for i in lst]
-
+def list_options(lst, format_string=None):   
+    # returns a list of dicts with keys "label" and "value" that set options in dash components                               
+    if format_string:
+        return [{"label": format_string.format(x), "value": x} if x!="-" else {"label": "None", "value": x} for x in lst]
+    else:
+        return [{"label": x, "value": x} if x!="-" else {"label": "None", "value": x} for x in lst]
+        
+    
 
 # Get base pathname from an environment variable that CS will provide.
 url_base_pathname = os.environ.get("URL_BASE_PATHNAME", "/")
@@ -94,7 +96,7 @@ bubble_dropdown_deck = dbc.CardDeck(
                             multi=True,
                             # create a list of dicts of countries and their labels
                             # to be selected by user in dropdown
-                            options=[{"label": c, "value": c} for c in countries],
+                            options=list_options(countries),
                             value=countries,
                         ),
                     ],
@@ -126,7 +128,7 @@ bubble_dropdown_deck = dbc.CardDeck(
                             value="-",
                             # create a list of dicts of states and their labels
                             # to be selected by user in dropdown
-                            options=[{"label": x, "value": x} for x in xtab1_vars],
+                            options=list_options(xtab1_vars),
                         ),
                         html.Br(),
                         html.Label(
@@ -146,7 +148,7 @@ bubble_dropdown_deck = dbc.CardDeck(
                             value="-",
                             # create a list of dicts of states and their labels
                             # to be selected by user in dropdown
-                            options=[{"label": x, "value": x} for x in xtab1_vals],
+                            options=list_options(xtab1_vals),
                         ),
                     ],
                     id="xtab1-bubble-cardbody",  # ID "xtab1-bubble-cardbody"
@@ -178,14 +180,13 @@ bubble_input_components = [
             "fontSize": 20,
         },
     ),
-    # TODO: for the EU polls with country crosstab, have those as selectable options
     dcc.Dropdown(
         # define component_id for input of app@callback function
         id="country-dropdown-2",  # ID "country-dropdown-2"
         multi=True,
         # create a list of dicts of countries and their labels
         # to be selected by user in dropdown
-        options=[{"label": c, "value": c} for c in countries],
+        options=list_options(countries),
         value=countries,
         # shrink the fontsize of the country selections to make the buble a little mroe readable
         style={"fontSize": 10},
@@ -196,7 +197,7 @@ bubble_input_components = [
         [
             html.H6(
                 [
-                    "Compare polls across selected demographic: ",
+                    "Compare polls by demographic: ",
                     # dbc.Badge("Optional", color="light", className="mr-1"),
                 ],
                 style={
@@ -226,11 +227,11 @@ bubble_input_components = [
                         value="-",
                         # create a list of dicts of states and their labels
                         # to be selected by user in dropdown
-                        options=[{"label": x, "value": x} for x in xtab1_vars],
+                        options=list_options(xtab1_vars),
                     ),
                     html.Br(),
                     html.Label(
-                        ["2. Select demographic:"],
+                        ["2. Select demographic"],
                         style={
                             "font-weight": "bold",
                             # "text-align": "center",
@@ -246,7 +247,7 @@ bubble_input_components = [
                         value="-",
                         # create a list of dicts of states and their labels
                         # to be selected by user in dropdown
-                        options=[{"label": x, "value": x} for x in xtab1_vals],
+                        options=list_options(xtab1_vals),
                     ),
                 ],
                 id="xtab1-bubble-cardbody",  # ID "xtab1-bubble-cardbody"
@@ -311,7 +312,7 @@ bar_input_components = [
         value="USA",
         # create a list of dicts of states and their labels
         # to be selected by user in dropdown
-        options=[{"label": c, "value": c} for c in countries],
+        options=list_options(countries),
     ),
     html.Br(),
     html.Label(
@@ -387,9 +388,9 @@ bar_input_components = [
         # multi=False,
         value="-",
         # to be selected by user in dropdown
-        options=[{"label": "{} ".format(x), "value": x} for x in xtab1_vars],
+        options = list_options(xtab1_vars),
         # try addding a right mark to the question text
-        inputStyle={"margin-right": "5px"},
+        inputStyle={"margin-right": "5px","margin-left": "5px"},
     ),
 ]
 
@@ -689,13 +690,9 @@ def update_xtab1_options_and_visibility(question_dropdown_value):
     question_label = "Question text: {}".format(
         r.loc[r.question_id == question_dropdown_value, "question_text"].max()
     )
-    xtab1_options = [
-        {
-            "label": "{value:{fill}{align}}".format(value=x, fill=" ", align="<"),
-            "value": x,
-        }
-        for x in r[r.question_id == question_dropdown_value].xtab1_var.unique()
-    ]
+    
+    # replace xtab1 dropdown options with the relavent options for the selected question
+    xtab1_options = list_options(r[r.question_id == question_dropdown_value].xtab1_var.unique())
 
     # define the style for xtab1-label (if relevant)
     label_style = {
@@ -753,13 +750,10 @@ def update_bubble_chart(
     r_sub = r[r.country.isin(countries)]
 
     # updates xtab1-bubble-dropdown options based on selected country
-    xtab1_options = [{"label": x, "value": x} for x in r_sub.xtab1_var.unique()]
+    xtab1_options=list_options(r_sub.xtab1_var.unique())
 
     # updates xtab1_val-bubble-dropdown options based on selected xtab1_var
-    xtab1_val_options = [
-        {"label": x, "value": x}
-        for x in r_sub[r_sub.xtab1_var == xtab1_var].xtab1_val.unique()
-    ]
+    xtab1_val_options = list_options(r_sub[r_sub.xtab1_var == xtab1_var].xtab1_val.unique())
 
     # if (xtab1_var in [None, "-"]) & (xtab1_val in [None, "-"]):
     #     bubble = visualize.bubble_chart(r_sub)
