@@ -8,7 +8,7 @@ questions = pd.read_csv("data/questions.csv")
 xtab_order = pd.read_csv("data/xtab_order.csv")
 
 # convert val_order to int
-xtab_order["val_order"] = xtab_order["val_order"].astype(int)
+xtab_order["val_order"] = xtab_order.val_order.astype(int)
 
 # Columns to group each poll responses to.
 IDS = [
