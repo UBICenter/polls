@@ -36,11 +36,9 @@ xtab2_vars = r.xtab2_var.unique()
 countries = sorted(r.country.unique().tolist())
 
 
-
-
-
 def dash_options(df, col):
     return [{"label": i, "value": i} for i in df[col].unique()]
+
 
 def dash_options(lst, col):
     return [{"label": i, "value": i} for i in lst]
@@ -67,8 +65,8 @@ application = app.server
 
 # create defualt bubble chart
 bubble_fig = visualize.bubble_chart(
-    responses=r, 
-    # poll_ids=poll_ids, 
+    responses=r,
+    # poll_ids=poll_ids,
     # question_ids=question_ids,
 )
 
@@ -539,13 +537,13 @@ app.layout = html.Div(
 
 # -------------------------------------------------------- #
 #                     Assign Bar Graph module callbacks                     #
-# -------------------------------------------------------- 
+# --------------------------------------------------------
 # update bar graph dropdown selections based on clickData from bubble-graph
 @app.callback(
     Output("country-dropdown", "value"),
     Output("poll-dropdown", "value"),
     Output("question-dropdown", "value"),
-    #TODO: output should include selected question
+    # TODO: output should include selected question
     Input("bubble-graph", "clickData"),
     Input("country-dropdown", "value"),
     Input("poll-dropdown", "value"),
@@ -553,8 +551,10 @@ app.layout = html.Div(
     # this prevents the callback from loading when the app starts
     prevent_initial_call=True,
 )
-def update_bar_graph_selections_with_click(clickData, country_value_in, poll_value_in, question_value_in):
-    #NOTE This section is the view callback context, #TODO delete
+def update_bar_graph_selections_with_click(
+    clickData, country_value_in, poll_value_in, question_value_in
+):
+    # NOTE This section is the view callback context, #TODO delete
     ctx = dash.callback_context
     prop_id = ctx.triggered[0]["prop_id"]
     if prop_id == "bubble-graph.clickData":
@@ -564,25 +564,29 @@ def update_bar_graph_selections_with_click(clickData, country_value_in, poll_val
         return country_value_out, poll_value_out, question_value_out
     elif prop_id == "country-dropdown.value":
         country_value_out = country_value_in
-        
+
         # subset polls based on selected country
-        poll_ids_sorted = r[r.country == country_value_in].sort_values("date", ascending=False).poll_id.unique()
+        poll_ids_sorted = (
+            r[r.country == country_value_in]
+            .sort_values("date", ascending=False)
+            .poll_id.unique()
+        )
         # populate poll-dropdown value with most recent poll as default
         poll_value_out = poll_ids_sorted[0]
-        
+
         # populate first question from poll as default
-        question_value_out=r[r.poll_id == poll_value_out].question_id.unique()[0]
-        
+        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[0]
+
         return country_value_out, poll_value_out, question_value_out
     elif prop_id == "poll-dropdown.value":
         country_value_out = country_value_in
         poll_value_out = poll_value_in
-        question_value_out=r[r.poll_id == poll_value_out].question_id.unique()[0]
-        
-        return country_value_out, poll_value_out, question_value_out
-    
+        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[0]
 
-#NOTE this one is probabably fine as is
+        return country_value_out, poll_value_out, question_value_out
+
+
+# NOTE this one is probabably fine as is
 @app.callback(
     Output("bar-graph", "figure"),
     Input("poll-dropdown", "value"),
@@ -591,7 +595,7 @@ def update_bar_graph_selections_with_click(clickData, country_value_in, poll_val
 )
 def return_bar_graph(poll, question, xtab1):
 
-    #NOTE debugging here
+    # NOTE debugging here
     # if not xtab selected then choose default value
     if (xtab1 is None) or (xtab1 == []):
         xtab1 = "-"
@@ -603,7 +607,6 @@ def return_bar_graph(poll, question, xtab1):
     return bar
 
 
-
 # ------ update poll, question, crosstab options based on country dropdown ----- #
 @app.callback(
     Output("poll-dropdown", "options"),
@@ -612,8 +615,12 @@ def return_bar_graph(poll, question, xtab1):
 def update_poll_options(country_dropdown_value):
     """update poll options based on country dropdown"""
     # get list of poll_ids for selected country, sorted by newest to oldest
-    poll_ids_sorted = r[r.country == country_dropdown_value].sort_values("date", ascending=False).poll_id.unique()
-    
+    poll_ids_sorted = (
+        r[r.country == country_dropdown_value]
+        .sort_values("date", ascending=False)
+        .poll_id.unique()
+    )
+
     poll_options = [
         {
             # shoud look like "Pew Research Center (2021-4-22)"
@@ -641,7 +648,6 @@ def update_poll_options(country_dropdown_value):
 )
 def update_question_options_and_value(poll_dropdown_value, country_dropdown_value):
 
-    
     # ---------------------------------------------------- #
     question_options = [
         # this part returns the question text based on the provided question id
@@ -690,7 +696,7 @@ def update_xtab1_options_and_visibility(question_dropdown_value):
         }
         for x in r[r.question_id == question_dropdown_value].xtab1_var.unique()
     ]
-    
+
     # define the style for xtab1-label (if relevant)
     label_style = {
         "font-weight": "bold",
@@ -699,15 +705,14 @@ def update_xtab1_options_and_visibility(question_dropdown_value):
         "fontSize": 20,
         # "display": "block",
     }
-    
+
     if len(xtab1_options) > 1:
         return question_label, xtab1_options, label_style, {"display": "block"}
     else:
         return question_label, xtab1_options, {"display": "none"}, {"display": "none"}
 
 
-    
-#NOTE MAYBE couuld combine with below callback. actually no - maybe 
+# NOTE MAYBE couuld combine with below callback. actually no - maybe
 @app.callback(
     Output("xtab1-dropdown", "value"),
     Input("country-dropdown", "value"),
@@ -717,9 +722,6 @@ def update_xtab1_options_and_visibility(question_dropdown_value):
 def set_default_xtab1_value(country, poll, question):
     """set xtab1 value to default value if country, poll, question changed"""
     return "-"
-
-
-
 
 
 # -------------------------------------------------------- #
@@ -776,6 +778,7 @@ def update_bubble_chart(
     bubble.update_layout(transition_duration=200)
 
     return xtab1_options, xtab1_val_options, bubble
+
 
 # -------------------------------------------------------- #
 #                      other callbacks                     #

@@ -42,7 +42,7 @@ responses2 = responses2.merge(polls, on="poll_id")
 # Merge to get question text.
 responses2 = responses2.merge(questions, on="question_id")
 # merge to get val_order
-responses2 =responses2.merge(xtab_order, on=["xtab1_var", "xtab1_val"], how='left')
+responses2 = responses2.merge(xtab_order, on=["xtab1_var", "xtab1_val"], how="left")
 # fill missing val order with 0
 responses2.val_order.fillna(0, inplace=True)
 # convert data column to yyyy-mm-dd format
