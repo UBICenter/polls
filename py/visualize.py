@@ -47,6 +47,8 @@ variable_mapping_inverse["pollster_wrap"] = "Pollster"
 variable_mapping_inverse["pct_fav"] = "% favorability"
 
 # function to replicate ubicenter's format_fig function enough for dash
+
+
 def format_fig(fig, show=True):
     CONFIG = {"displayModeBar": False}
     ubicenter.add_ubi_center_logo(fig)
@@ -66,7 +68,7 @@ def format_fig(fig, show=True):
 
 
 def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
-    """ returns bar graph """
+    """returns bar graph"""
     # ------------------ subset the data ----------------- #
     if question_id is None:
         target_questions = responses[responses.poll_id == poll_id].question_id.unique()
