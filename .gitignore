@@ -142,3 +142,8 @@ dolt_repo/
 
 # scratch
 *scratch*.*
+.vscode/settings.json
+cards.py
+maxh_python_test.py
+data/responses_merged_copy.csv
+data/responses_merged_copy.xlsx

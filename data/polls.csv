@@ -39,9 +39,9 @@ poll_id,date,pollster,sample_size,margin_of_error,demographic,country,crosstabs_
 39.0,2016-12-31,ESS,1959.0,,,UK,-,,False,,https://citizensincome.org/wp-content/uploads/2017/11/European-Social-Survey-survey-on-Basic-Income.pdf,Only year specified
 40.0,2016-12-31,ESS,2010.0,,,Austria,-,,False,,https://citizensincome.org/wp-content/uploads/2017/11/European-Social-Survey-survey-on-Basic-Income.pdf,Only year specified
 41.0,2016-12-31,ESS,2019.0,,,Estonia,-,,False,,https://citizensincome.org/wp-content/uploads/2017/11/European-Social-Survey-survey-on-Basic-Income.pdf,Only year specified
-42.0,2016-12-31,ESS,2067.0,,,Czech Republic,-,,False,,https://citizensincome.org/wp-content/uploads/2017/11/European-Social-Survey-survey-on-Basic-Income.pdf,Only year specified
+42.0,2016-12-31,ESS,2067.0,,,Czechia,-,,False,,https://citizensincome.org/wp-content/uploads/2017/11/European-Social-Survey-survey-on-Basic-Income.pdf,Only year specified
 43.0,2016-12-31,ESS,2070.0,,,France,-,,False,,https://citizensincome.org/wp-content/uploads/2017/11/European-Social-Survey-survey-on-Basic-Income.pdf,Only year specified
-44.0,2016-12-31,ESS,2430.0,,,Russian Federation,-,,False,,https://citizensincome.org/wp-content/uploads/2017/11/European-Social-Survey-survey-on-Basic-Income.pdf,Only year specified
+44.0,2016-12-31,ESS,2430.0,,,Russia,-,,False,,https://citizensincome.org/wp-content/uploads/2017/11/European-Social-Survey-survey-on-Basic-Income.pdf,Only year specified
 45.0,2016-12-31,ESS,2557.0,,,Israel,-,,False,,https://citizensincome.org/wp-content/uploads/2017/11/European-Social-Survey-survey-on-Basic-Income.pdf,Only year specified
 46.0,2016-12-31,ESS,2766.0,,,Ireland,-,,False,,https://citizensincome.org/wp-content/uploads/2017/11/European-Social-Survey-survey-on-Basic-Income.pdf,Only year specified
 47.0,2016-12-31,ESS,2852.0,,,Germany,-,,False,,https://citizensincome.org/wp-content/uploads/2017/11/European-Social-Survey-survey-on-Basic-Income.pdf,Only year specified
