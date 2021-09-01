@@ -36,15 +36,20 @@ xtab2_vars = r.xtab2_var.unique()
 countries = sorted(r.country.unique().tolist())
 
 
-def get_unique(df, col, sorted=False):
-    if sorted:
-        return sorted(df[col].unique())
+def list_options(lst, format_string=None):
+    # returns a list of dicts with keys "label" and "value" that set options in dash components
+    if format_string:
+        return [
+            {"label": format_string.format(x), "value": x}
+            if x != "-"
+            else {"label": "None", "value": x}
+            for x in lst
+        ]
     else:
-        return df[col].unique()
-
-
-def dash_options(df, col):
-    return [{"label": i, "value": i} for i in df[col].unique()]
+        return [
+            {"label": x, "value": x} if x != "-" else {"label": "None", "value": x}
+            for x in lst
+        ]
 
 
 # Get base pathname from an environment variable that CS will provide.
@@ -65,15 +70,6 @@ application = app.server
 # server = app.server
 
 # ------------ create cards to contain charts ------------ #
-barcard_bubble_click = dbc.Card(
-    dcc.Graph(
-        id="bar-graph-bubble-click",  # ID "bar-graph-bubble-click"
-        figure={},
-        config={"displayModeBar": False},
-    ),
-    body=True,
-    color="info",
-)
 
 # create defualt bubble chart
 bubble_fig = visualize.bubble_chart(
@@ -104,7 +100,7 @@ bubble_dropdown_deck = dbc.CardDeck(
                             multi=True,
                             # create a list of dicts of countries and their labels
                             # to be selected by user in dropdown
-                            options=[{"label": c, "value": c} for c in countries],
+                            options=list_options(countries),
                             value=countries,
                         ),
                     ],
@@ -134,9 +130,8 @@ bubble_dropdown_deck = dbc.CardDeck(
                             id="xtab1-bubble-dropdown",  # ID         "xtab1-bubble-dropdown"
                             multi=False,
                             value="-",
-                            # create a list of dicts of states and their labels
                             # to be selected by user in dropdown
-                            options=[{"label": x, "value": x} for x in xtab1_vars],
+                            options=list_options(xtab1_vars),
                         ),
                         html.Br(),
                         html.Label(
@@ -154,16 +149,9 @@ bubble_dropdown_deck = dbc.CardDeck(
                             id="xtab1_val-bubble-dropdown",  # ID "xtab1_val-bubble-dropdown"
                             multi=False,
                             value="-",
-                            # create a list of dicts of states and their labels
                             # to be selected by user in dropdown
-                            options=[{"label": x, "value": x} for x in xtab1_vals],
+                            options=list_options(xtab1_vals),
                         ),
-                        # dbc.Button(
-                        #     "Apply demographic filter",
-                        #     color="primary",
-                        #     outline=True,
-                        #     block=True
-                        # )
                     ],
                     id="xtab1-bubble-cardbody",  # ID "xtab1-bubble-cardbody"
                 ),
@@ -179,6 +167,7 @@ bubble_graph_component = (
         id="bubble-graph",  # ID "bubble-graph"
         figure=bubble_fig,
         config={"displayModeBar": False},
+        responsive=True,
     ),
 )
 
@@ -193,14 +182,13 @@ bubble_input_components = [
             "fontSize": 20,
         },
     ),
-    # TODO: for the EU polls with country crosstab, have those as selectable options
     dcc.Dropdown(
         # define component_id for input of app@callback function
         id="country-dropdown-2",  # ID "country-dropdown-2"
         multi=True,
         # create a list of dicts of countries and their labels
         # to be selected by user in dropdown
-        options=[{"label": c, "value": c} for c in countries],
+        options=list_options(countries),
         value=countries,
         # shrink the fontsize of the country selections to make the buble a little mroe readable
         style={"fontSize": 10},
@@ -209,31 +197,22 @@ bubble_input_components = [
     # ---------- filter demographics with these ---------- #
     dbc.Card(
         [
-            # create a header for the card that indicates that the two dropdown options work together as a group
-            # dbc.CardHeader(
-            #     html.H6(
-            #         [
-            #             "Compare polls across selected demographic ",
-            #             dbc.Badge("Optional", color="secondary", className="mr-1"),
-            #         ]
-            #     )
-            # ),
             html.H6(
-                    [
-                        "Compare polls across selected demographic: ",
-                        dbc.Badge("Optional", color="light", className="mr-1"),
-                    ],
-            style={
-                            "font-weight": "bold",
-                            # "text-align": "center",
-                            "color": BLUE,
-                            "fontSize": 20,
-                        },
+                [
+                    "Compare polls by demographic: ",
+                    # dbc.Badge("Optional", color="light", className="mr-1"),
+                ],
+                style={
+                    "font-weight": "bold",
+                    # "text-align": "center",
+                    "color": BLUE,
+                    "fontSize": 20,
+                },
             ),
             dbc.CardBody(
                 [
                     html.Label(
-                        ["1. Choose a category"],
+                        ["1. Choose category"],
                         id="xtab1-bubble-label",  # ID "xtab1-bubble-label"
                         style={
                             "font-weight": "bold",
@@ -248,13 +227,12 @@ bubble_input_components = [
                         id="xtab1-bubble-dropdown",  # ID         "xtab1-bubble-dropdown"
                         multi=False,
                         value="-",
-                        # create a list of dicts of states and their labels
                         # to be selected by user in dropdown
-                        options=[{"label": x, "value": x} for x in xtab1_vars],
+                        options=list_options(xtab1_vars),
                     ),
                     html.Br(),
                     html.Label(
-                        ["2. Select demographic:"],
+                        ["2. Select demographic"],
                         style={
                             "font-weight": "bold",
                             # "text-align": "center",
@@ -268,16 +246,9 @@ bubble_input_components = [
                         id="xtab1_val-bubble-dropdown",  # ID "xtab1_val-bubble-dropdown"
                         multi=False,
                         value="-",
-                        # create a list of dicts of states and their labels
                         # to be selected by user in dropdown
-                        options=[{"label": x, "value": x} for x in xtab1_vals],
+                        options=list_options(xtab1_vals),
                     ),
-                    # dbc.Button(
-                    #     "Apply demographic filter",
-                    #     color="primary",
-                    #     outline=True,
-                    #     block=True
-                    # )
                 ],
                 id="xtab1-bubble-cardbody",  # ID "xtab1-bubble-cardbody"
             ),
@@ -292,7 +263,10 @@ bubble_big_card = dbc.Card(
         dbc.CardHeader(html.H5("Compare Across Polls")),
         dbc.CardBody(
             [
-                html.P("Configure the below options to filter the bubble chart:"),
+                html.P(
+                    "Hover over one of the bubbles to view question information. Click one of the polls to view more information in the drill down module. Configure the below options to filter the bubble chart.",
+                    # style={"font-family": "Roboto"}
+                ),
                 dbc.Row(
                     [
                         dbc.Col(bubble_input_components, md=3),
@@ -310,25 +284,27 @@ bubble_big_card = dbc.Card(
 
 bar_col_components = [
     dbc.Col(
-        html.Label(
-            ["Question:"],
-            id="question-label",
+        [html.Label(
+            ["Question text:"],
+            id="question-label-heading",
             style={
-                # "font-weight": "bold",
+                "font-weight": "bold",
                 # "text-align": "center",
                 # "color": BLUE,
-                "fontSize": 12,
+                # "fontSize": 20,
             },
         ),
-        md={"width": 6, "offset": 3},
+            html.Blockquote(
+            ["Question:"],
+            id="question-label",
+        )],
+        md={"width": 6, "offset": 2},
     ),
     dcc.Graph(
         id="bar-graph",  # ID "bar-graph"
         figure={},
         config={"displayModeBar": False},
     ),
-    # TODO: show question names instead of question_id
-    # TODO: dynamically update dropdown options based on poll-dropdown`s value
 ]
 
 bar_input_components = [
@@ -346,12 +322,9 @@ bar_input_components = [
         # define component_id for input of app@callback function
         id="country-dropdown",  # ID "country-dropdown"
         multi=False,
-        value=22,
-        # create a list of dicts of states and their labels
+        value="USA",
         # to be selected by user in dropdown
-        options=[{"label": c, "value": c} for c in countries],
-        # make persistent
-        persistence=True,
+        options=list_options(countries),
     ),
     html.Br(),
     html.Label(
@@ -368,6 +341,7 @@ bar_input_components = [
         # define component_id for input of app@callback function
         id="poll-dropdown",  # ID "poll-dropdown"
         multi=False,
+        value=29,
         style={
             "fontSize": 14,
         },
@@ -396,6 +370,7 @@ bar_input_components = [
     dcc.RadioItems(
         # define component_id for input of app@callback function
         id="question-dropdown",  # ID "question-dropdown"\
+        value=26,
         options=[
             {
                 "label": "{}".format(
@@ -406,7 +381,7 @@ bar_input_components = [
             for x in question_ids
         ],
         # try addding a right mark to the question text
-        inputStyle={"margin-right": "10px"},
+        inputStyle={"margin-right": "5px"},
     ),
     html.Br(),
     html.Label(
@@ -425,16 +400,16 @@ bar_input_components = [
         # multi=False,
         value="-",
         # to be selected by user in dropdown
-        options=[{"label": x, "value": x} for x in xtab1_vars],
+        options=list_options(xtab1_vars),
         # try addding a right mark to the question text
-        inputStyle={"margin-right": "10px"},
+        inputStyle={"margin-right": "5px", "margin-left": "5px"},
     ),
 ]
 
 
 bar_big_card = dbc.Card(
     [
-        dbc.CardHeader(html.H5("Drill down on individual polls")),
+        dbc.CardHeader(html.H5("Drill down into individual polls")),
         dbc.CardBody(
             [
                 dbc.Row(
@@ -541,35 +516,54 @@ app.layout = html.Div(
             ]
         ),
         html.Br(),
-        # link to contact email and github issue tracker
+        # Link to contact email and github issue tracker
         dbc.Row(
             [
                 dbc.Col(
-                    html.H4(
-                        [
-                            "Questions or feedback? ",
-                            "Email ",
-                            html.A(
-                                "contact@ubicenter.org",
-                                href="mailto:contact@ubicenter.org",
-                            ),
-                            " or file an issue at ",
-                            html.A(
-                                "github.com/UBICenter/polls/issues",
-                                href="http://github.com/UBICenter/polls/issues",
-                            ),
-                        ],
-                        style={
-                            "text-align": "left",
-                            "color": "gray",
-                            "fontSize": 12,
-                            "font-family": "Roboto",
-                        },
-                    ),
-                    width={
-                        "size": "auto",
-                        # "offset": 2
-                    },
+                    [
+                        # Create html header for general issues
+                        html.H4(
+                            [
+                                "Questions or feedback? ",
+                                "Email ",
+                                html.A(
+                                    "contact@ubicenter.org",
+                                    href="mailto:contact@ubicenter.org",
+                                    target="blank",
+                                ),
+                                " or file an issue at ",
+                                html.A(
+                                    "github.com/UBICenter/polls/issues",
+                                    href="http://github.com/UBICenter/polls/issues",
+                                    target="blank",
+                                ),
+                            ],
+                            style={
+                                "text-align": "left",
+                                "color": "gray",
+                                "fontSize": 12,
+                                "font-family": "Roboto",
+                            },
+                        ),
+                        # Create html header for submitting polls
+                        html.H4(
+                            [
+                                "Found a poll we're missing? ",
+                                "Let us know ",
+                                html.A(
+                                    "here",
+                                    href="https://github.com/UBICenter/polls/issues/new?assignees=&labels=new-poll&template=new-poll.md&title=Add+poll+from+%5Bpollster%5D+on+%5Bdates%5D",
+                                    target="blank",
+                                ),
+                            ],
+                            style={
+                                "text-align": "left",
+                                "color": "gray",
+                                "fontSize": 12,
+                                "font-family": "Roboto",
+                            },
+                        ),
+                    ],
                     md={"size": 8, "offset": 1},
                 ),
             ]
@@ -578,18 +572,73 @@ app.layout = html.Div(
 )
 
 # -------------------------------------------------------- #
-#                     Assign Tab 1 callbacks                     #
-# -------------------------------------------------------- #
+#                     Assign Bar Graph module callbacks                     #
+# --------------------------------------------------------
+# update bar graph dropdown selections based on clickData from bubble-graph
 
-# TODO create most obvious way to select question first
+
 @app.callback(
-    Output(component_id="bar-graph", component_property="figure"),
-    # Input(component_id="country-dropdown", component_property="value"),
-    Input(component_id="poll-dropdown", component_property="value"),
-    Input(component_id="question-dropdown", component_property="value"),
-    Input(component_id="xtab1-dropdown", component_property="value"),
+    Output("country-dropdown", "value"),
+    Output("poll-dropdown", "value"),
+    Output("question-dropdown", "value"),
+    # TODO: output should include selected question
+    Input("bubble-graph", "clickData"),
+    Input("country-dropdown", "value"),
+    Input("poll-dropdown", "value"),
+    Input("question-dropdown", "value"),
+    # this prevents the callback from loading when the app starts
+    prevent_initial_call=True,
 )
-def test(poll, question, xtab1):
+def update_bar_graph_selections_with_click(
+    clickData, country_value_in, poll_value_in, question_value_in
+):
+    # NOTE This section is the view callback context, #TODO delete
+    ctx = dash.callback_context
+    prop_id = ctx.triggered[0]["prop_id"]
+    if prop_id == "bubble-graph.clickData":
+        country_value_out = clickData["points"][0]["customdata"][2]
+        poll_value_out = clickData["points"][0]["customdata"][0]
+        question_value_out = clickData["points"][0]["customdata"][1]
+        return country_value_out, poll_value_out, question_value_out
+    elif prop_id == "country-dropdown.value":
+        country_value_out = country_value_in
+
+        # subset polls based on selected country
+        poll_ids_sorted = (
+            r[r.country == country_value_in]
+            .sort_values("date", ascending=False)
+            .poll_id.unique()
+        )
+        # populate poll-dropdown value with most recent poll as default
+        poll_value_out = poll_ids_sorted[0]
+
+        # populate first question from poll as default
+        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[
+            0]
+
+        return country_value_out, poll_value_out, question_value_out
+    elif prop_id == "poll-dropdown.value":
+        country_value_out = country_value_in
+        poll_value_out = poll_value_in
+        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[
+            0]
+
+        return country_value_out, poll_value_out, question_value_out
+
+
+# NOTE this one is probabably fine as is
+@app.callback(
+    Output("bar-graph", "figure"),
+    Input("poll-dropdown", "value"),
+    Input("question-dropdown", "value"),
+    Input("xtab1-dropdown", "value"),
+)
+def return_bar_graph(poll, question, xtab1):
+
+    # NOTE debugging here
+    # if not xtab selected then choose default value
+    if (xtab1 is None) or (xtab1 == []):
+        xtab1 = "-"
 
     bar = visualize.poll_vis(
         responses=r, poll_id=poll, question_id=question, crosstab_variable=xtab1
@@ -600,63 +649,46 @@ def test(poll, question, xtab1):
 
 # ------ update poll, question, crosstab options based on country dropdown ----- #
 @app.callback(
-    Output(component_id="poll-dropdown", component_property="options"),
-    # Output(component_id="bubble-graph", component_property="figure"),
+    Output("poll-dropdown", "options"),
     Input("country-dropdown", "value"),
 )
-def update(dropdown_value):
-    """[summary]
-    change the options of the checklist to match the selected countries
-    Parameters
-    ----------
-    dropdown : str
-        takes the input "country-dropdown" from the callback
-    Returns
-    -------
-    populates other dropdowns with country-specific options
-    """
+def update_poll_options(country_dropdown_value):
+    """update poll options based on country dropdown"""
+    # get list of poll_ids for selected country, sorted by newest to oldest
+    poll_ids_sorted = (
+        r[r.country == country_dropdown_value]
+        .sort_values("date", ascending=False)
+        .poll_id.unique()
+    )
+
     poll_options = [
         {
-            "label": "{} - {} ({})".format(
+            # shoud look like "Pew Research Center (2021-4-22)"
+            "label": "{} ({})".format(
                 polls.loc[id, "pollster"],
                 polls.loc[id, "date"],
-                polls.loc[id, "country"],
             ),
             "value": id,
         }
-        for id in r[r.country == dropdown_value]
-        .sort_values("date", ascending=False)
-        .poll_id.unique()
+        for id in poll_ids_sorted
     ]
-
-    # bubble = visualize.bubble_chart(
-    #     responses=r,
-    #     # poll_ids=r.poll_id.unique(),
-    #     # question_ids=r.question_id.unique()
-    # )
 
     return poll_options
 
 
 # ------ update question options based on poll dropdown ----- #
 @app.callback(
-    Output(component_id="question-dropdown", component_property="options"),
-    Output(component_id="question-dropdown", component_property="value"),
-    # Output(component_id="xtab1-dropdown", component_property="options"),
+    Output("question-dropdown", "options"),
+    # NOTE value is output here
+    # Output("question-dropdown", "value"),
+    # we want to update the default question based on the poll selected
     Input("poll-dropdown", "value"),
+    # we also want to update the default question when a new country is selected
+    Input("country-dropdown", "value"),
 )
-def update(dropdown_value):
-    """[summary]
-    change the options of the questions dropdown to match the selected countries
-    Parameters
-    ----------
-    dropdown : str
-        takes the input "country-dropdown" from the callback
-    Returns
-    -------
-    populates other dropdowns with country-specific options
-    """
+def update_question_options_and_value(poll_dropdown_value, country_dropdown_value):
 
+    # ---------------------------------------------------- #
     question_options = [
         # this part returns the question text based on the provided question id
         {
@@ -664,77 +696,71 @@ def update(dropdown_value):
             "value": x,
         }
         # this part returns the unique question ids associated with the selected poll id in responses_merged.csv
-        for x in r[r.poll_id == dropdown_value].question_id.unique()
+        for x in r[r.poll_id == poll_dropdown_value].question_id.unique()
     ]
 
-    default_question = question_options[0]["value"] if question_options else None
-    return question_options, default_question
-
-    # return question_options, question_options[0]["value"]
-
-
-# update question-label above bar-graph based on question-dropdown selection
-@app.callback(
-    Output(component_id="question-label", component_property="children"),
-    Input(component_id="question-dropdown", component_property="value"),
-)
-def update_question_label(question_dropdown_value):
-    question = "{}".format(
-        r.loc[r.question_id == question_dropdown_value, "question_text"].max()
-    )
-    return "Question text: " + str(question)
+    if poll_dropdown_value is None:
+        question_options = [
+            {
+                "label": "Please select a poll first",
+                "value": "",
+            }
+        ]
+    return question_options
+    # NOTE commented out code below is only for if we still include the question-dropdown value in the column
+    # default_question = question_options[0]["value"] if question_options else None
+    # return question_options, default_question
 
 
 # ------ update xtab1 options based on question dropdown ----- #
 @app.callback(
-    Output(component_id="xtab1-dropdown", component_property="options"),
+    Output("question-label", "children"),
+    Output("xtab1-dropdown", "options"),
+    Output("xtab1-label", "style"),
+    Output("xtab1-dropdown", "style"),
     # NOTE: deactivate second crosstab for now
     # Output(component_id="xtab2-dropdown", component_property="options"),
     Input("question-dropdown", "value"),
 )
-def update(dropdown_value):
-    # update xtab1 options based on question dropdown
+def update_xtab1_options_and_visibility(question_dropdown_value):
+    """update xtab1 options based on question dropdown"""
 
-    xtab1_options = [
-        {"label": x, "value": x}
-        for x in r[r.question_id == dropdown_value].xtab1_var.unique()
-    ]
+    # this places the question text above the bar graph
+    question_label = 'Question text: "{}"'.format(
+        r.loc[r.question_id == question_dropdown_value, "question_text"].max()
+    )
 
-    # NOTE: deactivate this for now
-    # xtab2_options = [
-    #     {"label": x, "value": x}
-    #     for x in r[r.question_id == dropdown_value].xtab2_var.unique()
-    # ]
+    # replace xtab1 dropdown options with the relavent options for the selected question
+    xtab1_options = list_options(
+        r[r.question_id == question_dropdown_value].xtab1_var.unique()
+    )
 
-    return xtab1_options
-    # return xtab1_options, xtab2_options
+    # define the style for xtab1-label (if relevant)
+    label_style = {
+        "font-weight": "bold",
+        "text-align": "center",
+        "color": BLUE,
+        "fontSize": 20,
+        # "display": "block",
+    }
 
-
-# ------ update xtab1 options based on question dropdown ----- #
-@app.callback(
-    Output(component_id="xtab1-label", component_property="style"),
-    Output(component_id="xtab1-dropdown", component_property="style"),
-    # Output(component_id="xtab1-dropdown", component_property="value"),
-    Input("xtab1-dropdown", "options"),
-)
-def show_hide_xtab(xtab1_dropdown_options):
-    # change visibilty of xtab1-dropdown based on xtab1-card
-    if len(xtab1_dropdown_options) > 1:
-        return {"display": "block"}, {"display": "block"}
+    if len(xtab1_options) > 1:
+        return question_label, xtab1_options, label_style, {"display": "block"}
     else:
-        return {"display": "none"}, {"display": "none"}
+        return question_label, xtab1_options, {"display": "none"}, {"display": "none"}
 
 
-# # ------ update xtab2 options based on question dropdown ----- #
-# @app.callback(
-#     Output(component_id="xtab2-card", component_property="style"),
-#     Input("xtab2-dropdown", "options"),
-# )
-# def show_hide_xtab(xtab2_dropdown_options):
-#     if len(xtab2_dropdown_options) > 1:
-#         return {"display": "block"}
-#     else:
-#         return {"display": "none"}
+# NOTE MAYBE couuld combine with below callback. actually no - maybe
+@app.callback(
+    Output("xtab1-dropdown", "value"),
+    Input("country-dropdown", "value"),
+    Input("poll-dropdown", "value"),
+    Input("question-dropdown", "value"),
+)
+def set_default_xtab1_value(country, poll, question):
+    """set xtab1 value to default value if country, poll, question changed"""
+    return "-"
+
 
 # -------------------------------------------------------- #
 #                bubble chart tab callbacks                #
@@ -744,17 +770,17 @@ def show_hide_xtab(xtab1_dropdown_options):
 # update bubble chart based on country dropdown, crosstab variable, crosstab value
 @app.callback(
     # output the relevent xtab1_val based on selected xtab1_var
-    Output(component_id="xtab1-bubble-dropdown", component_property="options"),
+    Output("xtab1-bubble-dropdown", "options"),
     # output the relevent xtab1_val based on selected xtab1_var
-    Output(component_id="xtab1_val-bubble-dropdown", component_property="options"),
+    Output("xtab1_val-bubble-dropdown", "options"),
     # country input will be list
-    Output(component_id="bubble-graph", component_property="figure"),
+    Output("bubble-graph", "figure"),
     # # this is to update xtab1_val-bubble-dropdown VALUE based on selected xtab1_var
     # Output(component_id="xtab1_val-bubble-dropdown", component_property="value"),
-    Input(component_id="country-dropdown-2", component_property="value"),
+    Input("country-dropdown-2", "value"),
     # xtab1-bubble-dropdown input will be a string
-    Input(component_id="xtab1-bubble-dropdown", component_property="value"),
-    Input(component_id="xtab1_val-bubble-dropdown", component_property="value"),
+    Input("xtab1-bubble-dropdown", "value"),
+    Input("xtab1_val-bubble-dropdown", "value"),
 )
 def update_bubble_chart(
     countries,
@@ -765,13 +791,12 @@ def update_bubble_chart(
     r_sub = r[r.country.isin(countries)]
 
     # updates xtab1-bubble-dropdown options based on selected country
-    xtab1_options = [{"label": x, "value": x} for x in r_sub.xtab1_var.unique()]
+    xtab1_options = list_options(r_sub.xtab1_var.unique())
 
     # updates xtab1_val-bubble-dropdown options based on selected xtab1_var
-    xtab1_val_options = [
-        {"label": x, "value": x}
-        for x in r_sub[r_sub.xtab1_var == xtab1_var].xtab1_val.unique()
-    ]
+    xtab1_val_options = list_options(
+        r_sub[r_sub.xtab1_var == xtab1_var].xtab1_val.unique()
+    )
 
     # if (xtab1_var in [None, "-"]) & (xtab1_val in [None, "-"]):
     #     bubble = visualize.bubble_chart(r_sub)
@@ -792,38 +817,16 @@ def update_bubble_chart(
     return xtab1_options, xtab1_val_options, bubble
 
 
-# update bar-bubble-graph-click based on clickData from bubble-graph
-@app.callback(
-    Output(component_id="country-dropdown", component_property="value"),
-    Output(component_id="poll-dropdown", component_property="value"),
-    Input(component_id="bubble-graph", component_property="clickData"),
-    # this prevents the callback from loading when the app starts
-    prevent_initial_call=True,
-)
-def update_bar_graph_bubble_click(clickData):
-    print(
-        clickData,
-    )
-    # if a bubble is clicked, update the bar chart to the side. else, update the bubble chart with an empty dict
-    if clickData is None:
-        # raise PreventUpdate
-        pass
-    else:
-        poll_id = clickData["points"][0]["customdata"][0]
-        # country = r.loc[r.poll_id == poll_id, "country"].max()
-        country = clickData["points"][0]["customdata"][2]
-        return country, poll_id
-
-
-# ----------- rewrite callbacks for bubble tab ----------- #
-
+# -------------------------------------------------------- #
+#                      other callbacks                     #
+# -------------------------------------------------------- #
 # callback to download responses_merged.csv
 @app.callback(
     Output("download-dataframe-csv", "data"),
     Input("btn_csv", "n_clicks"),
     prevent_initial_call=True,
 )
-def func(n_clicks):
+def clickd_bubble(n_clicks):
     return dcc.send_data_frame(r.to_csv, "responses.csv")
 
 
