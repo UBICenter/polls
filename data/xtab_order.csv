@@ -1,0 +1,92 @@
+xtab1_var,xtab1_val,val_order
+2017 Election Vote,Labour,1
+2017 Election Vote,Liberal Democrat,2
+2017 Election Vote,Conservative,3
+2017 Election Vote,Other,4
+Age,18-24,1
+Age,18-29,2
+Age,18-34,3
+Age,25-34,4
+Age,25-49,5
+Age,30-49,6
+Age,35-44,7
+Age,35-49,8
+Age,35-54,9
+Age,45-54,10
+Age,50-64,11
+Age,55-64,12
+Age,55-75,13
+Age,55+,14
+Age,65+,15
+Education,HS or less,1
+Education,Upper secondary education or less,2
+Education,"Higher technical education, vocational training, community college education or associate degree",3
+Education,College / Tech school,4
+Education,Univ+,5
+Education,Bachelor's degree,6
+Education,Master's or doctoral degree,7
+Gender,Female,1
+Gender,Male,2
+Income,<$50K,1
+Income,Lower,2
+Income,Lower income,3
+Income,$50-99K,4
+Income,Middle,5
+Income,Middle income,6
+Income,Higher,7
+Income,$100K+,8
+Income,Upper income,9
+Partisanship,Democrat,1
+Partisanship,Independent / Third party,2
+Partisanship,Republican,3
+Political Affiliation,Democrat,1
+Political ideology,Liberal Democrat,2
+Political Affiliation,Democrat / Lean Democrat,3
+Political Affiliation,Independent,4
+Political Affiliation,Republican / Lean Republican,5
+Political Affiliation,GOP,6
+Political ideology,Moderate Democrat,7
+Political ideology,Conservative Democrat,8
+Race,White,1
+Race,Asian,2
+Race,Black,3
+Race,Hispanic,4
+Race,Other,5
+Region,East Midlands,1
+Region,Eastern,2
+Region,England,3
+Region,London,4
+Region,Midlands,5
+Region,North,6
+Region,North East,7
+Region,North West,8
+Region,Northern Ireland,9
+Region,Scotland,10
+Region,South,11
+Region,South East,12
+Region,South West,13
+Region,Wales,14
+Region,West Midlands,15
+Region,Yorkshire,16
+Vote in Dec 2019 GE,Brexit Party,1
+Vote in Dec 2019 GE,Conservative,2
+Vote in Dec 2019 GE,Liberal Democrat,3
+Vote in Dec 2019 GE,Labour,4
+Vote in Dec 2019 GE,Green,5
+Vote in Dec 2019 GE,Plaid Cymru,6
+Vote in Dec 2019 GE,Scottish National Party,7
+Vote in Dec 2019 GE,Didn't Vote,8
+Vote in Dec 2019 GE,Other,9
+Vote in most recent GE,Brexit Party,1
+Vote in most recent GE,Conservative,2
+Vote in most recent GE,Liberal Democrat,3
+Vote in most recent GE,Labour,4
+Vote in most recent GE,Green,5
+Vote in most recent GE,Plaid Cymru,6
+Vote in most recent GE,Scottish National Party,7
+Vote in most recent GE,Other,8
+Vote in most recent GE,Didn't Vote,9
+Voting Intention,Conservative,1
+Voting Intention,Liberal Democrat,2
+Voting Intention,Labour,3
+Voting Intention,Other,4
