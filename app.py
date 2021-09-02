@@ -221,7 +221,6 @@ bubble_input_components = [
                             # "fontSize": 20,
                         },
                     ),
-                    # TODO: show question names instead of question_id
                     dcc.Dropdown(
                         # define component_id for input of app@callback function
                         id="xtab1-bubble-dropdown",  # ID         "xtab1-bubble-dropdown"
@@ -232,7 +231,7 @@ bubble_input_components = [
                     ),
                     html.Br(),
                     html.Label(
-                        ["2. Select demographic"],
+                        ["2. Choose demographic"],
                         style={
                             "font-weight": "bold",
                             # "text-align": "center",
@@ -240,7 +239,6 @@ bubble_input_components = [
                             # "fontSize": 20,
                         },
                     ),
-                    # TODO: show question names instead of question_id
                     dcc.Dropdown(
                         # define component_id for input of app@callback function
                         id="xtab1_val-bubble-dropdown",  # ID "xtab1_val-bubble-dropdown"
