@@ -221,7 +221,6 @@ bubble_input_components = [
                             # "fontSize": 20,
                         },
                     ),
-                    # TODO: show question names instead of question_id
                     dcc.Dropdown(
                         # define component_id for input of app@callback function
                         id="xtab1-bubble-dropdown",  # ID         "xtab1-bubble-dropdown"
@@ -232,7 +231,7 @@ bubble_input_components = [
                     ),
                     html.Br(),
                     html.Label(
-                        ["2. Select demographic"],
+                        ["2. Choose demographic"],
                         style={
                             "font-weight": "bold",
                             # "text-align": "center",
@@ -240,7 +239,6 @@ bubble_input_components = [
                             # "fontSize": 20,
                         },
                     ),
-                    # TODO: show question names instead of question_id
                     dcc.Dropdown(
                         # define component_id for input of app@callback function
                         id="xtab1_val-bubble-dropdown",  # ID "xtab1_val-bubble-dropdown"
@@ -284,20 +282,22 @@ bubble_big_card = dbc.Card(
 
 bar_col_components = [
     dbc.Col(
-        [html.Label(
-            ["Question text:"],
-            id="question-label-heading",
-            style={
-                "font-weight": "bold",
-                # "text-align": "center",
-                # "color": BLUE,
-                # "fontSize": 20,
-            },
-        ),
+        [
+            html.Label(
+                ["Question text:"],
+                id="question-label-heading",
+                style={
+                    "font-weight": "bold",
+                    # "text-align": "center",
+                    # "color": BLUE,
+                    # "fontSize": 20,
+                },
+            ),
             html.Blockquote(
-            ["Question:"],
-            id="question-label",
-        )],
+                ["Question:"],
+                id="question-label",
+            ),
+        ],
         md={"width": 6, "offset": 2},
     ),
     dcc.Graph(
@@ -613,15 +613,13 @@ def update_bar_graph_selections_with_click(
         poll_value_out = poll_ids_sorted[0]
 
         # populate first question from poll as default
-        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[
-            0]
+        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[0]
 
         return country_value_out, poll_value_out, question_value_out
     elif prop_id == "poll-dropdown.value":
         country_value_out = country_value_in
         poll_value_out = poll_value_in
-        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[
-            0]
+        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[0]
 
         return country_value_out, poll_value_out, question_value_out
 

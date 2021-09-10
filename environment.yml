@@ -1,0 +1,17 @@
+name: calc
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - dash
+  - dash-bootstrap-components
+  - plotly
+  - pandas
+  - numpy
+  - pip
+  - textwrap
+  - os
+  - kaleido
+  - pip:
+    numerize
+    "git+https://github.com/UBICenter/ubicenter"
