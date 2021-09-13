@@ -613,13 +613,15 @@ def update_bar_graph_selections_with_click(
         poll_value_out = poll_ids_sorted[0]
 
         # populate first question from poll as default
-        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[0]
+        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[
+            0]
 
         return country_value_out, poll_value_out, question_value_out
     elif prop_id == "poll-dropdown.value":
         country_value_out = country_value_in
         poll_value_out = poll_value_in
-        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[0]
+        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[
+            0]
 
         return country_value_out, poll_value_out, question_value_out
 
@@ -719,8 +721,9 @@ def update_question_options_and_value(poll_dropdown_value, country_dropdown_valu
     # NOTE: deactivate second crosstab for now
     # Output(component_id="xtab2-dropdown", component_property="options"),
     Input("question-dropdown", "value"),
+    Input("poll-dropdown", "value"),
 )
-def update_xtab1_options_and_visibility(question_dropdown_value):
+def update_xtab1_options_and_visibility(question_dropdown_value, poll_dropdown_value):
     """update xtab1 options based on question dropdown"""
 
     # this places the question text above the bar graph
@@ -730,7 +733,8 @@ def update_xtab1_options_and_visibility(question_dropdown_value):
 
     # replace xtab1 dropdown options with the relavent options for the selected question
     xtab1_options = list_options(
-        r[r.question_id == question_dropdown_value].xtab1_var.unique()
+        r[(r.question_id == question_dropdown_value) & (
+            r.poll_id == poll_dropdown_value)].xtab1_var.unique()
     )
 
     # define the style for xtab1-label (if relevant)
@@ -824,7 +828,7 @@ def update_bubble_chart(
     Input("btn_csv", "n_clicks"),
     prevent_initial_call=True,
 )
-def clickd_bubble(n_clicks):
+def download_button(n_clicks):
     return dcc.send_data_frame(r.to_csv, "responses.csv")
 
 
