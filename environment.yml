@@ -13,5 +13,5 @@ dependencies:
   - os
   - kaleido
   - pip:
-    numerize
-    "git+https://github.com/UBICenter/ubicenter"
+    - numerize
+    - "git+https://github.com/UBICenter/ubicenter"
