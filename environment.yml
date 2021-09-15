@@ -1,4 +1,4 @@
-name: calc
+name: polls
 channels:
   - conda-forge
 dependencies:
