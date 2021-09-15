@@ -8,9 +8,7 @@ dependencies:
   - plotly
   - pandas
   - numpy
+  - taxcalc
   - pip
   - pip:
-    - black
-    # - kaleido
-    # - numerize
     - "git+https://github.com/UBICenter/ubicenter"
