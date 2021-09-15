@@ -47,7 +47,9 @@ def list_options(lst, format_string=None):
         ]
     else:
         return [
-            {"label": x, "value": x} if x != "-" else {"label": "None", "value": x}
+            {"label": x, "value": x}
+            if x != "-"
+            else {"label": "None", "value": x}
             for x in lst
         ]
 
@@ -613,13 +615,17 @@ def update_bar_graph_selections_with_click(
         poll_value_out = poll_ids_sorted[0]
 
         # populate first question from poll as default
-        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[0]
+        question_value_out = r[
+            r.poll_id == poll_value_out
+        ].question_id.unique()[0]
 
         return country_value_out, poll_value_out, question_value_out
     elif prop_id == "poll-dropdown.value":
         country_value_out = country_value_in
         poll_value_out = poll_value_in
-        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[0]
+        question_value_out = r[
+            r.poll_id == poll_value_out
+        ].question_id.unique()[0]
 
         return country_value_out, poll_value_out, question_value_out
 
@@ -639,7 +645,10 @@ def return_bar_graph(poll, question, xtab1):
         xtab1 = "-"
 
     bar = visualize.poll_vis(
-        responses=r, poll_id=poll, question_id=question, crosstab_variable=xtab1
+        responses=r,
+        poll_id=poll,
+        question_id=question,
+        crosstab_variable=xtab1,
     )
 
     return bar
@@ -684,13 +693,17 @@ def update_poll_options(country_dropdown_value):
     # we also want to update the default question when a new country is selected
     Input("country-dropdown", "value"),
 )
-def update_question_options_and_value(poll_dropdown_value, country_dropdown_value):
+def update_question_options_and_value(
+    poll_dropdown_value, country_dropdown_value
+):
 
     # ---------------------------------------------------- #
     question_options = [
         # this part returns the question text based on the provided question id
         {
-            "label": "{}".format(r.loc[r.question_id == x, "question_text"].max()),
+            "label": "{}".format(
+                r.loc[r.question_id == x, "question_text"].max()
+            ),
             "value": x,
         }
         # this part returns the unique question ids associated with the selected poll id in responses_merged.csv
@@ -721,11 +734,13 @@ def update_question_options_and_value(poll_dropdown_value, country_dropdown_valu
     Input("question-dropdown", "value"),
     Input("poll-dropdown", "value"),
 )
-def update_xtab1_options_and_visibility(question_dropdown_value, poll_dropdown_value):
+def update_xtab1_options_and_visibility(
+    question_dropdown_value, poll_dropdown_value
+):
     """update xtab1 options based on question dropdown"""
 
     # this places the question text above the bar graph
-    question_label = 'Question text: "{}"'.format(
+    question_label = '"{}"'.format(
         r.loc[r.question_id == question_dropdown_value, "question_text"].max()
     )
 
@@ -749,7 +764,12 @@ def update_xtab1_options_and_visibility(question_dropdown_value, poll_dropdown_v
     if len(xtab1_options) > 1:
         return question_label, xtab1_options, label_style, {"display": "block"}
     else:
-        return question_label, xtab1_options, {"display": "none"}, {"display": "none"}
+        return (
+            question_label,
+            xtab1_options,
+            {"display": "none"},
+            {"display": "none"},
+        )
 
 
 # NOTE MAYBE couuld combine with below callback. actually no - maybe

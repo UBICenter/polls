@@ -42,14 +42,18 @@ responses = responses.merge(polls, on="poll_id")
 # Merge to get question text.
 responses = responses.merge(questions, on="question_id")
 # merge to get val_order
-responses = responses.merge(xtab_order, on=["xtab1_var", "xtab1_val"], how="left")
+responses = responses.merge(
+    xtab_order, on=["xtab1_var", "xtab1_val"], how="left"
+)
 # fill missing val order with 0
 responses.val_order.fillna(0, inplace=True)
 # convert data column to yyyy-mm-dd format
 responses["date"] = pd.to_datetime(responses.date, format="%Y-%m-%d")
 
 # set poll_id, vall_order as int
-responses[["poll_id", "val_order"]] = responses[["poll_id", "val_order"]].astype(int)
+responses[["poll_id", "val_order"]] = responses[
+    ["poll_id", "val_order"]
+].astype(int)
 # Wrap question text and pollster
 def plotly_wrap(x, length=30):
     return x.str.wrap(length).apply(lambda x: x.replace("\n", "<br>"))
