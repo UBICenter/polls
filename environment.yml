@@ -1,4 +1,4 @@
-name: calc
+name: polls
 channels:
   - conda-forge
 dependencies:
@@ -9,9 +9,8 @@ dependencies:
   - pandas
   - numpy
   - pip
-  - textwrap
-  - os
-  - kaleido
   - pip:
-    numerize
-    "git+https://github.com/UBICenter/ubicenter"
+    - black
+    # - kaleido
+    # - numerize
+    - "git+https://github.com/UBICenter/ubicenter"

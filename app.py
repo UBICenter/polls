@@ -441,7 +441,7 @@ app.layout = html.Div(
                         [
                             dbc.Col(
                                 html.Img(
-                                    src="https://blog.ubicenter.org/_static/ubi_center_logo_wide_blue.png",  # LINK TO LOGO
+                                    src="https://raw.githubusercontent.com/UBICenter/ubicenter.org/master/assets/images/logos/wide-blue.jpg",  # LINK TO LOGO
                                     height="30px",
                                 )
                             ),
@@ -613,15 +613,13 @@ def update_bar_graph_selections_with_click(
         poll_value_out = poll_ids_sorted[0]
 
         # populate first question from poll as default
-        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[
-            0]
+        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[0]
 
         return country_value_out, poll_value_out, question_value_out
     elif prop_id == "poll-dropdown.value":
         country_value_out = country_value_in
         poll_value_out = poll_value_in
-        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[
-            0]
+        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[0]
 
         return country_value_out, poll_value_out, question_value_out
 
@@ -733,8 +731,10 @@ def update_xtab1_options_and_visibility(question_dropdown_value, poll_dropdown_v
 
     # replace xtab1 dropdown options with the relavent options for the selected question
     xtab1_options = list_options(
-        r[(r.question_id == question_dropdown_value) & (
-            r.poll_id == poll_dropdown_value)].xtab1_var.unique()
+        r[
+            (r.question_id == question_dropdown_value)
+            & (r.poll_id == poll_dropdown_value)
+        ].xtab1_var.unique()
     )
 
     # define the style for xtab1-label (if relevant)
