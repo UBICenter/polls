@@ -257,7 +257,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
                 x=0.14,
                 y=yd,
                 xanchor="right",
-                text=wrap_string(str(yd), 15),
+                text=wrap_string(str(yd), 15) if yd != "-" else "All",
                 font=dict(family="Arial", size=14, color="rgb(67, 67, 67)"),
                 showarrow=False,
                 align="right",
