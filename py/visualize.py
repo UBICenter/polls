@@ -351,12 +351,12 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
     xtab1_var = target_responses.loc[:, ["xtab1_var"]].values[0][0]
     date = target_responses.loc[:, ["date"]].values[0][0]
     date = pd.to_datetime(date).strftime("%B %Y")
-    # date = target_responses.loc[:,['date']].values[0][0].datetime_as_string(t, unit='D')
     url = target_responses.loc[:, ["Link"]].values[0][0]
     country = target_responses.loc[:, ["country"]].values[0][0]
+    demographic = target_responses.loc[:, ["demographic"]].values[0][0]
 
-    source_text = "Country surveyed: {country}<br>Source: {pollster}, {date}. Retrieved from ".format(
-        pollster=pollster, country=country, date=date
+    source_text = "{demographic}, {country}<br>Source: {pollster}, {date}. Retrieved from ".format(
+        demographic=demographic, pollster=pollster, country=country, date=date
     )
     source_url = "<br><a href='blank'>{}</a>".format(url)
 
@@ -367,22 +367,19 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         xref="paper",
         yref="paper",
         xanchor="left",
-        # The arrow head will be 25% along the x axis, starting from the left
         x=0.15,
-        # The arrow head will be 40% along the y axis, starting from the bottom
         y=-0.175,
         text=source,
         font=dict(family="Arial", size=12, color="rgb(67, 67, 67)"),
         align="left",
-        # arrowhead=2,
         showarrow=False,
     )
 
     # ------------------ add title text ------------------ #
     if crosstab_variable != "-":
-        title = "Favorability by " + str(xtab1_var).lower()
+        title = "Results by " + str(xtab1_var).lower()
     if crosstab_variable == "-":
-        title = "Favorability among all respondents"
+        title = "Results from all respondents"
 
     fig.update_layout(
         title={
