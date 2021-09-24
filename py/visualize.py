@@ -504,6 +504,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
         xaxis=dict(
             title=None,  # date self-explanatory
         ),
+        legend_title_text=None,
     )
 
     return format_fig(fig, show=False)
