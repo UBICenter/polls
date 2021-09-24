@@ -463,7 +463,7 @@ app.layout = html.Div(
             [
                 dbc.Col(
                     html.H1(
-                        "Explore the state of public opinion on UBI",
+                        "UBI Poll Tracker",
                         id="header",  # ID "header"
                         style={
                             "text-align": "center",
@@ -483,9 +483,9 @@ app.layout = html.Div(
             [
                 dbc.Col(
                     html.H4(
-                        "Use the interactive below to explore different the current state of UBI's favorability from "
+                        "Explore the state of public opinion on UBI across "
                         + str(len(poll_ids))
-                        + " different polls across "
+                        + " different polls from "
                         + str(len(countries))
                         + " countries.",  # REVIEW
                         style={
