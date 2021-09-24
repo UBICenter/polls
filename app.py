@@ -260,7 +260,7 @@ bubble_input_components = [
 
 bubble_big_card = dbc.Card(
     [
-        dbc.CardHeader(html.H5("Compare Across Polls")),
+        dbc.CardHeader(html.H5("Compare across polls")),
         dbc.CardBody(
             [
                 html.P(
@@ -487,7 +487,7 @@ app.layout = html.Div(
                         + str(len(poll_ids))
                         + " different polls from "
                         + str(len(countries))
-                        + " countries.",  # REVIEW
+                        + " countries.",  
                         style={
                             "text-align": "left",
                             "color": "black",
@@ -598,6 +598,7 @@ def update_bar_graph_selections_with_click(
     ctx = dash.callback_context
     prop_id = ctx.triggered[0]["prop_id"]
     if prop_id == "bubble-graph.clickData":
+        # the element "customdata" is defined by an argument in the px.scatter() call in the bubble_chart() function in the visualize.py file. The order of the items in customdata is important, but the order is set arbitrarily 
         country_value_out = clickData["points"][0]["customdata"][2]
         poll_value_out = clickData["points"][0]["customdata"][0]
         question_value_out = clickData["points"][0]["customdata"][1]
