@@ -375,24 +375,6 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         showarrow=False,
     )
 
-    # ------------------ add title text ------------------ #
-    if crosstab_variable != "-":
-        title = "Results by " + str(xtab1_var).lower()
-    if crosstab_variable == "-":
-        title = "Results from all respondents"
-
-    fig.update_layout(
-        title={
-            "text": title,
-            # 'xanchor': 'center',
-            "x": 0.55,
-            # 'xref': 'paper',
-            "xanchor": "center",
-            # 'yanchor': 'top'
-        },
-        font=dict(family="Arial", size=20, color="rgb(67, 67, 67)"),
-    )
-    # fig.show()
     # NOTE: use format_fig as defined above instead of ubicenter.format_fig
     return format_fig(fig, show=False).update_layout(autosize=True)
 
