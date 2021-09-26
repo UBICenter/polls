@@ -418,6 +418,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
         "pollster_wrap",
         "sample_size",
         "country",
+        "short_question",
     ]
     # add xtab1_var and xtab1_val if we're \ splitting by it.
     if xtab_split:
@@ -443,12 +444,14 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
     )
     size_max = 30
     opacity = 0.7
-    hover_data = [
+    custom_data = [
         "poll_id",
         "question_id",
         "country",
-        "question_text_wrap",
+        "short_question",
         "sample_size",
+        "pollster_wrap",
+        "date",
     ]
 
     if xtab_split:
@@ -464,7 +467,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
             size=size,
             opacity=opacity,
             # size_max=size_max,
-            hover_data=hover_data,
+            hover_data=custom_data,
             labels=variable_mapping_inverse_tmp,
         )
 
@@ -484,7 +487,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
             size=size,
             size_max=size_max,
             opacity=opacity,
-            hover_data=hover_data,
+            custom_data=custom_data,
             labels=variable_mapping_inverse,
             # trendline="lowess",
         )
@@ -505,6 +508,20 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
             title=None,  # date self-explanatory
         ),
         legend_title_text=None,
+    )
+    fig.update_layout(
+        hoverlabel=dict(bgcolor="white", font_size=16, font_family="Arial")
+    )
+
+    fig.update_traces(
+        hovertemplate="<br>".join(
+            [
+                "<b>%{customdata[3]}</b>",
+                "Net favorability %{y}%",
+                "%{customdata[5]}, %{x}",
+            ]
+        ),
+        hoverlabel_align= 'left',
     )
 
     return format_fig(fig, show=False)
