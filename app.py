@@ -47,9 +47,7 @@ def list_options(lst, format_string=None):
         ]
     else:
         return [
-            {"label": x, "value": x}
-            if x != "-"
-            else {"label": "None", "value": x}
+            {"label": x, "value": x} if x != "-" else {"label": "None", "value": x}
             for x in lst
         ]
 
@@ -487,7 +485,7 @@ app.layout = html.Div(
                         + str(len(poll_ids))
                         + " different polls from "
                         + str(len(countries))
-                        + " countries.",  
+                        + " countries.",
                         style={
                             "text-align": "left",
                             "color": "black",
@@ -598,7 +596,7 @@ def update_bar_graph_selections_with_click(
     ctx = dash.callback_context
     prop_id = ctx.triggered[0]["prop_id"]
     if prop_id == "bubble-graph.clickData":
-        # the element "customdata" is defined by an argument in the px.scatter() call in the bubble_chart() function in the visualize.py file. The order of the items in customdata is important, but the order is set arbitrarily 
+        # the element "customdata" is defined by an argument in the px.scatter() call in the bubble_chart() function in the visualize.py file. The order of the items in customdata is important, but the order is set arbitrarily
         country_value_out = clickData["points"][0]["customdata"][2]
         poll_value_out = clickData["points"][0]["customdata"][0]
         question_value_out = clickData["points"][0]["customdata"][1]
@@ -616,17 +614,13 @@ def update_bar_graph_selections_with_click(
         poll_value_out = poll_ids_sorted[0]
 
         # populate first question from poll as default
-        question_value_out = r[
-            r.poll_id == poll_value_out
-        ].question_id.unique()[0]
+        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[0]
 
         return country_value_out, poll_value_out, question_value_out
     elif prop_id == "poll-dropdown.value":
         country_value_out = country_value_in
         poll_value_out = poll_value_in
-        question_value_out = r[
-            r.poll_id == poll_value_out
-        ].question_id.unique()[0]
+        question_value_out = r[r.poll_id == poll_value_out].question_id.unique()[0]
 
         return country_value_out, poll_value_out, question_value_out
 
@@ -694,17 +688,13 @@ def update_poll_options(country_dropdown_value):
     # we also want to update the default question when a new country is selected
     Input("country-dropdown", "value"),
 )
-def update_question_options_and_value(
-    poll_dropdown_value, country_dropdown_value
-):
+def update_question_options_and_value(poll_dropdown_value, country_dropdown_value):
 
     # ---------------------------------------------------- #
     question_options = [
         # this part returns the question text based on the provided question id
         {
-            "label": "{}".format(
-                r.loc[r.question_id == x, "question_text"].max()
-            ),
+            "label": "{}".format(r.loc[r.question_id == x, "question_text"].max()),
             "value": x,
         }
         # this part returns the unique question ids associated with the selected poll id in responses_merged.csv
@@ -735,9 +725,7 @@ def update_question_options_and_value(
     Input("question-dropdown", "value"),
     Input("poll-dropdown", "value"),
 )
-def update_xtab1_options_and_visibility(
-    question_dropdown_value, poll_dropdown_value
-):
+def update_xtab1_options_and_visibility(question_dropdown_value, poll_dropdown_value):
     """update xtab1 options based on question dropdown"""
 
     # this places the question text above the bar graph
