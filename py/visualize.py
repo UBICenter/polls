@@ -51,7 +51,6 @@ variable_mapping_inverse["pct_fav"] = "% favorability"
 
 def format_fig(fig, show=True):
     CONFIG = {"displayModeBar": False}
-    ubicenter.add_ubi_center_logo(fig)
     fig.update_xaxes(
         title_font=dict(size=16, color="black"), tickfont={"size": 14}
     )
@@ -219,6 +218,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
                         line=dict(color="rgb(248, 248, 249)", width=1),
                     ),
                     width=0.4 if len(y_data) == 1 else (),
+                    hoverinfo="skip",
                 )
             )
 
@@ -375,6 +375,8 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         showarrow=False,
     )
 
+    ubicenter.add_ubi_center_logo(fig)
+
     # NOTE: use format_fig as defined above instead of ubicenter.format_fig
     return format_fig(fig, show=False).update_layout(autosize=True)
 
@@ -463,33 +465,27 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
             y="pct_fav",
             color="country",
             text="pollster_wrap",
-            # size=np.log(poll_question.sample_size+1),
             size=size,
             opacity=opacity,
-            # size_max=size_max,
             hover_data=custom_data,
             labels=variable_mapping_inverse_tmp,
         )
 
         # add title based on xtab1_val
         fig.update_layout(title=xtab1_val)
-        # fig.add_hline(y=0, line_color="red")
 
-    # this is also our default map when you first run the script
+    # this is our default map when you first run the script
     else:
         fig = px.scatter(
             poll_question,
             x="date",
             y="pct_fav",
             color="country",
-            # text="pollster_wrap",
-            # size=np.log(poll_question.sample_size+1),
             size=size,
             size_max=size_max,
             opacity=opacity,
             custom_data=custom_data,
             labels=variable_mapping_inverse,
-            # trendline="lowess",
         )
 
     # add line for zero net fav
@@ -507,7 +503,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
         xaxis=dict(
             title=None,  # date self-explanatory
         ),
-        legend_title_text=None,
+        legend_title_text=None,  # country self-explanatory
     )
     fig.update_layout(
         hoverlabel=dict(bgcolor="white", font_size=16, font_family="Arial")
@@ -523,5 +519,6 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
         ),
         hoverlabel_align="left",
     )
+    ubicenter.add_ubi_center_logo(fig, x=1.2, y=-0.16)
 
     return format_fig(fig, show=False)
