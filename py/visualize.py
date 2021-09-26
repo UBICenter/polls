@@ -521,7 +521,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
                 "%{customdata[5]}, %{x}",
             ]
         ),
-        hoverlabel_align= 'left',
+        hoverlabel_align="left",
     )
 
     return format_fig(fig, show=False)
