@@ -387,7 +387,7 @@ bar_input_components = [
     ),
     html.Br(),
     html.Label(
-        ["Select cross-tab:"],
+        ["Break down results by:"],
         id="xtab1-label",  # ID "x-tab1-label"
         style={
             "font-weight": "bold",
