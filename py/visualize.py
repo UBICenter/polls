@@ -168,7 +168,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
     # ------------------ prepare inputs ------------------ #
     # create list of unique xtab1_vals ordered by val_order
     xtab1_vals = target_responses.sort_values(
-        by=["val_order"]
+        by=["val_order"], ascending=True
     ).xtab1_val.unique()
     # create list of lists of the percent_norm of each response in order of response_order
     x_data = [
@@ -300,7 +300,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
                     y=1.15,
                     text=top_labels[0],
                     font=dict(
-                        family="Arial", size=14, color="rgb(67, 67, 67)"
+                        family="Roboto", size=14, color="rgb(67, 67, 67)"
                     ),
                     showarrow=False,
                 )
