@@ -51,7 +51,6 @@ variable_mapping_inverse["pct_fav"] = "% favorability"
 
 def format_fig(fig, show=True):
     CONFIG = {"displayModeBar": False}
-    ubicenter.add_ubi_center_logo(fig)
     fig.update_xaxes(
         title_font=dict(size=16, color="black"), tickfont={"size": 14}
     )
@@ -169,7 +168,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
     # ------------------ prepare inputs ------------------ #
     # create list of unique xtab1_vals ordered by val_order
     xtab1_vals = target_responses.sort_values(
-        by=["val_order"]
+        by=["val_order"], ascending=True
     ).xtab1_val.unique()
     # create list of lists of the percent_norm of each response in order of response_order
     x_data = [
@@ -219,6 +218,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
                         line=dict(color="rgb(248, 248, 249)", width=1),
                     ),
                     width=0.4 if len(y_data) == 1 else (),
+                    hoverinfo="skip",
                 )
             )
 
@@ -257,7 +257,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
                 x=0.14,
                 y=yd,
                 xanchor="right",
-                text=wrap_string(str(yd), 15),
+                text=wrap_string(str(yd), 15) if yd != "-" else "All",
                 font=dict(family="Arial", size=14, color="rgb(67, 67, 67)"),
                 showarrow=False,
                 align="right",
@@ -340,7 +340,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
 
     fig.update_layout(
         annotations=annotations,
-        margin=dict(l=10, r=20, t=110, b=80),
+        margin=dict(l=10, r=20, t=60, b=80),
     )
 
     fig.update_yaxes(automargin=True)
@@ -351,12 +351,12 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
     xtab1_var = target_responses.loc[:, ["xtab1_var"]].values[0][0]
     date = target_responses.loc[:, ["date"]].values[0][0]
     date = pd.to_datetime(date).strftime("%B %Y")
-    # date = target_responses.loc[:,['date']].values[0][0].datetime_as_string(t, unit='D')
     url = target_responses.loc[:, ["Link"]].values[0][0]
     country = target_responses.loc[:, ["country"]].values[0][0]
+    demographic = target_responses.loc[:, ["demographic"]].values[0][0]
 
-    source_text = "Country surveyed: {country}<br>Source: {pollster}, {date}. Retrieved from ".format(
-        pollster=pollster, country=country, date=date
+    source_text = "{demographic}, {country}<br>Source: {pollster}, {date}. Retrieved from ".format(
+        demographic=demographic, pollster=pollster, country=country, date=date
     )
     source_url = "<br><a href='blank'>{}</a>".format(url)
 
@@ -367,35 +367,16 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         xref="paper",
         yref="paper",
         xanchor="left",
-        # The arrow head will be 25% along the x axis, starting from the left
         x=0.15,
-        # The arrow head will be 40% along the y axis, starting from the bottom
-        y=-0.175,
+        y=-0.25,
         text=source,
         font=dict(family="Arial", size=12, color="rgb(67, 67, 67)"),
         align="left",
-        # arrowhead=2,
         showarrow=False,
     )
 
-    # ------------------ add title text ------------------ #
-    if crosstab_variable != "-":
-        title = "Favorability by " + str(xtab1_var).lower()
-    if crosstab_variable == "-":
-        title = "Favorability among all respondents"
+    ubicenter.add_ubi_center_logo(fig)
 
-    fig.update_layout(
-        title={
-            "text": title,
-            # 'xanchor': 'center',
-            "x": 0.55,
-            # 'xref': 'paper',
-            "xanchor": "center",
-            # 'yanchor': 'top'
-        },
-        font=dict(family="Arial", size=20, color="rgb(67, 67, 67)"),
-    )
-    # fig.show()
     # NOTE: use format_fig as defined above instead of ubicenter.format_fig
     return format_fig(fig, show=False).update_layout(autosize=True)
 
@@ -439,6 +420,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
         "pollster_wrap",
         "sample_size",
         "country",
+        "short_question",
     ]
     # add xtab1_var and xtab1_val if we're \ splitting by it.
     if xtab_split:
@@ -464,12 +446,14 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
     )
     size_max = 30
     opacity = 0.7
-    hover_data = [
+    custom_data = [
         "poll_id",
         "question_id",
         "country",
-        "question_text_wrap",
+        "short_question",
         "sample_size",
+        "pollster_wrap",
+        "date",
     ]
 
     if xtab_split:
@@ -481,33 +465,27 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
             y="pct_fav",
             color="country",
             text="pollster_wrap",
-            # size=np.log(poll_question.sample_size+1),
             size=size,
             opacity=opacity,
-            # size_max=size_max,
-            hover_data=hover_data,
+            hover_data=custom_data,
             labels=variable_mapping_inverse_tmp,
         )
 
         # add title based on xtab1_val
         fig.update_layout(title=xtab1_val)
-        # fig.add_hline(y=0, line_color="red")
 
-    # this is also our default map when you first run the script
+    # this is our default map when you first run the script
     else:
         fig = px.scatter(
             poll_question,
             x="date",
             y="pct_fav",
             color="country",
-            # text="pollster_wrap",
-            # size=np.log(poll_question.sample_size+1),
             size=size,
             size_max=size_max,
             opacity=opacity,
-            hover_data=hover_data,
+            custom_data=custom_data,
             labels=variable_mapping_inverse,
-            # trendline="lowess",
         )
 
     # add line for zero net fav
@@ -525,6 +503,27 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
         xaxis=dict(
             title=None,  # date self-explanatory
         ),
+        legend_title_text=None,  # country self-explanatory
     )
+    fig.update_layout(
+        hoverlabel=dict(bgcolor="white", font_size=16, font_family="Arial")
+    )
+
+    fig.update_traces(
+        # Add hover text, which will display instead of custom_data. Custom data is still available to the click event that updates the bar graph
+        # TODO: add plus sign to favorability like in the bar chart
+        hovertemplate="<br>".join(
+            [
+                "<b>%{customdata[3]}</b>",
+                "%{customdata[2]}",
+                "Net favorability %{y:+.0f}%",
+                "%{customdata[5]}, %{x}",
+                "<extra></extra>",
+            ]
+        ),
+        hoverlabel_align="left",
+    )
+
+    ubicenter.add_ubi_center_logo(fig, x=1.2, y=-0.16)
 
     return format_fig(fig, show=False)

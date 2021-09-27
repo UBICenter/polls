@@ -220,7 +220,7 @@ bubble_input_components = [
                             "font-weight": "bold",
                             # "text-align": "center",
                             # "color": BLUE,
-                            # "fontSize": 20,
+                            "fontSize": 14,
                         },
                     ),
                     dcc.Dropdown(
@@ -231,14 +231,14 @@ bubble_input_components = [
                         # to be selected by user in dropdown
                         options=list_options(xtab1_vars),
                     ),
-                    html.Br(),
+                    # html.Br(),
                     html.Label(
                         ["2. Choose demographic"],
                         style={
                             "font-weight": "bold",
                             # "text-align": "center",
                             # "color": BLUE,
-                            # "fontSize": 20,
+                            "fontSize": 14,
                         },
                     ),
                     dcc.Dropdown(
@@ -260,7 +260,7 @@ bubble_input_components = [
 
 bubble_big_card = dbc.Card(
     [
-        dbc.CardHeader(html.H5("Compare Across Polls")),
+        dbc.CardHeader(html.H5("Compare across polls")),
         dbc.CardBody(
             [
                 html.P(
@@ -269,6 +269,7 @@ bubble_big_card = dbc.Card(
                 ),
                 dbc.Row(
                     [
+                        # Place the filter components in a row with the bubble graph
                         dbc.Col(bubble_input_components, md=3),
                         dbc.Col(
                             bubble_graph_component,
@@ -316,7 +317,7 @@ bar_input_components = [
             "font-weight": "bold",
             "text-align": "center",
             "color": BLUE,
-            "fontSize": 20,
+            "fontSize": 16,
         },
     ),
     # TODO: show poll names instead of poll_id
@@ -335,7 +336,7 @@ bar_input_components = [
             "font-weight": "bold",
             "text-align": "center",
             "color": BLUE,
-            "fontSize": 20,
+            "fontSize": 16,
         },
     ),
     # TODO: show poll names instead of poll_id
@@ -366,7 +367,7 @@ bar_input_components = [
             "font-weight": "bold",
             "text-align": "center",
             "color": BLUE,
-            "fontSize": 20,
+            "fontSize": 16,
         },
     ),
     dcc.RadioItems(
@@ -387,13 +388,13 @@ bar_input_components = [
     ),
     html.Br(),
     html.Label(
-        ["Select cross-tab:"],
+        ["Break down results by:"],
         id="xtab1-label",  # ID "x-tab1-label"
         style={
             "font-weight": "bold",
             "text-align": "center",
             "color": BLUE,
-            "fontSize": 20,
+            "fontSize": 16,
         },
     ),
     dcc.RadioItems(
@@ -463,7 +464,7 @@ app.layout = html.Div(
             [
                 dbc.Col(
                     html.H1(
-                        "Explore the state of public opinion on UBI",
+                        "UBI Poll Tracker",
                         id="header",  # ID "header"
                         style={
                             "text-align": "center",
@@ -483,11 +484,11 @@ app.layout = html.Div(
             [
                 dbc.Col(
                     html.H4(
-                        "Use the interactive below to explore different the current state of UBI's favorability from "
+                        "Explore the state of public opinion on UBI across "
                         + str(len(poll_ids))
-                        + " different polls across "
+                        + " different polls from "
                         + str(len(countries))
-                        + " countries.",  # REVIEW
+                        + " countries.",
                         style={
                             "text-align": "left",
                             "color": "black",
@@ -598,6 +599,7 @@ def update_bar_graph_selections_with_click(
     ctx = dash.callback_context
     prop_id = ctx.triggered[0]["prop_id"]
     if prop_id == "bubble-graph.clickData":
+        # the element "customdata" is defined by an argument in the px.scatter() call in the bubble_chart() function in the visualize.py file. The order of the items in customdata is important, but the order is set arbitrarily
         country_value_out = clickData["points"][0]["customdata"][2]
         poll_value_out = clickData["points"][0]["customdata"][0]
         question_value_out = clickData["points"][0]["customdata"][1]
