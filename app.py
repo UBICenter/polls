@@ -220,7 +220,7 @@ bubble_input_components = [
                             "font-weight": "bold",
                             # "text-align": "center",
                             # "color": BLUE,
-                            # "fontSize": 20,
+                            "fontSize": 14,
                         },
                     ),
                     dcc.Dropdown(
@@ -231,14 +231,14 @@ bubble_input_components = [
                         # to be selected by user in dropdown
                         options=list_options(xtab1_vars),
                     ),
-                    html.Br(),
+                    # html.Br(),
                     html.Label(
                         ["2. Choose demographic"],
                         style={
                             "font-weight": "bold",
                             # "text-align": "center",
                             # "color": BLUE,
-                            # "fontSize": 20,
+                            "fontSize": 14,
                         },
                     ),
                     dcc.Dropdown(
@@ -269,6 +269,7 @@ bubble_big_card = dbc.Card(
                 ),
                 dbc.Row(
                     [
+                        # Place the filter components in a row with the bubble graph
                         dbc.Col(bubble_input_components, md=3),
                         dbc.Col(
                             bubble_graph_component,
@@ -316,7 +317,7 @@ bar_input_components = [
             "font-weight": "bold",
             "text-align": "center",
             "color": BLUE,
-            "fontSize": 20,
+            "fontSize": 16,
         },
     ),
     # TODO: show poll names instead of poll_id
@@ -335,7 +336,7 @@ bar_input_components = [
             "font-weight": "bold",
             "text-align": "center",
             "color": BLUE,
-            "fontSize": 20,
+            "fontSize": 16,
         },
     ),
     # TODO: show poll names instead of poll_id
@@ -366,7 +367,7 @@ bar_input_components = [
             "font-weight": "bold",
             "text-align": "center",
             "color": BLUE,
-            "fontSize": 20,
+            "fontSize": 16,
         },
     ),
     dcc.RadioItems(
@@ -393,7 +394,7 @@ bar_input_components = [
             "font-weight": "bold",
             "text-align": "center",
             "color": BLUE,
-            "fontSize": 20,
+            "fontSize": 16,
         },
     ),
     dcc.RadioItems(

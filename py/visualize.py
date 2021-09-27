@@ -300,7 +300,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
                     y=1.15,
                     text=top_labels[0],
                     font=dict(
-                        family="Roboto", size=14, color="rgb(67, 67, 67)"
+                        family="Arial", size=14, color="rgb(67, 67, 67)"
                     ),
                     showarrow=False,
                 )
@@ -340,7 +340,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
 
     fig.update_layout(
         annotations=annotations,
-        margin=dict(l=10, r=20, t=110, b=80),
+        margin=dict(l=10, r=20, t=60, b=80),
     )
 
     fig.update_yaxes(automargin=True)
@@ -368,7 +368,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         yref="paper",
         xanchor="left",
         x=0.15,
-        y=-0.175,
+        y=-0.25,
         text=source,
         font=dict(family="Arial", size=12, color="rgb(67, 67, 67)"),
         align="left",
@@ -510,15 +510,20 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
     )
 
     fig.update_traces(
+        # Add hover text, which will display instead of custom_data. Custom data is still available to the click event that updates the bar graph
+        # TODO: add plus sign to favorability like in the bar chart
         hovertemplate="<br>".join(
             [
                 "<b>%{customdata[3]}</b>",
-                "Net favorability %{y}%",
+                "%{customdata[2]}",
+                "Net favorability %{y:+.0f}%",
                 "%{customdata[5]}, %{x}",
+                "<extra></extra>",
             ]
         ),
         hoverlabel_align="left",
     )
+
     ubicenter.add_ubi_center_logo(fig, x=1.2, y=-0.16)
 
     return format_fig(fig, show=False)
