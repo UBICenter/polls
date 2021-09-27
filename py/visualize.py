@@ -354,9 +354,14 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
     url = target_responses.loc[:, ["Link"]].values[0][0]
     country = target_responses.loc[:, ["country"]].values[0][0]
     demographic = target_responses.loc[:, ["demographic"]].values[0][0]
+    sample_size = int(target_responses.loc[:, ["sample_size"]].values[0][0])
 
-    source_text = "{demographic}, {country}<br>Source: {pollster}, {date}. Retrieved from ".format(
-        demographic=demographic, pollster=pollster, country=country, date=date
+    source_text = "Poll of {sample_size} {demographic} in {country} by {pollster}, {date}. Retrieved from ".format(
+        sample_size=f"{sample_size:,}",
+        demographic=demographic,
+        pollster=pollster,
+        country=country,
+        date=date,
     )
     source_url = "<br><a href='blank'>{}</a>".format(url)
 
