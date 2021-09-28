@@ -5,7 +5,6 @@ dependencies:
   - python
   - dash
   - dash-bootstrap-components
-  - dash_html_components
   - plotly
   - pandas
   - numpy
