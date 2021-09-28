@@ -177,9 +177,8 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         .percent_norm.values
         for val in xtab1_vals
     ]
-    print(xtab1_vals[0])
-    print(x_data[0])
-    # create list of y_data corresponding to the xtab1_val
+
+    # create list of y_data that is used to label the bars ie. ["Black", "Hispanic", "White"]
     y_data = xtab1_vals
 
     net_fav_df = target_responses.groupby(["xtab1_val"])["pct_fav"].sum()
@@ -522,7 +521,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
             [
                 "<b>%{customdata[3]}</b>",
                 "%{customdata[2]}",
-                "Net favorability %{y:+.0f}%",
+                "Net favorability: %{y:+.0f}%",
                 "%{customdata[5]}, %{x}",
                 "<extra></extra>",
             ]
