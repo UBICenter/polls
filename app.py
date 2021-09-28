@@ -5,7 +5,8 @@ import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
 import dash
-from dash import dcc, html
+import dash_core_components as dcc
+import dash_html_components as html
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
