@@ -168,7 +168,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
     # ------------------ prepare inputs ------------------ #
     # create list of unique xtab1_vals ordered by val_order
     xtab1_vals = target_responses.sort_values(
-        by=["val_order"], ascending=True
+        by=["val_order"], ascending=False
     ).xtab1_val.unique()
     # create list of lists of the percent_norm of each response in order of response_order
     x_data = [
@@ -178,7 +178,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         for val in xtab1_vals
     ]
 
-    # create list of y_data corresponding to the xtab1_val
+    # create list of y_data that is used to label the bars ie. ["Black", "Hispanic", "White"]
     y_data = xtab1_vals
 
     net_fav_df = target_responses.groupby(["xtab1_val"])["pct_fav"].sum()
@@ -354,9 +354,14 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
     url = target_responses.loc[:, ["Link"]].values[0][0]
     country = target_responses.loc[:, ["country"]].values[0][0]
     demographic = target_responses.loc[:, ["demographic"]].values[0][0]
+    sample_size = int(target_responses.loc[:, ["sample_size"]].values[0][0])
 
-    source_text = "{demographic}, {country}<br>Source: {pollster}, {date}. Retrieved from ".format(
-        demographic=demographic, pollster=pollster, country=country, date=date
+    source_text = "Poll of {sample_size} {demographic} in {country} by {pollster}, {date}. Retrieved from ".format(
+        sample_size=f"{sample_size:,}",
+        demographic=demographic,
+        pollster=pollster,
+        country=country,
+        date=date,
     )
     source_url = "<br><a href='blank'>{}</a>".format(url)
 
@@ -516,7 +521,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
             [
                 "<b>%{customdata[3]}</b>",
                 "%{customdata[2]}",
-                "Net favorability %{y:+.0f}%",
+                "Net favorability: %{y:+.0f}%",
                 "%{customdata[5]}, %{x}",
                 "<extra></extra>",
             ]
