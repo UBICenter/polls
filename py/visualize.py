@@ -459,7 +459,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
             x="date",
             y="pct_fav",
             color="country",
-            text="pollster_wrap",
+            # text="pollster_wrap",
             opacity=opacity,
             hover_data=custom_data,
             labels=variable_mapping_inverse_tmp,
@@ -512,11 +512,12 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
     fig.update_xaxes(rangeslider_visible=True)
 
     # get the date of the most recent poll, and add one month to it
-    date_range_max = (poll_question.date.max() + timedelta(days=30)).strftime("%Y-%m-%d")
-    
+    date_range_max = (poll_question.date.max() + timedelta(days=30)).strftime(
+        "%Y-%m-%d"
+    )
+
     initial_range = ["2016-01-01", date_range_max]
 
-    print(poll_question.date.max().strftime("%Y-%m-%d"))
     fig["layout"]["xaxis"].update(range=initial_range)
 
     # add line for zero net fav
