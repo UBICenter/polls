@@ -230,6 +230,7 @@ bubble_input_components = [
                         value="-",
                         # to be selected by user in dropdown
                         options=list_options(xtab1_vars),
+                        optionHeight=25,
                     ),
                     # html.Br(),
                     html.Label(
@@ -254,7 +255,7 @@ bubble_input_components = [
             ),
         ],
         # color="info",
-        outline=False,
+        outline="light",
     ),
 ]
 
@@ -270,10 +271,10 @@ bubble_big_card = dbc.Card(
                 dbc.Row(
                     [
                         # Place the filter components in a row with the bubble graph
-                        dbc.Col(bubble_input_components, md=3),
+                        dbc.Col(bubble_input_components, lg=3),
                         dbc.Col(
                             bubble_graph_component,
-                            md=9,
+                            lg=9,
                         ),
                     ],
                     no_gutters=True,
