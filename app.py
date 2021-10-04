@@ -434,7 +434,7 @@ bar_big_card = dbc.Card(
 default_size = "auto"
 input_width = {"size": 10, "offset": 1}
 chart_width = {"size": 10, "offset": 1}
-default_offset = "1"
+default_offset = 1
 # Design the app
 app.layout = html.Div(
     [

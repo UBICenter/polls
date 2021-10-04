@@ -354,10 +354,17 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
     url = target_responses.loc[:, ["Link"]].values[0][0]
     country = target_responses.loc[:, ["country"]].values[0][0]
     demographic = target_responses.loc[:, ["demographic"]].values[0][0]
-    sample_size = int(target_responses.loc[:, ["sample_size"]].values[0][0])
 
-    source_text = "Poll of {sample_size} {demographic} in {country} by {pollster}, {date}. Retrieved from ".format(
-        sample_size=f"{sample_size:,}",
+    try:
+        sample_size = int(
+            target_responses.loc[:, ["sample_size"]].values[0][0]
+        )
+        sample_size = "{:,}".format(sample_size)
+    except:
+        sample_size = ""
+
+    source_text = "Survey of {sample_size} {demographic}, {country} by {pollster}, {date}. Retrieved from ".format(
+        sample_size=sample_size,
         demographic=demographic,
         pollster=pollster,
         country=country,
@@ -487,12 +494,13 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
         ),
         legend_title_text=None,  # country self-explanatory
         autosize=True,
-    )
-    fig.update_layout(
-        hoverlabel=dict(bgcolor="white", font_size=16, font_family="Arial")
+        # define hoverlabel characteristics
+        hoverlabel=dict(bgcolor="white", font_size=16, font_family="Arial"),
     )
 
     fig.update_traces(
+        # set size of bubbles,
+        marker_size=8,
         # Add hover text, which will display instead of custom_data. Custom data is still available to the click event that updates the bar graph
         hovertemplate="<br>".join(
             [
@@ -505,14 +513,12 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
         ),
         hoverlabel_align="left",
     )
-    # set size of bubbles
-    fig.update_traces(marker_size=8)
 
     # add a Range slider to the graph
     fig.update_xaxes(rangeslider_visible=True)
 
     # get the date of the most recent poll, and add one month to it
-    date_range_max = (poll_question.date.max() + timedelta(days=30)).strftime(
+    date_range_max = (poll_question.date.max() + timedelta(days=60)).strftime(
         "%Y-%m-%d"
     )
 
@@ -526,10 +532,8 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
         line_width=3,
         line_dash="dot",
         line_color=GRAY,
-        annotation_text="Zero net favorability",
-        annotation_position="bottom left",
     )
 
-    ubicenter.add_ubi_center_logo(fig, x=1.2, y=-0.16)
+    ubicenter.add_ubi_center_logo(fig, x=1.1, y=-0.16)
 
     return format_fig(fig, show=False)
