@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 import ubicenter
 import numpy as np
 import textwrap
-from datetime import datetime
+from datetime import datetime, timedelta
 import pandas as pd
 
 # Define UBI Center colors
@@ -44,7 +44,7 @@ VARIABLE_MAPPING = {
 variable_mapping_inverse = {v: k for k, v in VARIABLE_MAPPING.items()}
 variable_mapping_inverse["question_text_wrap"] = "Question"
 variable_mapping_inverse["pollster_wrap"] = "Pollster"
-variable_mapping_inverse["pct_fav"] = "% favorability"
+variable_mapping_inverse["pct_fav"] = "Net favorability"
 
 # function to replicate ubicenter's format_fig function enough for dash
 
@@ -354,16 +354,23 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
     url = target_responses.loc[:, ["Link"]].values[0][0]
     country = target_responses.loc[:, ["country"]].values[0][0]
     demographic = target_responses.loc[:, ["demographic"]].values[0][0]
-    sample_size = int(target_responses.loc[:, ["sample_size"]].values[0][0])
 
-    source_text = "Poll of {sample_size} {demographic} in {country} by {pollster}, {date}. Retrieved from ".format(
-        sample_size=f"{sample_size:,}",
+    try:
+        sample_size = int(
+            target_responses.loc[:, ["sample_size"]].values[0][0]
+        )
+        sample_size = "{:,}".format(sample_size)
+    except:
+        sample_size = ""
+
+    source_text = "Survey of {sample_size} {demographic}, {country} by {pollster}, {date}. Retrieved from ".format(
+        sample_size=sample_size,
         demographic=demographic,
         pollster=pollster,
         country=country,
         date=date,
     )
-    source_url = "<br><a href='blank'>{}</a>".format(url)
+    source_url = "<br><a target='blank' href='{}'>{}</a>".format(url, url)
 
     source = wrap_string(source_text, 100) + source_url
 
@@ -380,7 +387,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         showarrow=False,
     )
 
-    ubicenter.add_ubi_center_logo(fig)
+    ubicenter.add_ubi_center_logo(fig, y=-0.2)
 
     # NOTE: use format_fig as defined above instead of ubicenter.format_fig
     return format_fig(fig, show=False).update_layout(autosize=True)
@@ -440,17 +447,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
         ]
 
     # Set arguments that are common across figures conditionally created by the xtab_split
-
-    # Check if "Switzerland" is in poll_question.country.unique()
-    switzerland = "Switzerland" in poll_question.country.unique()
-    # The Swiss referendum question really throws off the chart, so do this weird slightly-less-than-square-root transofrmation
-    size = (
-        (poll_question.sample_size + 1) ** 0.4
-        if switzerland
-        else "sample_size"
-    )
-    size_max = 30
-    opacity = 0.7
+    opacity = 0.5
     custom_data = [
         "poll_id",
         "question_id",
@@ -469,8 +466,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
             x="date",
             y="pct_fav",
             color="country",
-            text="pollster_wrap",
-            size=size,
+            # text="pollster_wrap",
             opacity=opacity,
             hover_data=custom_data,
             labels=variable_mapping_inverse_tmp,
@@ -486,42 +482,20 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
             x="date",
             y="pct_fav",
             color="country",
-            size=size,
-            size_max=size_max,
             opacity=opacity,
             custom_data=custom_data,
             labels=variable_mapping_inverse,
         )
 
-    # add line for zero net fav
-    fig.add_hline(
-        y=0,
-        line_width=3,
-        line_dash="dot",
-        line_color=GRAY,
-        annotation_text="Zero net favorability",
-        annotation_position="bottom left",
-    )
-
-    fig.update_layout(
-        clickmode="event+select",
-        xaxis=dict(
-            title=None,  # date self-explanatory
-        ),
-        legend_title_text=None,  # country self-explanatory
-    )
-    fig.update_layout(
-        hoverlabel=dict(bgcolor="white", font_size=16, font_family="Arial")
-    )
-
     fig.update_traces(
+        # set size of bubbles,
+        marker_size=8,
         # Add hover text, which will display instead of custom_data. Custom data is still available to the click event that updates the bar graph
-        # TODO: add plus sign to favorability like in the bar chart
         hovertemplate="<br>".join(
             [
                 "<b>%{customdata[3]}</b>",
                 "%{customdata[2]}",
-                "Net favorability: %{y:+.0f}%",
+                "Net favorability: %{y:+.0f}",
                 "%{customdata[5]}, %{x}",
                 "<extra></extra>",
             ]
@@ -529,6 +503,60 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
         hoverlabel_align="left",
     )
 
-    ubicenter.add_ubi_center_logo(fig, x=1.2, y=-0.16)
+    # add a Range slider to the graph
+    fig.update_xaxes(rangeslider_visible=True)
+
+    # get the date of the most recent poll, and add one month to it
+    date_range_max = (poll_question.date.max() + timedelta(days=60)).strftime(
+        "%Y-%m-%d"
+    )
+
+    initial_range = ["2016-01-01", date_range_max]
+
+    fig.update_layout(
+        # update default xaxis range
+        xaxis_range=initial_range,
+        clickmode="event+select",
+        xaxis=dict(
+            title=None,  # date self-explanatory
+        ),
+        legend_title_text=None,  # country self-explanatory
+        autosize=True,
+        # define hoverlabel characteristics
+        hoverlabel=dict(bgcolor="white", font_size=16, font_family="Arial"),
+    )
+
+    # add line for zero net fav
+    fig.add_hline(
+        y=0,
+        line_width=3,
+        line_dash="dot",
+        line_color=GRAY,
+    )
+
+    # add annotation for net fav
+    net_fav_explanation = "<br>".join(
+        textwrap.wrap(
+            str(
+                'Net favorability refers to the difference between the percentage of those surveyed expressing agreement/support towards the more "pro-UBI" position, and those that expressed disagreement/opposition.'
+            ),
+            70,
+            break_long_words=False,
+        )
+    )
+
+    fig.add_annotation(
+        xref="paper",
+        yref="paper",
+        xanchor="left",
+        x=0.0,
+        y=-0.55,
+        text=net_fav_explanation,
+        font=dict(family="Arial", size=10, color="rgb(67, 67, 67)"),
+        align="left",
+        showarrow=False,
+    )
+
+    ubicenter.add_ubi_center_logo(fig, x=1.15, y=-0.16)
 
     return format_fig(fig, show=False)
