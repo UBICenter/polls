@@ -533,6 +533,21 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
         line_dash="dot",
         line_color=GRAY,
     )
+    
+    # add annotation for net fav
+    net_fav_explanation = "<br>".join(textwrap.wrap(str('Net favorability refers to the difference between the percentage of those surveyed expressing agreement/support towards the more "pro-UBI" position, and those that expressed disagreement/opposition.'), 100, break_long_words=False))
+    
+    fig.add_annotation(
+        xref="paper",
+        yref="paper",
+        xanchor="left",
+        x=0.15,
+        y=-0.25,
+        text= net_fav_explanation,
+        font=dict(family="Arial", size=12, color="rgb(67, 67, 67)"),
+        align="left",
+        showarrow=False,
+    )
 
     ubicenter.add_ubi_center_logo(fig, x=1.15, y=-0.16)
 
