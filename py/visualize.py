@@ -487,17 +487,6 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
             labels=variable_mapping_inverse,
         )
 
-    fig.update_layout(
-        clickmode="event+select",
-        xaxis=dict(
-            title=None,  # date self-explanatory
-        ),
-        legend_title_text=None,  # country self-explanatory
-        autosize=True,
-        # define hoverlabel characteristics
-        hoverlabel=dict(bgcolor="white", font_size=16, font_family="Arial"),
-    )
-
     fig.update_traces(
         # set size of bubbles,
         marker_size=8,
@@ -524,7 +513,18 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
 
     initial_range = ["2016-01-01", date_range_max]
 
-    fig["layout"]["xaxis"].update(range=initial_range)
+    fig.update_layout(
+        # update default xaxis range
+        xaxis_range=initial_range,
+        clickmode="event+select",
+        xaxis=dict(
+            title=None,  # date self-explanatory
+        ),
+        legend_title_text=None,  # country self-explanatory
+        autosize=True,
+        # define hoverlabel characteristics
+        hoverlabel=dict(bgcolor="white", font_size=16, font_family="Arial"),
+    )
 
     # add line for zero net fav
     fig.add_hline(
@@ -540,7 +540,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
             str(
                 'Net favorability refers to the difference between the percentage of those surveyed expressing agreement/support towards the more "pro-UBI" position, and those that expressed disagreement/opposition.'
             ),
-            100,
+            70,
             break_long_words=False,
         )
     )
@@ -549,10 +549,10 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
         xref="paper",
         yref="paper",
         xanchor="left",
-        x=0.15,
-        y=-0.25,
+        x=0.0,
+        y=-0.55,
         text=net_fav_explanation,
-        font=dict(family="Arial", size=12, color="rgb(67, 67, 67)"),
+        font=dict(family="Arial", size=10, color="rgb(67, 67, 67)"),
         align="left",
         showarrow=False,
     )
