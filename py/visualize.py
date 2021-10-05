@@ -370,7 +370,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         country=country,
         date=date,
     )
-    source_url = "<br><a href='blank'>{}</a>".format(url)
+    source_url = "<br><a target='blank' href={}>{}</a>".format(url)
 
     source = wrap_string(source_text, 100) + source_url
 
@@ -534,6 +534,6 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
         line_color=GRAY,
     )
 
-    ubicenter.add_ubi_center_logo(fig, x=1.1, y=-0.16)
+    ubicenter.add_ubi_center_logo(fig, x=1.15, y=-0.16)
 
     return format_fig(fig, show=False)

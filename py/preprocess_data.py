@@ -59,6 +59,16 @@ def plotly_wrap(x, length=30):
     return x.str.wrap(length).apply(lambda x: x.replace("\n", "<br>"))
 
 
+# abbreviate some long xtab_val names
+responses.loc[
+    responses.xtab1_val
+    == "Higher technical education, vocational training, community college education or associate degree",
+    "xtab1_val",
+] = "Tech school/community college"
+responses.loc[
+    responses.xtab1_val == "Upper secondary education or less", "xtab1_val"
+] = "Upper secondary ed. or less"
+
 responses["question_text_wrap"] = plotly_wrap(responses.question_text)
 responses["pollster_wrap"] = plotly_wrap(responses.pollster, 20)
 

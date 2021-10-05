@@ -21,7 +21,7 @@ Age,65+,15
 Education,HS or less,1
 Education,Upper secondary education or less,2
 Education,"Higher technical education, vocational training, community college education or associate degree",3
-Education,College / Tech school,4
+Education,College/Tech school,4
 Education,Univ+,5
 Education,Bachelor's degree,6
 Education,Master's or doctoral degree,7
@@ -37,12 +37,12 @@ Income,Higher,7
 Income,$100K+,8
 Income,Upper income,9
 Partisanship,Democrat,1
-Partisanship,Independent / Third party,2
+Partisanship,Independent/Third party,2
 Partisanship,Republican,3
 Political Affiliation,Democrat,1
-Political Affiliation,Democrat / Lean Democrat,3
+Political Affiliation,Democrat/Lean Democrat,3
 Political Affiliation,Independent,4
-Political Affiliation,Republican / Lean Republican,5
+Political Affiliation,Republican/Lean Republican,5
 Political Affiliation,GOP,6
 Political ideology,Liberal Democrat,2
 Political ideology,Moderate Democrat,7
