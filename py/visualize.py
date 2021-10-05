@@ -370,7 +370,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         country=country,
         date=date,
     )
-    source_url = "<br><a target='blank' href={}>{}</a>".format(url)
+    source_url = "<br><a target='blank' href='{}'>{}</a>".format(url, url)
 
     source = wrap_string(source_text, 100) + source_url
 
