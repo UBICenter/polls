@@ -198,18 +198,15 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
     # example: if there is a 5-point response scale, than we would iterate through [0, 1, 2, 3, 4]
     for i in range(0, len(x_data[0])):
         for xd, yd in zip(x_data, y_data):
+            # NOTE: this is tricky, the traces are drawn from the bottom left corner up
             fig.add_trace(
                 go.Bar(
                     x=[xd[i]],
                     y=[yd],
                     orientation="h",
-                    text=[
-                        "{:.0%}".format(xd[i])
-                    ], 
+                    text=["{:.0%}".format(xd[i])],
                     textposition="inside",
-                    name=top_labels[
-                        i
-                    ],  
+                    name=top_labels[i],
                     insidetextanchor="middle",
                     insidetextfont=dict(
                         family="Arial",
@@ -220,7 +217,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
                         line=dict(color="rgb(248, 248, 249)", width=1),
                     ),
                     width=0.4 if len(y_data) == 1 else (),
-                    # hoverinfo="skip",
+                    hoverinfo="skip",
                     showlegend=True,
                 )
             )
@@ -245,32 +242,18 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         legend=dict(
             orientation="h",
             yanchor="bottom",
-            traceorder='normal',
+            traceorder="normal",
             xanchor="left",
             x=0.15,
             y=1.02,
-            ),
+        ),
         barmode="stack",
     )
-    
-    # def trace_legend_hider():
-    #     counter = itertools.count(start=0)
-    #     if counter <= len(y_data):
-    #         next()
-    #     def update_layout_showlegend(t):
-    #         t.update(showlegend=False)
-
-    #     return update_layout_showlegend
-
-    # fig.for_each_trace(trace_legend_hider())
-    invisible_ids= [ ]
-    for i in range(1,len(fig.data)):
-        # if len(x_data[0]) % i != 0:
+    # ex. if there are 3 horizontal bars with 5-point response scale, then len(fig.data) will be 15
+    for i in range(1, len(fig.data)):
+        # eg. check if trace is
         if i % len(y_data) != 0:
-            # print(i)
-            invisible_ids += [i]
             fig.data[i].showlegend = False
-    # print(len(fig.data))
     # ---------------------------------------------------- #
     #                 Label the bar graphs                 #
     # ---------------------------------------------------- #
@@ -317,24 +300,10 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
                 showarrow=False,
             )
         )
-        
+
         space = xd[0]
         for i in range(1, len(xd)):
             space += xd[i]
-    # labeling the END of TOP of y-axis with 'Net'
-    # annotations.append(
-    #     dict(
-    #         xref="x",
-    #         yref="paper",
-    #         x=1.075,
-    #         y=1.1,
-    #         xanchor="right",
-    #         text="<b>Net</b>",
-    #         font=dict(family="Arial", size=14, color="rgb(67, 67, 67)"),
-    #         showarrow=False,
-    #         align="right",
-    #     )
-    # )
 
     fig.update_layout(
         annotations=annotations,
