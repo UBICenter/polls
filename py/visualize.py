@@ -210,7 +210,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
                     insidetextanchor="middle",
                     insidetextfont=dict(
                         family="Arial",
-                        size=14,
+                        size=20,
                     ),
                     marker=dict(
                         color=colors[i],
@@ -274,36 +274,26 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
             )
         )
         # add the net favorability for each bar
-        annotations.append(
-            dict(
-                xref="x",
-                yref="y",
-                x=1.075,
-                y=yd,
-                xanchor="right",
-                text="<b>{fav:+.0f}</b>".format(fav=net_fav_df[yd]),
-                font=dict(family="Arial", size=18, color="rgb(67, 67, 67)"),
-                showarrow=False,
-                align="right",
-            )
+        # add a trace to the end to display the net favorability
+        fig.add_trace(
+            go.Bar(
+                x=[0.10],
+                y=[yd],
+                orientation="h",
+                text="<b>{fav:+.0f}</b>".format(
+                    fav=net_fav_df[yd]
+                ),  # NOTE test if we can do auto text to label the graphs
+                textposition="inside",  # NOTE test if we can do auto text to label the graphs
+                insidetextanchor="middle",
+                insidetextfont=dict(
+                    family="Arial",
+                    size=20,
+                ),
+                marker=dict(color="white", line=dict(color="white", width=1)),
+                hoverinfo="skip",
+                showlegend=False,
+            ),
         )
-
-        # labeling the first percentage of each bar (x_axis)
-        annotations.append(
-            dict(
-                xref="x",
-                yref="y",
-                x=xd[0] / 2,
-                y=yd,
-                text="{:.0%}".format(xd[0]),
-                font=dict(family="Arial", size=14, color="rgb(248, 248, 255)"),
-                showarrow=False,
-            )
-        )
-
-        space = xd[0]
-        for i in range(1, len(xd)):
-            space += xd[i]
 
     fig.update_layout(
         annotations=annotations,
