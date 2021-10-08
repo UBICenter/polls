@@ -366,7 +366,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
     # change source text depending on whether this is actually the Swiss Referendum
     if poll_id == 3:
         source_text = (
-            "Results of 2016 Swiss referendum in which 2,494,848 partook."
+            "Results of 2016 Swiss referendum in which 2,494,848 votes were cast."
         )
     else:
         source_text = "Survey of {sample_size} {demographic}, {country} by {pollster}, {date}. Retrieved from ".format(
