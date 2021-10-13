@@ -13,3 +13,4 @@ dependencies:
   - pip:
     - "git+git://github.com/PSLmodels/microdf.git"
     - "git+https://github.com/UBICenter/ubicenter.py"
+    - black
