@@ -1,4 +1,5 @@
 # import ubicenter
+from inspect import trace
 from dash_html_components.Label import Label
 import plotly.express as px
 import plotly.graph_objects as go
@@ -7,6 +8,7 @@ import numpy as np
 import textwrap
 from datetime import datetime, timedelta
 import pandas as pd
+import itertools
 
 # Define UBI Center colors
 BLUE = "#1976D2"
@@ -171,6 +173,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         by=["val_order"], ascending=False
     ).xtab1_val.unique()
     # create list of lists of the percent_norm of each response in order of response_order
+    # eg. [0.27 0.12 0.06 0.23 0.32]
     x_data = [
         target_responses[target_responses.xtab1_val == val]
         .sort_values(by=["response_order"])
@@ -178,7 +181,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
         for val in xtab1_vals
     ]
 
-    # create list of y_data that is used to label the bars ie. ["Black", "Hispanic", "White"]
+    # create list of y_data that is used to label the bars eg. ["Black", "Hispanic", "White"]
     y_data = xtab1_vals
 
     net_fav_df = target_responses.groupby(["xtab1_val"])["pct_fav"].sum()
@@ -192,26 +195,22 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
     # ---------------------------------------------------- #
     fig = go.Figure()
 
-    # this is likely an artifact from constructing the dataset in the plotly example
+    # example: if there is a 5-point response scale, than we would iterate through [0, 1, 2, 3, 4]
     for i in range(0, len(x_data[0])):
         for xd, yd in zip(x_data, y_data):
+            # NOTE: this is tricky, the traces are drawn from the bottom left corner up
             fig.add_trace(
                 go.Bar(
                     x=[xd[i]],
                     y=[yd],
                     orientation="h",
-                    text=[
-                        "{:.0%}".format(xd[i])
-                    ],  # NOTE test if we can do auto text to label the graphs
-                    textposition="inside",  # NOTE test if we can do auto text to label the graphs
-                    legendgroup=top_labels[
-                        i
-                    ],  # NOTE this might not work with this index
+                    text=["{:.0%}".format(xd[i])],
+                    textposition="inside",
+                    name=top_labels[i],
                     insidetextanchor="middle",
                     insidetextfont=dict(
                         family="Arial",
-                        size=14,
-                        # color="rgb(248, 248, 255)"
+                        size=20,
                     ),
                     marker=dict(
                         color=colors[i],
@@ -219,6 +218,7 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
                     ),
                     width=0.4 if len(y_data) == 1 else (),
                     hoverinfo="skip",
+                    showlegend=True,
                 )
             )
 
@@ -236,18 +236,28 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
             showticklabels=False,
             zeroline=False,
         ),
-        barmode="stack",
         paper_bgcolor="rgb(248, 248, 255)",
         plot_bgcolor="rgb(248, 248, 255)",
         margin=dict(l=120, r=10, t=140, b=80),
-        showlegend=False,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            traceorder="normal",
+            xanchor="left",
+            x=0.15,
+            y=1.02,
+        ),
+        barmode="stack",
     )
-
-    annotations = []
-
+    # ex. if there are 3 horizontal bars with 5-point response scale, then len(fig.data) will be 15
+    for i in range(1, len(fig.data)):
+        # eg. check if trace is
+        if i % len(y_data) != 0:
+            fig.data[i].showlegend = False
     # ---------------------------------------------------- #
     #                 Label the bar graphs                 #
     # ---------------------------------------------------- #
+    annotations = []
     for yd, xd in zip(y_data, x_data):
         # labeling the y-axis
         annotations.append(
@@ -264,79 +274,26 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
             )
         )
         # add the net favorability for each bar
-        annotations.append(
-            dict(
-                xref="x",
-                yref="y",
-                x=1.075,
-                y=yd,
-                xanchor="right",
-                text="<b>{fav:+.0f}</b>".format(fav=net_fav_df[yd]),
-                font=dict(family="Arial", size=18, color="rgb(67, 67, 67)"),
-                showarrow=False,
-                align="right",
-            )
+        # add a trace to the end to display the net favorability
+        fig.add_trace(
+            go.Bar(
+                x=[0.10],
+                y=[yd],
+                orientation="h",
+                text="<b>{fav:+.0f}</b>".format(
+                    fav=net_fav_df[yd]
+                ),  # NOTE test if we can do auto text to label the graphs
+                textposition="inside",  # NOTE test if we can do auto text to label the graphs
+                insidetextanchor="middle",
+                insidetextfont=dict(
+                    family="Arial",
+                    size=20,
+                ),
+                marker=dict(color="white", line=dict(color="white", width=1)),
+                hoverinfo="skip",
+                showlegend=False,
+            ),
         )
-
-        # labeling the first percentage of each bar (x_axis)
-        annotations.append(
-            dict(
-                xref="x",
-                yref="y",
-                x=xd[0] / 2,
-                y=yd,
-                text="{:.0%}".format(xd[0]),
-                font=dict(family="Arial", size=14, color="rgb(248, 248, 255)"),
-                showarrow=False,
-            )
-        )
-        # labeling the first Likert scale (#NOTE on the top)
-        if yd == y_data[-1]:
-            annotations.append(
-                dict(
-                    xref="x",
-                    yref="paper",
-                    x=xd[0] / 2,
-                    y=1.15,
-                    text=top_labels[0],
-                    font=dict(
-                        family="Arial", size=14, color="rgb(67, 67, 67)"
-                    ),
-                    showarrow=False,
-                )
-            )
-        space = xd[0]
-        for i in range(1, len(xd)):
-            # labeling the Likert scale
-            if yd == y_data[-1]:
-                annotations.append(
-                    dict(
-                        xref="x",
-                        yref="paper",
-                        x=space + (xd[i] / 2),
-                        y=1.15,
-                        text=top_labels[i],
-                        font=dict(
-                            family="Arial", size=14, color="rgb(67, 67, 67)"
-                        ),
-                        showarrow=False,
-                    )
-                )
-            space += xd[i]
-    # labeling the END of TOP of y-axis with 'Net'
-    annotations.append(
-        dict(
-            xref="x",
-            yref="paper",
-            x=1.075,
-            y=1.1,
-            xanchor="right",
-            text="<b>Net</b>",
-            font=dict(family="Arial", size=14, color="rgb(67, 67, 67)"),
-            showarrow=False,
-            align="right",
-        )
-    )
 
     fig.update_layout(
         annotations=annotations,
