@@ -236,8 +236,6 @@ bubble_input_components = [
                         ["2. Choose demographic"],
                         style={
                             "font-weight": "bold",
-                            # "text-align": "center",
-                            # "color": BLUE,
                             "fontSize": 14,
                         },
                     ),
@@ -467,9 +465,8 @@ app.layout = html.Div(
                             "UBI Poll Tracker ",
                             dbc.Badge(
                                 "BETA",
-                                # color="MAGENTA",
                                 pill=True,
-                                # className="mr-1",
+                                href="http://github.com/UBICenter/polls/issues"
                             ),
                         ],
                         id="header",  # ID "header"
