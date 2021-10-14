@@ -363,13 +363,19 @@ def poll_vis(responses, poll_id, question_id=None, crosstab_variable="-"):
     except:
         sample_size = ""
 
-    source_text = "Survey of {sample_size} {demographic}, {country} by {pollster}, {date}. Retrieved from ".format(
-        sample_size=sample_size,
-        demographic=demographic,
-        pollster=pollster,
-        country=country,
-        date=date,
-    )
+    # Change source text depending on whether this is actually the Swiss Referendum
+    if poll_id == 3:
+        source_text = "Results of 2016 Swiss referendum in which 2,494,848 votes were cast."
+    else:
+        source_text = "Survey of {sample_size} {demographic}, {country} by {pollster}, {date}. Retrieved from ".format(
+            sample_size=sample_size,
+            demographic=demographic,
+            pollster=pollster,
+            country=country,
+            date=date,
+        )
+
+    # ---------------------------------------------------- #
     source_url = "<br><a target='blank' href='{}'>{}</a>".format(url, url)
 
     source = wrap_string(source_text, 100) + source_url
