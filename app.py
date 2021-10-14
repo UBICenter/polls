@@ -202,7 +202,6 @@ bubble_input_components = [
             html.H6(
                 [
                     "Compare polls by demographic: ",
-                    # dbc.Badge("Optional", color="light", className="mr-1"),
                 ],
                 style={
                     "font-weight": "bold",
@@ -254,7 +253,6 @@ bubble_input_components = [
                 id="xtab1-bubble-cardbody",  # ID "xtab1-bubble-cardbody"
             ),
         ],
-        # color="info",
         outline="light",
     ),
 ]
@@ -465,7 +463,15 @@ app.layout = html.Div(
             [
                 dbc.Col(
                     html.H1(
-                        "UBI Poll Tracker",
+                        [
+                            "UBI Poll Tracker ",
+                            dbc.Badge(
+                                "BETA",
+                                # color="MAGENTA",
+                                pill=True,
+                                # className="mr-1",
+                            ),
+                        ],
                         id="header",  # ID "header"
                         style={
                             "text-align": "center",
