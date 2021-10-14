@@ -494,7 +494,7 @@ app.layout = html.Div(
                             dbc.Badge(
                                 "BETA",
                                 pill=True,
-                                href="http://github.com/UBICenter/polls/issues"
+                                href="http://github.com/UBICenter/polls/issues",
                             ),
                         ],
                         id="header",  # ID "header"
