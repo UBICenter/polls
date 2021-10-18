@@ -48,6 +48,36 @@ variable_mapping_inverse["question_text_wrap"] = "Question"
 variable_mapping_inverse["pollster_wrap"] = "Pollster"
 variable_mapping_inverse["pct_fav"] = "Net favorability"
 
+COUNTRY_MAPPING = {
+    'USA' : '#e57574',
+'EU28' : '#ca1415',
+'Switzerland' : '#780001',
+'Iceland' : '#ffb23c',
+'Canada' : '#ff8112',
+'UK' : '#783d02',
+'Germany' : '#eae19d',
+'France' : '#f7d801',
+'Spain' : '#867202',
+'Slovenia' : '#79e077',
+'Norway' : '#61bf22',
+'Sweden' : '#156c30',
+'Netherlands' : '#7dece3',
+'Poland' : '#00c09b',
+'Belgium' : '#014f51',
+'Finland' : '#74a3f3',
+'Austria' : '#004fce',
+'Estonia' : '#012a6c',
+'Czechia' : '#b780e6',
+'Russia' : '#6d00cd',
+'Israel' : '#370065',
+'Ireland' : '#ff99ff',
+'Hungary' : '#ff00ff',
+'Greece' : '#750073',
+'Italy' : '#960018',
+'Romania' : '#535353',
+'Portugal' : '#aeaeae',
+}
+
 # function to replicate ubicenter's format_fig function enough for dash
 
 
@@ -429,7 +459,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
             x="date",
             y="pct_fav",
             color="country",
-            # text="pollster_wrap",
+            color_discrete_map=COUNTRY_MAPPING,
             opacity=opacity,
             hover_data=custom_data,
             labels=variable_mapping_inverse_tmp,
@@ -445,6 +475,7 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
             x="date",
             y="pct_fav",
             color="country",
+            color_discrete_map=COUNTRY_MAPPING,
             opacity=opacity,
             custom_data=custom_data,
             labels=variable_mapping_inverse,
