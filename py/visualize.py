@@ -502,14 +502,10 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
 
     # Get the max x-axis range
     full_fig = fig.full_figure_for_development(warn=False)
-    x_max_date_str=full_fig.layout.xaxis.range[1]
+    x_max_date_str = full_fig.layout.xaxis.range[1]
     # convert x_max from string to datetime
     date_range_max = datetime.strftime(
-        datetime.strptime(
-        x_max_date_str,
-        "%Y-%m-%d %H:%M:%S.%f"
-    ),
-        "%Y-%m-%d"
+        datetime.strptime(x_max_date_str, "%Y-%m-%d %H:%M:%S.%f"), "%Y-%m-%d"
     )
 
     initial_range = ["2016-01-01", date_range_max]
