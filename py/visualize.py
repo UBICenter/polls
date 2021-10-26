@@ -517,6 +517,8 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
         xaxis=dict(
             title=None,  # date self-explanatory
         ),
+        # see https://plotly.com/python/tick-formatting/
+        yaxis_tickformat="+.0",
         legend_title_text=None,  # country self-explanatory
         autosize=True,
         # define hoverlabel characteristics
