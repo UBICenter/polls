@@ -619,7 +619,7 @@ app.layout = html.Div(
     # TODO: output should include selected question
     # These inputs are the inputs from the bubble graph
     Input("bubble-graph", "clickData"),
-    Input("country-dropdown-2", "value")
+    Input("country-dropdown-2", "value"),
     # These inputs are from the bar graph
     Input("country-dropdown", "value"),
     Input("poll-dropdown", "value"),
@@ -628,7 +628,11 @@ app.layout = html.Div(
     prevent_initial_call=True,
 )
 def update_bar_graph_selections_with_click(
-    clickData, bubble_country_value_in, country_value_in, poll_value_in, question_value_in
+    clickData,
+    bubble_country_value_in,
+    country_value_in,
+    poll_value_in,
+    question_value_in,
 ):
     # NOTE This section is the view callback context, #TODO delete
     ctx = dash.callback_context
@@ -640,7 +644,7 @@ def update_bar_graph_selections_with_click(
         poll_value_out = clickData["points"][0]["customdata"][0]
         question_value_out = clickData["points"][0]["customdata"][1]
         return country_value_out, poll_value_out, question_value_out
-        
+
     elif prop_id == "country-dropdown.value":
         country_value_out = country_value_in
 
@@ -659,10 +663,10 @@ def update_bar_graph_selections_with_click(
         ].question_id.unique()[0]
 
         return country_value_out, poll_value_out, question_value_out
-        
+
     elif prop_id == "country-dropdown-2.value":
         country_value_out = bubble_country_value_in
-        
+
         # subset polls based on selected country
         poll_ids_sorted = (
             r[r.country == bubble_country_value_in]
@@ -678,7 +682,7 @@ def update_bar_graph_selections_with_click(
         ].question_id.unique()[0]
 
         return country_value_out, poll_value_out, question_value_out
-        
+
         # subset polls
     elif prop_id == "poll-dropdown.value":
         country_value_out = country_value_in
@@ -873,7 +877,7 @@ def update_bubble_chart(
     if country_input_value is None:
         r_sub = r[r.country.isin(countries)]
     else:
-        r_sub = r[r.country==country_input_value]
+        r_sub = r[r.country == country_input_value]
 
     # updates xtab1-bubble-dropdown options based on selected country
     xtab1_options = list_options(r_sub.xtab1_var.unique())
