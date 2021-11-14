@@ -127,11 +127,11 @@ bubble_dropdown_deck = dbc.CardDeck(
                         dcc.Dropdown(
                             # define component_id for input of app@callback function
                             id="country-dropdown-2",  # ID "country-dropdown-2"
-                            multi=True,
+                            multi=False,
                             # create a list of dicts of countries and their labels
                             # to be selected by user in dropdown
                             options=list_options(countries),
-                            value=countries,
+                            value=None,
                         ),
                     ],
                     # style={"height": "100px"},
@@ -215,11 +215,11 @@ bubble_input_components = [
     dcc.Dropdown(
         # define component_id for input of app@callback function
         id="country-dropdown-2",  # ID "country-dropdown-2"
-        multi=True,
+        multi=False,
         # create a list of dicts of countries and their labels
         # to be selected by user in dropdown
         options=list_options(countries),
-        value=countries,
+        value=None,
         # shrink the fontsize of the country selections to make the buble a little mroe readable
         style={"fontSize": 10},
     ),
@@ -617,7 +617,10 @@ app.layout = html.Div(
     Output("poll-dropdown", "value"),
     Output("question-dropdown", "value"),
     # TODO: output should include selected question
+    # These inputs are the inputs from the bubble graph
     Input("bubble-graph", "clickData"),
+    Input("country-dropdown-2", "value")
+    # These inputs are from the bar graph
     Input("country-dropdown", "value"),
     Input("poll-dropdown", "value"),
     Input("question-dropdown", "value"),
@@ -625,17 +628,19 @@ app.layout = html.Div(
     prevent_initial_call=True,
 )
 def update_bar_graph_selections_with_click(
-    clickData, country_value_in, poll_value_in, question_value_in
+    clickData, bubble_country_value_in, country_value_in, poll_value_in, question_value_in
 ):
     # NOTE This section is the view callback context, #TODO delete
     ctx = dash.callback_context
     prop_id = ctx.triggered[0]["prop_id"]
+
     if prop_id == "bubble-graph.clickData":
         # the element "customdata" is defined by an argument in the px.scatter() call in the bubble_chart() function in the visualize.py file. The order of the items in customdata is important, but the order is set arbitrarily
         country_value_out = clickData["points"][0]["customdata"][2]
         poll_value_out = clickData["points"][0]["customdata"][0]
         question_value_out = clickData["points"][0]["customdata"][1]
         return country_value_out, poll_value_out, question_value_out
+        
     elif prop_id == "country-dropdown.value":
         country_value_out = country_value_in
 
@@ -654,6 +659,27 @@ def update_bar_graph_selections_with_click(
         ].question_id.unique()[0]
 
         return country_value_out, poll_value_out, question_value_out
+        
+    elif prop_id == "country-dropdown-2.value":
+        country_value_out = bubble_country_value_in
+        
+        # subset polls based on selected country
+        poll_ids_sorted = (
+            r[r.country == bubble_country_value_in]
+            .sort_values("date", ascending=False)
+            .poll_id.unique()
+        )
+        # populate poll-dropdown value with most recent poll as default
+        poll_value_out = poll_ids_sorted[0]
+
+        # populate first question from poll as default
+        question_value_out = r[
+            r.poll_id == poll_value_out
+        ].question_id.unique()[0]
+
+        return country_value_out, poll_value_out, question_value_out
+        
+        # subset polls
     elif prop_id == "poll-dropdown.value":
         country_value_out = country_value_in
         poll_value_out = poll_value_in
@@ -839,12 +865,15 @@ def set_default_xtab1_value(country, poll, question):
     Input("xtab1_val-bubble-dropdown", "value"),
 )
 def update_bubble_chart(
-    countries,
+    country_input_value,
     xtab1_var,
     xtab1_val,
 ):
     # subsets r to only include the selected countries
-    r_sub = r[r.country.isin(countries)]
+    if country_input_value is None:
+        r_sub = r[r.country.isin(countries)]
+    else:
+        r_sub = r[r.country==country_input_value]
 
     # updates xtab1-bubble-dropdown options based on selected country
     xtab1_options = list_options(r_sub.xtab1_var.unique())
