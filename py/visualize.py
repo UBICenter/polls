@@ -416,12 +416,19 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
     xtab_split = xtab1_val != "-"
     if not xtab_split:
         target_data[
-            # Exclude the NYC democratic primary poll (poll _id 20), which is both a poll of a geographic area and a poll of a demographic that is not comporable to polls on country levels
-            (target_data.poll_id!=20) & 
-            # Exclude question about willingness to pay higher taxes among supporters of ubi (question _id 21) 
-            (target_data.question_id!=21) & 
-            (target_data.xtab1_val == xtab1_val)
-            ]
+            # Exclude the NYC democratic primary poll
+            # (poll _id 20), which is both a poll of a
+            # geographic area and a poll of a
+            # demographic that is not comporable to
+            # polls on country levels
+            (target_data.poll_id != 20)
+            &
+            # Exclude question about willingness to pay
+            # higher taxes among supporters of ubi
+            # (question _id 21)
+            (target_data.question_id != 21)
+            & (target_data.xtab1_val == xtab1_val)
+        ]
     # Summarize to the poll/question level.
     GROUPBY = [
         "poll_id",
