@@ -510,6 +510,8 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
     fig.update_layout(
         # update default xaxis range
         xaxis_range=initial_range,
+        # Set default y-axis range to -100, 100
+        yaxis_range=[-100, 100],
         clickmode="event+select",
         xaxis=dict(
             title=None,  # date self-explanatory
