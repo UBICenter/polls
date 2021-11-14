@@ -495,6 +495,9 @@ app.layout = html.Div(
                                 "BETA",
                                 pill=True,
                                 href="http://github.com/UBICenter/polls/issues",
+                                style={
+                                    "transform": "scale(0.5) translate(-50%)",
+                                },
                             ),
                         ],
                         id="header",  # ID "header"

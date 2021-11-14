@@ -500,9 +500,12 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
     # add a Range slider to the graph
     fig.update_xaxes(rangeslider_visible=True)
 
-    # get the date of the most recent poll, and add one month to it
-    date_range_max = (poll_question.date.max() + timedelta(days=60)).strftime(
-        "%Y-%m-%d"
+    # Get the max x-axis range
+    full_fig = fig.full_figure_for_development(warn=False)
+    x_max_date_str = full_fig.layout.xaxis.range[1]
+    # convert x_max from string to datetime
+    date_range_max = datetime.strftime(
+        datetime.strptime(x_max_date_str, "%Y-%m-%d %H:%M:%S.%f"), "%Y-%m-%d"
     )
 
     initial_range = ["2016-01-01", date_range_max]
@@ -516,6 +519,8 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
         xaxis=dict(
             title=None,  # date self-explanatory
         ),
+        # see https://plotly.com/python/tick-formatting/
+        yaxis_tickformat="+.0",
         legend_title_text=None,  # country self-explanatory
         autosize=True,
         # define hoverlabel characteristics
