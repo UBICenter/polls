@@ -11,7 +11,9 @@ import pandas as pd
 import itertools
 
 DROP_POLL_IDS = [
-    # NYC democratic primary poll is both a poll of a geographic area and a poll of a demographic that is not comparable to polls on country levels.
+    # NYC democratic primary poll is both a poll of a geographic area and
+    # a poll of a demographic that is not comparable to polls on country
+    # levels.
     20
 ]
 DROP_QUESTION_IDS = [
