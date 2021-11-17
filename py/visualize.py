@@ -10,6 +10,17 @@ from datetime import datetime, timedelta
 import pandas as pd
 import itertools
 
+DROP_POLL_IDS = [
+    # NYC democratic primary poll is both a poll of a geographic area and
+    # a poll of a demographic that is not comparable to polls on country
+    # levels.
+    20
+]
+DROP_QUESTION_IDS = [
+    # Willingness to pay higher taxes among supporters of UBI.
+    21
+]
+
 # Define UBI Center colors
 BLUE = "#1976D2"
 DARK_BLUE = "#1565C0"
@@ -415,7 +426,22 @@ def bubble_chart(responses, poll_ids=None, question_ids=None, xtab1_val="-"):
     # Only subset by xtab1_val if we're not splitting by it.
     xtab_split = xtab1_val != "-"
     if not xtab_split:
-        target_data = target_data[target_data.xtab1_val == xtab1_val]
+        target_data = target_data[
+            # Exclude the NYC democratic primary poll
+            # (poll _id 20), which is both a poll of a
+            # geographic area and a poll of a
+            # demographic that is not comporable to
+            # polls on country levels
+            (~target_data.poll_id.isin(DROP_POLL_IDS))
+            &
+            # Exclude question about willingness to pay
+            # higher taxes among supporters of ubi
+            # (question _id 21)
+            (~target_data.question_id.isin(DROP_QUESTION_IDS))
+            # We still need to include this, since xtab1_val the default arg is "-" & we only want responses without a crosstab
+            & (target_data.xtab1_val == xtab1_val)
+        ]
+
     # Summarize to the poll/question level.
     GROUPBY = [
         "poll_id",
