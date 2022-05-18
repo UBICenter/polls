@@ -7,9 +7,9 @@ A google sheet with our data can be found [here](https://docs.google.com/spreads
 ## Installation
 To install the app on your device, clone this repo. 
 
-From the new directory, install dependencies in pip with:
+From the new directory, create a new conda environment and install dependencies with:
 ```python
-pip install -r requirements.txt
+conda env create --file environment.yaml
 ```
 To run the app:
 ```python
